@@ -1,25 +1,24 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import ProfileScreen from "@/screens/ProfileScreen";
+import IslamicGPTScreen from "@/screens/IslamicGPTScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
-export type ProfileStackParamList = {
-  Profile: undefined;
+export type IslamicGPTStackParamList = {
+  IslamicGPT: undefined;
 };
 
-const Stack = createNativeStackNavigator<ProfileStackParamList>();
+const Stack = createNativeStackNavigator<IslamicGPTStackParamList>();
 
-export default function ProfileStackNavigator() {
+export default function IslamicGPTStackNavigator() {
   const screenOptions = useScreenOptions();
 
   return (
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="IslamicGPT"
+        component={IslamicGPTScreen}
         options={{
-          title: "Profile",
+          headerTitle: "IslamicGPT",
         }}
       />
     </Stack.Navigator>

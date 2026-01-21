@@ -1,24 +1,24 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "@/screens/HomeScreen";
+import CalendarScreen from "@/screens/CalendarScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
-export type HomeStackParamList = {
-  Home: undefined;
+export type CalendarStackParamList = {
+  Calendar: undefined;
 };
 
-const Stack = createNativeStackNavigator<HomeStackParamList>();
+const Stack = createNativeStackNavigator<CalendarStackParamList>();
 
-export default function HomeStackNavigator() {
+export default function CalendarStackNavigator() {
   const screenOptions = useScreenOptions();
 
   return (
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Calendar"
+        component={CalendarScreen}
         options={{
-          headerShown: false,
+          headerTitle: "Islamic Calendar",
         }}
       />
     </Stack.Navigator>

@@ -1,4 +1,4 @@
-import { Text, type TextProps } from "react-native";
+import { Text, type TextProps, Platform } from "react-native";
 
 import { useTheme } from "@/hooks/useTheme";
 import { Typography } from "@/constants/theme";
@@ -6,7 +6,7 @@ import { Typography } from "@/constants/theme";
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: "h1" | "h2" | "h3" | "h4" | "body" | "small" | "link";
+  type?: "h1" | "h2" | "h3" | "h4" | "body" | "small" | "link" | "arabic" | "arabicLarge";
 };
 
 export function ThemedText({
@@ -50,12 +50,26 @@ export function ThemedText({
         return Typography.small;
       case "link":
         return Typography.link;
+      case "arabic":
+        return Typography.arabic;
+      case "arabicLarge":
+        return Typography.arabicLarge;
       default:
         return Typography.body;
     }
   };
 
+  const isArabic = type === "arabic" || type === "arabicLarge";
+  const writingDirection = isArabic ? "rtl" : "ltr";
+
   return (
-    <Text style={[{ color: getColor() }, getTypeStyle(), style]} {...rest} />
+    <Text
+      style={[
+        { color: getColor(), writingDirection },
+        getTypeStyle(),
+        style,
+      ]}
+      {...rest}
+    />
   );
 }
