@@ -2,21 +2,20 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import HomeStackNavigator from "@/navigation/HomeStackNavigator";
 import TasksStackNavigator from "@/navigation/TasksStackNavigator";
 import IslamicGPTStackNavigator from "@/navigation/IslamicGPTStackNavigator";
-import CalendarStackNavigator from "@/navigation/CalendarStackNavigator";
 import TasbihStackNavigator from "@/navigation/TasbihStackNavigator";
+import SettingsStackNavigator from "@/navigation/SettingsStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, BorderRadius } from "@/constants/theme";
 
 export type MainTabParamList = {
   HomeTab: undefined;
   TasksTab: undefined;
   IslamicGPTTab: undefined;
-  CalendarTab: undefined;
   TasbihTab: undefined;
+  SettingsTab: undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -85,19 +84,7 @@ export default function MainTabNavigator() {
         options={{
           title: "AI",
           tabBarIcon: ({ color, size }) => (
-            <View style={styles.aiIconContainer}>
-              <Feather name="message-circle" size={size} color={color} />
-            </View>
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="CalendarTab"
-        component={CalendarStackNavigator}
-        options={{
-          title: "Calendar",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="calendar" size={size} color={color} />
+            <Feather name="message-circle" size={size} color={color} />
           ),
         }}
       />
@@ -111,13 +98,16 @@ export default function MainTabNavigator() {
           ),
         }}
       />
+      <Tab.Screen
+        name="SettingsTab"
+        component={SettingsStackNavigator}
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="settings" size={size} color={color} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  aiIconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
