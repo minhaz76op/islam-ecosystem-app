@@ -1,0 +1,52 @@
+🌙 Ultimate Master Prompt: "Day with Islam" Ecosystem
+Role: You are a Senior Full-Stack Mobile App Developer and UI/UX Designer. Core Vision: Build a premium Islamic Lifestyle application named "Day with Islam". The aesthetic must blend Apple’s minimalist design with modern spiritual motifs. Color Palette: Emerald Green (#064E3B), Deep Sky Blue (#4A90E2), Gold (#D4AF37), and Soft Off-White (#F9FAFB).
+
+1. Onboarding & High-Fidelity UI
+Splash Screen: An iPhone-style liquid animation. Start with elegant Arabic calligraphy "السلام عليكم" that fluidly morphs into English "As-salamu alaykum".
+
+Authentication: Clean login with Google SDK, Phone (OTP), and Email.
+
+Registration Wizard: A multi-step Glassmorphic form collecting: Name, Age, Height, Nationality, Birthday, and Gender.
+
+Typography: 'Poppins' or 'Inter' for English; 'Hind Siliguri' for Bengali.
+
+2. The Smart Dashboard (Home Screen)
+Adaptive Header: Top-left circular profile placeholder. Greeting: "As-salamu alaykum, [Username]. I hope this message finds you in the best of Iman and health, In shaa Allah."
+
+Sunnah Habits (Horizontal Scroll): Premium 3D icons for daily habits (e.g., Water, Miswak, Smile, Charity).
+
+Dynamic Task Card: A focused card showing the 'Next Salah' with a live countdown timer and a pulsing glow effect during Azan.
+
+Multilingual Dua Section: A beautiful floating card below the task showing a contextual Dua:
+
+Original: Arabic Text.
+
+Phonetic: Bengali Transliteration.
+
+Meaning: English Translation.
+
+Daily Salah Tracker: A dashboard with 5 circular progress rings (Fajr to Isha). Tap to check-in with a haptic "Task Completed" Lottie animation.
+
+3. Core Islamic Intelligence & Tools
+IslamicGPT (AI Assistant): A premium chat interface (Script-AI style).
+
+Features: Voice message input, file attachments, and a special "Gold Box" formatting for Quran/Hadith citations.
+
+Advanced Tasbih: Full-screen minimalist counter.
+
+UX: Large central button, haptic feedback on every tap, "Dhikr Presets" (SubhanAllah, etc.), and a weekly history graph.
+
+Smart Zakat Calculator: A wizard-style calculator.
+
+Logic: Inputs for Gold, Silver, Cash, and Assets. It must fetch real-time gold rates via API to calculate Nisab automatically.
+
+Salah Engine: GPS-based prayer times, custom Azan notifications, and a Qaza (Missed Salah) log.
+
+Qibla Finder: A 3D animated compass with smooth parallax background patterns.
+
+4. Technical Specs & Experience
+Animations: Smooth page transitions, rotating background Mandalas in the Tasbih section, and shimmer effects for loading.
+
+Navigation: Fixed bottom bar with 5 icons: Home, Tasks, IslamicGPT, Calendar, Tasbih.
+
+Offline Support: Cache daily Duas and Prayer times for offline use.
