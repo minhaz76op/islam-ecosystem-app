@@ -4,6 +4,12 @@ import MainTabNavigator from "@/navigation/MainTabNavigator";
 import LoginScreen from "@/screens/LoginScreen";
 import EditProfileScreen from "@/screens/EditProfileScreen";
 import LanguageSelectScreen from "@/screens/LanguageSelectScreen";
+import DuaListScreen from "@/screens/DuaListScreen";
+import QuranScreen from "@/screens/QuranScreen";
+import ArticlesScreen from "@/screens/ArticlesScreen";
+import QuizScreen from "@/screens/QuizScreen";
+import MosqueLocatorScreen from "@/screens/MosqueLocatorScreen";
+import RozaTimetableScreen from "@/screens/RozaTimetableScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
@@ -11,6 +17,12 @@ export type RootStackParamList = {
   Login: undefined;
   EditProfile: undefined;
   LanguageSelect: undefined;
+  DuaList: undefined;
+  Quran: undefined;
+  Articles: undefined;
+  Quiz: undefined;
+  MosqueLocator: undefined;
+  RozaTimetable: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,6 +59,48 @@ export default function RootStackNavigator() {
         options={{
           presentation: "modal",
           headerTitle: "Language",
+        }}
+      />
+      <Stack.Screen
+        name="DuaList"
+        component={DuaListScreen}
+        options={{
+          headerTitle: "Duas",
+        }}
+      />
+      <Stack.Screen
+        name="Quran"
+        component={QuranScreen}
+        options={{
+          headerTitle: "Holy Quran",
+        }}
+      />
+      <Stack.Screen
+        name="Articles"
+        component={ArticlesScreen}
+        options={{
+          headerTitle: "Articles",
+        }}
+      />
+      <Stack.Screen
+        name="Quiz"
+        component={QuizScreen}
+        options={{
+          headerTitle: "Islamic Quiz",
+        }}
+      />
+      <Stack.Screen
+        name="MosqueLocator"
+        component={MosqueLocatorScreen}
+        options={{
+          headerTitle: "Find Mosques",
+        }}
+      />
+      <Stack.Screen
+        name="RozaTimetable"
+        component={RozaTimetableScreen}
+        options={{
+          headerTitle: "Roza Timetable",
         }}
       />
     </Stack.Navigator>

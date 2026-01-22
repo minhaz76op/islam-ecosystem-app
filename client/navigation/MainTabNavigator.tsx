@@ -4,15 +4,16 @@ import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { Platform, StyleSheet } from "react-native";
 import HomeStackNavigator from "@/navigation/HomeStackNavigator";
-import TasksStackNavigator from "@/navigation/TasksStackNavigator";
+import MenuStackNavigator from "@/navigation/MenuStackNavigator";
 import IslamicGPTStackNavigator from "@/navigation/IslamicGPTStackNavigator";
 import TasbihStackNavigator from "@/navigation/TasbihStackNavigator";
 import SettingsStackNavigator from "@/navigation/SettingsStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export type MainTabParamList = {
   HomeTab: undefined;
-  TasksTab: undefined;
+  MenuTab: undefined;
   IslamicGPTTab: undefined;
   TasbihTab: undefined;
   SettingsTab: undefined;
@@ -22,6 +23,7 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainTabNavigator() {
   const { theme, isDark } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Tab.Navigator
@@ -62,19 +64,19 @@ export default function MainTabNavigator() {
         name="HomeTab"
         component={HomeStackNavigator}
         options={{
-          title: "Home",
+          title: t("home"),
           tabBarIcon: ({ color, size }) => (
             <Feather name="home" size={size} color={color} />
           ),
         }}
       />
       <Tab.Screen
-        name="TasksTab"
-        component={TasksStackNavigator}
+        name="MenuTab"
+        component={MenuStackNavigator}
         options={{
-          title: "Salah",
+          title: t("menu"),
           tabBarIcon: ({ color, size }) => (
-            <Feather name="check-circle" size={size} color={color} />
+            <Feather name="grid" size={size} color={color} />
           ),
         }}
       />
@@ -92,7 +94,7 @@ export default function MainTabNavigator() {
         name="TasbihTab"
         component={TasbihStackNavigator}
         options={{
-          title: "Tasbih",
+          title: t("tasbih"),
           tabBarIcon: ({ color, size }) => (
             <Feather name="circle" size={size} color={color} />
           ),
@@ -102,7 +104,7 @@ export default function MainTabNavigator() {
         name="SettingsTab"
         component={SettingsStackNavigator}
         options={{
-          title: "Settings",
+          title: t("settings"),
           tabBarIcon: ({ color, size }) => (
             <Feather name="settings" size={size} color={color} />
           ),
