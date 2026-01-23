@@ -1,27 +1,83 @@
 import React from "react";
-import { View, ScrollView, StyleSheet, Pressable, Linking } from "react-native";
+import { View, ScrollView, StyleSheet, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 
+const appLogo = require("../../assets/images/app-logo.png");
+
+const FEATURES = [
+  {
+    icon: "clock",
+    title: "Prayer Times",
+    description: "Accurate GPS-based prayer times with customizable notifications and Adhan sounds",
+  },
+  {
+    icon: "book-open",
+    title: "Holy Quran",
+    description: "Complete Quran with Arabic text, English and Bengali translations",
+  },
+  {
+    icon: "heart",
+    title: "Daily Duas",
+    description: "40+ authentic duas organized by categories with audio recitation",
+  },
+  {
+    icon: "target",
+    title: "Qibla Direction",
+    description: "Find the direction of Kaaba from anywhere in the world",
+  },
+  {
+    icon: "users",
+    title: "Friends System",
+    description: "Connect with friends, share progress, and complete Islamic challenges together",
+  },
+  {
+    icon: "message-circle",
+    title: "IslamicGPT",
+    description: "AI-powered assistant for Islamic questions and guidance",
+  },
+  {
+    icon: "repeat",
+    title: "Tasbih Counter",
+    description: "Digital counter for dhikr with haptic feedback and progress tracking",
+  },
+  {
+    icon: "calendar",
+    title: "Islamic Calendar",
+    description: "Hijri calendar with important Islamic dates and holidays",
+  },
+  {
+    icon: "sun",
+    title: "Ramadan Timetable",
+    description: "Complete Sehri and Iftar times for the blessed month",
+  },
+  {
+    icon: "percent",
+    title: "Zakat Calculator",
+    description: "Calculate your Zakat obligation accurately",
+  },
+  {
+    icon: "map-pin",
+    title: "Mosque Locator",
+    description: "Find nearby mosques using GPS location",
+  },
+  {
+    icon: "award",
+    title: "Islamic Quiz",
+    description: "Test and improve your Islamic knowledge with quizzes",
+  },
+];
+
 export default function AboutScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const { theme, isDark } = useTheme();
-
-  const openFacebook = () => {
-    Linking.openURL("https://www.facebook.com/minhazOFF76");
-  };
-
-  const openEmail = () => {
-    Linking.openURL("mailto:minhazofficial5576@gmail.com");
-  };
+  const { theme } = useTheme();
 
   return (
     <ScrollView
@@ -37,18 +93,8 @@ export default function AboutScreen() {
         entering={FadeInUp.delay(100).duration(600)}
         style={styles.headerSection}
       >
-        <LinearGradient
-          colors={[theme.primary, AppColors.accent]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.logoContainer}
-        >
-          <Feather name="moon" size={48} color="#FFFFFF" />
-        </LinearGradient>
+        <Image source={appLogo} style={styles.appLogo} resizeMode="contain" />
         <ThemedText style={styles.appName}>Day with Islam</ThemedText>
-        <ThemedText style={[styles.tagline, { color: theme.textSecondary }]}>
-          An Islamic lifestyle application created to support daily worship, learning, and spiritual growth.
-        </ThemedText>
         <View style={[styles.versionBadge, { backgroundColor: theme.primary + "15" }]}>
           <ThemedText style={[styles.versionText, { color: theme.primary }]}>
             Version 1.0.0
@@ -57,90 +103,42 @@ export default function AboutScreen() {
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(200).duration(600)}>
-        <View style={[styles.card, { backgroundColor: theme.backgroundDefault }]}>
-          <View style={[styles.cardIconBg, { backgroundColor: theme.primary + "15" }]}>
-            <Feather name="code" size={20} color={theme.primary} />
-          </View>
-          <ThemedText style={styles.cardTitle}>Concept, Design & Development</ThemedText>
-          <ThemedText style={styles.developerName}>Minhajul Islam</ThemedText>
-          <View style={styles.socialRow}>
-            <Pressable onPress={openFacebook} style={[styles.socialBtn, { backgroundColor: "#1877F2" }]}>
-              <Feather name="facebook" size={18} color="#FFFFFF" />
-            </Pressable>
-            <Pressable onPress={openEmail} style={[styles.socialBtn, { backgroundColor: theme.primary }]}>
-              <Feather name="mail" size={18} color="#FFFFFF" />
-            </Pressable>
-          </View>
+        <View style={[styles.descriptionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <ThemedText style={styles.descriptionTitle}>Your Complete Islamic Companion</ThemedText>
+          <ThemedText style={[styles.descriptionText, { color: theme.textSecondary }]}>
+            Day with Islam is a comprehensive Islamic lifestyle application designed to support your daily worship, learning, and spiritual growth. Whether you're tracking prayer times, reading Quran, learning duas, or connecting with fellow Muslims, this app provides everything you need for a fulfilling Islamic lifestyle.
+          </ThemedText>
         </View>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(300).duration(600)}>
-        <View style={[styles.card, { backgroundColor: theme.backgroundDefault }]}>
-          <View style={[styles.cardIconBg, { backgroundColor: AppColors.gold + "15" }]}>
-            <Feather name="book-open" size={20} color={AppColors.gold} />
-          </View>
-          <ThemedText style={styles.cardTitle}>Content Sources</ThemedText>
-          <ThemedText style={[styles.cardText, { color: theme.textSecondary }]}>
-            All Islamic content is based on:
-          </ThemedText>
-          <View style={styles.bulletList}>
-            <View style={styles.bulletRow}>
-              <View style={[styles.bullet, { backgroundColor: theme.primary }]} />
-              <ThemedText style={[styles.bulletText, { color: theme.text }]}>The Holy Qur'an</ThemedText>
-            </View>
-            <View style={styles.bulletRow}>
-              <View style={[styles.bullet, { backgroundColor: theme.primary }]} />
-              <ThemedText style={[styles.bulletText, { color: theme.text }]}>Authentic Hadith collections</ThemedText>
-            </View>
-            <View style={styles.bulletRow}>
-              <View style={[styles.bullet, { backgroundColor: theme.primary }]} />
-              <ThemedText style={[styles.bulletText, { color: theme.text }]}>Trusted and widely accepted Islamic scholarly references</ThemedText>
-            </View>
-          </View>
-          <ThemedText style={[styles.cardNote, { color: theme.textSecondary }]}>
-            Care has been taken to ensure accuracy and authenticity.
-          </ThemedText>
+        <ThemedText style={styles.sectionTitle}>Features</ThemedText>
+        <View style={styles.featuresGrid}>
+          {FEATURES.map((feature, index) => (
+            <Animated.View
+              key={feature.title}
+              entering={FadeInDown.delay(350 + index * 30).duration(500)}
+              style={[styles.featureCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.featureIconBg, { backgroundColor: theme.primary + "15" }]}>
+                <Feather name={feature.icon as any} size={20} color={theme.primary} />
+              </View>
+              <ThemedText style={styles.featureTitle}>{feature.title}</ThemedText>
+              <ThemedText style={[styles.featureDesc, { color: theme.textSecondary }]}>
+                {feature.description}
+              </ThemedText>
+            </Animated.View>
+          ))}
         </View>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(400).duration(600)}>
-        <View style={[styles.card, { backgroundColor: theme.backgroundDefault }]}>
-          <View style={[styles.cardIconBg, { backgroundColor: "#10B981" + "15" }]}>
-            <Feather name="heart" size={20} color="#10B981" />
-          </View>
-          <ThemedText style={styles.cardTitle}>Acknowledgements</ThemedText>
-          <ThemedText style={[styles.cardText, { color: theme.textSecondary }]}>
-            Sincere appreciation to the scholars and educators whose works have served as references for this application.
+      <Animated.View entering={FadeInDown.delay(700).duration(600)}>
+        <View style={[styles.missionCard, { backgroundColor: theme.primary }]}>
+          <Feather name="compass" size={28} color="#FFFFFF" style={styles.missionIcon} />
+          <ThemedText style={styles.missionTitle}>Our Mission</ThemedText>
+          <ThemedText style={styles.missionText}>
+            To make Islamic knowledge and practices accessible to Muslims worldwide, helping them strengthen their connection with Allah and live according to the teachings of the Quran and Sunnah.
           </ThemedText>
-          <ThemedText style={[styles.cardText, { color: theme.textSecondary, marginTop: Spacing.sm }]}>
-            Gratitude is also extended to users whose feedback helps improve and refine the app.
-          </ThemedText>
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(500).duration(600)}>
-        <View style={[styles.card, { backgroundColor: theme.backgroundDefault }]}>
-          <View style={[styles.cardIconBg, { backgroundColor: AppColors.warning + "15" }]}>
-            <Feather name="alert-circle" size={20} color={AppColors.warning} />
-          </View>
-          <ThemedText style={styles.cardTitle}>Disclaimer</ThemedText>
-          <ThemedText style={[styles.cardText, { color: theme.textSecondary }]}>
-            This application is provided for educational and devotional purposes only.
-          </ThemedText>
-          <ThemedText style={[styles.cardText, { color: theme.textSecondary, marginTop: Spacing.sm }]}>
-            For religious rulings (fatwa) or detailed jurisprudential guidance, users should consult qualified Islamic scholars.
-          </ThemedText>
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(600).duration(600)}>
-        <View style={[styles.prayerCard, { backgroundColor: theme.primary }]}>
-          <Feather name="star" size={24} color="#FFFFFF" style={styles.prayerIcon} />
-          <ThemedText style={styles.prayerTitle}>Prayer</ThemedText>
-          <ThemedText style={styles.prayerText}>
-            May Allah accept this effort, forgive any shortcomings, and make it a means of ongoing benefit (Sadaqah Jariyah).
-          </ThemedText>
-          <ThemedText style={styles.ameen}>Ameen.</ThemedText>
         </View>
       </Animated.View>
     </ScrollView>
@@ -155,27 +153,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: Spacing["2xl"],
   },
-  logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
+  appLogo: {
+    width: 120,
+    height: 120,
     marginBottom: Spacing.lg,
-    ...Shadows.lg,
   },
   appName: {
     fontSize: 28,
     fontFamily: "Poppins_700Bold",
-    marginBottom: Spacing.xs,
-  },
-  tagline: {
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
-    textAlign: "center",
-    lineHeight: 22,
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.sm,
   },
   versionBadge: {
     paddingHorizontal: Spacing.lg,
@@ -186,101 +172,74 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Poppins_500Medium",
   },
-  card: {
+  descriptionCard: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing["2xl"],
     ...Shadows.sm,
   },
-  cardIconBg: {
+  descriptionTitle: {
+    fontSize: 18,
+    fontFamily: "Poppins_600SemiBold",
+    marginBottom: Spacing.md,
+  },
+  descriptionText: {
+    fontSize: 14,
+    fontFamily: "Poppins_400Regular",
+    lineHeight: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontFamily: "Poppins_600SemiBold",
+    marginBottom: Spacing.lg,
+  },
+  featuresGrid: {
+    gap: Spacing.md,
+    marginBottom: Spacing["2xl"],
+  },
+  featureCard: {
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    ...Shadows.sm,
+  },
+  featureIconBg: {
     width: 44,
     height: 44,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
   },
-  cardTitle: {
-    fontSize: 17,
+  featureTitle: {
+    fontSize: 16,
     fontFamily: "Poppins_600SemiBold",
-    marginBottom: Spacing.sm,
-  },
-  developerName: {
-    fontSize: 20,
-    fontFamily: "Poppins_700Bold",
-    marginBottom: Spacing.md,
-  },
-  socialRow: {
-    flexDirection: "row",
-    gap: Spacing.md,
-  },
-  socialBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cardText: {
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
-    lineHeight: 22,
-  },
-  cardNote: {
-    fontSize: 13,
-    fontFamily: "Poppins_400Regular",
-    fontStyle: "italic",
-    marginTop: Spacing.md,
-  },
-  bulletList: {
-    marginTop: Spacing.md,
-    marginBottom: Spacing.sm,
-  },
-  bulletRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
     marginBottom: Spacing.xs,
   },
-  bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginTop: 8,
-    marginRight: Spacing.sm,
-  },
-  bulletText: {
-    flex: 1,
-    fontSize: 14,
+  featureDesc: {
+    fontSize: 13,
     fontFamily: "Poppins_400Regular",
-    lineHeight: 22,
+    lineHeight: 20,
   },
-  prayerCard: {
+  missionCard: {
     borderRadius: BorderRadius.xl,
     padding: Spacing["2xl"],
     alignItems: "center",
-    marginBottom: Spacing.lg,
     ...Shadows.lg,
   },
-  prayerIcon: {
+  missionIcon: {
     marginBottom: Spacing.md,
   },
-  prayerTitle: {
+  missionTitle: {
     fontSize: 20,
     fontFamily: "Poppins_700Bold",
     color: "#FFFFFF",
     marginBottom: Spacing.sm,
   },
-  prayerText: {
+  missionText: {
     fontSize: 14,
     fontFamily: "Poppins_400Regular",
     color: "rgba(255,255,255,0.9)",
     textAlign: "center",
     lineHeight: 24,
-  },
-  ameen: {
-    fontSize: 18,
-    fontFamily: "Poppins_600SemiBold",
-    color: "#FFFFFF",
-    marginTop: Spacing.md,
   },
 });

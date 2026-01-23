@@ -1,14 +1,15 @@
 import React from "react";
-import { View, ScrollView, StyleSheet, Pressable, Linking } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable, Linking, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
+
+const appLogo = require("../../assets/images/app-logo.png");
 
 export default function CreditsScreen() {
   const insets = useSafeAreaInsets();
@@ -37,14 +38,7 @@ export default function CreditsScreen() {
         entering={FadeInUp.delay(100).duration(600)}
         style={styles.headerSection}
       >
-        <LinearGradient
-          colors={[theme.primary, AppColors.accent]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.logoContainer}
-        >
-          <Feather name="award" size={48} color="#FFFFFF" />
-        </LinearGradient>
+        <Image source={appLogo} style={styles.appLogo} resizeMode="contain" />
         <ThemedText style={styles.appName}>Day with Islam</ThemedText>
         <ThemedText style={[styles.tagline, { color: theme.textSecondary }]}>
           An Islamic lifestyle application created to support daily worship, learning, and spiritual growth.
@@ -150,14 +144,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: Spacing["2xl"],
   },
-  logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
+  appLogo: {
+    width: 120,
+    height: 120,
     marginBottom: Spacing.lg,
-    ...Shadows.lg,
   },
   appName: {
     fontSize: 28,
