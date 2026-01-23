@@ -8,6 +8,8 @@ const KEYS = {
 export interface AuthUser {
   email: string;
   name: string;
+  username?: string;
+  uniqueId?: string;
   createdAt: number;
 }
 
@@ -29,10 +31,27 @@ export async function isLoggedIn(): Promise<boolean> {
   }
 }
 
+function generateUniqueId(): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "DWI";
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+function generateUsername(name: string): string {
+  const base = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const suffix = Math.floor(Math.random() * 1000);
+  return `${base}${suffix}`;
+}
+
 export async function login(email: string, name: string): Promise<AuthUser> {
   const user: AuthUser = {
     email,
     name,
+    username: generateUsername(name),
+    uniqueId: generateUniqueId(),
     createdAt: Date.now(),
   };
 

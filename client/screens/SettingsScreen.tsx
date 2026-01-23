@@ -153,8 +153,8 @@ export default function SettingsScreen() {
             <Feather name="user" size={32} color={theme.primary} />
           </View>
           <View style={styles.profileInfo}>
-            <ThemedText style={styles.profileName}>{user.name}</ThemedText>
-            <ThemedText style={styles.profileEmail}>{user.email}</ThemedText>
+            <ThemedText style={styles.profileName}>@{user.username || user.name.toLowerCase().replace(/\s/g, '')}</ThemedText>
+            <ThemedText style={styles.profileEmail}>ID: {user.uniqueId || 'DWI' + user.createdAt.toString().slice(-8)}</ThemedText>
           </View>
           <Pressable onPress={handleEditProfile} style={styles.editProfileBtn}>
             <Feather name="edit-2" size={18} color="#FFFFFF" />
@@ -248,6 +248,19 @@ export default function SettingsScreen() {
         </View>
       </Animated.View>
 
+      <Animated.View entering={FadeInDown.delay(450).duration(500)}>
+        <ThemedText style={styles.sectionTitle}>Adhan</ThemedText>
+        <View style={styles.section}>
+          <SettingsRow
+            icon="volume-2"
+            title="Adhan Settings"
+            subtitle="Muezzin voices & prayer notifications"
+            onPress={() => navigation.navigate("AdhanSettings")}
+            theme={theme}
+          />
+        </View>
+      </Animated.View>
+
       <Animated.View entering={FadeInDown.delay(500).duration(500)}>
         <ThemedText style={styles.sectionTitle}>About</ThemedText>
         <View style={styles.section}>
@@ -255,16 +268,19 @@ export default function SettingsScreen() {
             icon="info"
             title="About Day with Islam"
             subtitle="Version 1.0.0"
+            onPress={() => navigation.navigate("About")}
             theme={theme}
           />
           <SettingsRow
             icon="shield"
             title="Privacy Policy"
+            onPress={() => navigation.navigate("PrivacyPolicy")}
             theme={theme}
           />
           <SettingsRow
             icon="file-text"
             title="Terms of Service"
+            onPress={() => navigation.navigate("TermsOfService")}
             theme={theme}
           />
         </View>

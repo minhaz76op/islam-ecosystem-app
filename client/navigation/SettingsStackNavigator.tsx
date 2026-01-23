@@ -7,6 +7,10 @@ import SignupScreen from "@/screens/SignupScreen";
 import LanguageSelectScreen from "@/screens/LanguageSelectScreen";
 import AlarmScreen from "@/screens/AlarmScreen";
 import NotificationsScreen from "@/screens/NotificationsScreen";
+import AboutScreen from "@/screens/AboutScreen";
+import PrivacyPolicyScreen from "@/screens/PrivacyPolicyScreen";
+import TermsOfServiceScreen from "@/screens/TermsOfServiceScreen";
+import AdhanSettingsScreen from "@/screens/AdhanSettingsScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type SettingsStackParamList = {
@@ -17,6 +21,10 @@ export type SettingsStackParamList = {
   LanguageSelect: undefined;
   Alarm: undefined;
   Notifications: undefined;
+  About: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
+  AdhanSettings: undefined;
 };
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
@@ -73,6 +81,34 @@ export default function SettingsStackNavigator() {
         component={NotificationsScreen}
         options={{
           headerTitle: "Notifications",
+        }}
+      />
+      <Stack.Screen
+        name="About"
+        component={AboutScreen}
+        options={{
+          headerTitle: "About",
+        }}
+      />
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
+        options={{
+          headerTitle: "Privacy Policy",
+        }}
+      />
+      <Stack.Screen
+        name="TermsOfService"
+        component={TermsOfServiceScreen}
+        options={{
+          headerTitle: "Terms of Service",
+        }}
+      />
+      <Stack.Screen
+        name="AdhanSettings"
+        component={AdhanSettingsScreen}
+        options={{
+          headerTitle: "Adhan Settings",
         }}
       />
     </Stack.Navigator>
