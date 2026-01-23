@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -80,6 +81,7 @@ function getGreeting(): string {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
+  const navigation = useNavigation<any>();
   const { theme, isDark } = useTheme();
 
   const [userName, setUserName] = useState("Guest");
@@ -225,13 +227,17 @@ export default function HomeScreen() {
             >
               <Feather name="user" size={20} color="#FFFFFF" />
             </View>
-            <Pressable style={styles.notificationBtn}>
-              <Feather
-                name="bell"
-                size={22}
-                color={theme.textSecondary}
-              />
-            </Pressable>
+            <View style={styles.headerButtons}>
+              <Pressable 
+                onPress={() => navigation.navigate("Calendar")}
+                style={styles.headerBtn}
+              >
+                <Feather name="calendar" size={22} color={theme.textSecondary} />
+              </Pressable>
+              <Pressable style={styles.notificationBtn}>
+                <Feather name="bell" size={22} color={theme.textSecondary} />
+              </Pressable>
+            </View>
           </View>
 
           <ThemedText style={styles.greeting}>
@@ -296,6 +302,7 @@ export default function HomeScreen() {
         {nextPrayer ? (
           <Animated.View entering={FadeInDown.delay(300).duration(600)}>
             <Pressable
+              onPress={() => navigation.navigate("DailySalah")}
               style={[
                 styles.nextPrayerCard,
                 { backgroundColor: theme.primary },
@@ -464,6 +471,16 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerButtons: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+  },
+  headerBtn: {
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },

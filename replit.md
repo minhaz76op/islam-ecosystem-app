@@ -59,6 +59,29 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
 - Fixed language selection to immediately update app language
 - Added debouncing to Tasbih button to prevent duplicate clicks (100ms timeout)
 
+### Latest Session Changes (January 2026)
+- **Islamic Calendar System**: Full Gregorian-Islamic date conversion using astronomical algorithms
+  - Location: `client/lib/islamic-calendar.ts`
+  - Features: Julian date conversion, holiday tracking, upcoming events
+- **GPS-based Prayer Times**: Real prayer time calculations using Karachi method
+  - Location: `client/lib/prayer-calculator.ts`
+  - Supports multiple calculation methods (Karachi, ISNA, MWL, Makkah, Egypt)
+- **Notification System**: expo-notifications integration for prayer reminders
+  - Location: `client/lib/notifications.ts`
+  - Android notification channels for prayer reminders and Fajr alarm
+- **New Screens Added**:
+  - SignupScreen: User registration with Google/Apple authentication
+  - CalendarScreen: Dual calendar showing both Gregorian and Islamic dates with holiday markers
+  - AlarmScreen: Prayer alarm settings with customizable azan sounds and reminder times
+  - NotificationsScreen: Notification preferences for prayer reminders, events, and daily verses
+  - DailySalahScreen: Location-based prayer times with prayer completion tracking
+- **Enhanced EditProfileScreen**: Added avatar image picker with expo-image-picker, email field
+- **Navigation Updates**:
+  - HomeStackNavigator: Added Calendar and DailySalah screens
+  - SettingsStackNavigator: Added EditProfile, Login, Signup, LanguageSelect, Alarm, Notifications screens
+- **HomeScreen Enhancements**: Added calendar quick access button, navigation to DailySalah from prayer card
+- **Storage Extensions**: AlarmSettings, NotificationSettings, UserLocation, CompletedPrayer interfaces
+
 ## External Dependencies
 
 ### Third-Party Services

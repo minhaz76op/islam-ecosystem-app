@@ -233,7 +233,7 @@ export default function LoginScreen() {
         <ThemedText style={[styles.footerText, { color: theme.textSecondary }]}>
           Don't have an account?{" "}
         </ThemedText>
-        <Pressable>
+        <Pressable onPress={() => navigation.navigate("Signup")}>
           <ThemedText style={[styles.signUpText, { color: theme.primary }]}>
             Sign Up
           </ThemedText>

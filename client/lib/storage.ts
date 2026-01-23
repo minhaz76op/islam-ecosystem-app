@@ -7,13 +7,42 @@ const KEYS = {
   TASBIH_COUNT: "@day_with_islam:tasbih_count",
   TASBIH_HISTORY: "@day_with_islam:tasbih_history",
   CHAT_MESSAGES: "@day_with_islam:chat_messages",
+  ALARM_SETTINGS: "@day_with_islam:alarm_settings",
+  NOTIFICATION_SETTINGS: "@day_with_islam:notification_settings",
+  USER_LOCATION: "@day_with_islam:user_location",
 };
 
 export interface UserProfile {
   name: string;
+  email?: string;
   age?: number;
   nationality?: string;
   gender?: string;
+  avatarUri?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    city?: string;
+    country?: string;
+  };
+}
+
+export interface AlarmSettings {
+  enabled: boolean;
+  fajr: boolean;
+  dhuhr: boolean;
+  asr: boolean;
+  maghrib: boolean;
+  isha: boolean;
+  azanSound: string;
+  reminderMinutes: number;
+}
+
+export interface NotificationSettings {
+  prayerReminders: boolean;
+  fajrAlarm: boolean;
+  dailyVerse: boolean;
+  islamicEvents: boolean;
 }
 
 export interface CompletedPrayer {
@@ -204,5 +233,82 @@ export async function clearChatMessages(): Promise<void> {
     await AsyncStorage.removeItem(KEYS.CHAT_MESSAGES);
   } catch (error) {
     console.error("Failed to clear chat messages:", error);
+  }
+}
+
+const DEFAULT_ALARM_SETTINGS: AlarmSettings = {
+  enabled: false,
+  fajr: true,
+  dhuhr: true,
+  asr: true,
+  maghrib: true,
+  isha: true,
+  azanSound: "default",
+  reminderMinutes: 15,
+};
+
+export async function getAlarmSettings(): Promise<AlarmSettings> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.ALARM_SETTINGS);
+    return data ? JSON.parse(data) : DEFAULT_ALARM_SETTINGS;
+  } catch {
+    return DEFAULT_ALARM_SETTINGS;
+  }
+}
+
+export async function saveAlarmSettings(settings: AlarmSettings): Promise<void> {
+  try {
+    await AsyncStorage.setItem(KEYS.ALARM_SETTINGS, JSON.stringify(settings));
+  } catch (error) {
+    console.error("Failed to save alarm settings:", error);
+  }
+}
+
+const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
+  prayerReminders: true,
+  fajrAlarm: false,
+  dailyVerse: true,
+  islamicEvents: true,
+};
+
+export async function getNotificationSettings(): Promise<NotificationSettings> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.NOTIFICATION_SETTINGS);
+    return data ? JSON.parse(data) : DEFAULT_NOTIFICATION_SETTINGS;
+  } catch {
+    return DEFAULT_NOTIFICATION_SETTINGS;
+  }
+}
+
+export async function saveNotificationSettings(settings: NotificationSettings): Promise<void> {
+  try {
+    await AsyncStorage.setItem(KEYS.NOTIFICATION_SETTINGS, JSON.stringify(settings));
+  } catch (error) {
+    console.error("Failed to save notification settings:", error);
+  }
+}
+
+export interface UserLocation {
+  latitude: number;
+  longitude: number;
+  city?: string;
+  country?: string;
+  timestamp: number;
+}
+
+export async function getUserLocation(): Promise<UserLocation | null> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.USER_LOCATION);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveUserLocation(location: UserLocation): Promise<void> {
+  try {
+    await AsyncStorage.setItem(KEYS.USER_LOCATION, JSON.stringify(location));
+  } catch (error) {
+    console.error("Failed to save user location:", error);
   }
 }

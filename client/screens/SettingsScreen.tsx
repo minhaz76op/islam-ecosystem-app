@@ -229,32 +229,20 @@ export default function SettingsScreen() {
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(400).duration(500)}>
-        <ThemedText style={styles.sectionTitle}>Notifications</ThemedText>
+        <ThemedText style={styles.sectionTitle}>Notifications & Alarms</ThemedText>
         <View style={styles.section}>
           <SettingsRow
             icon="bell"
-            title="Prayer Reminders"
-            subtitle="Get notified before prayer times"
-            rightElement={
-              <Switch
-                value={true}
-                trackColor={{ false: theme.backgroundTertiary, true: theme.primary + "50" }}
-                thumbColor={theme.primary}
-              />
-            }
+            title="Notifications"
+            subtitle="Manage prayer reminders and alerts"
+            onPress={() => navigation.navigate("Notifications")}
             theme={theme}
           />
           <SettingsRow
-            icon="sunrise"
-            title="Fajr Alarm"
-            subtitle="Special alarm for Fajr prayer"
-            rightElement={
-              <Switch
-                value={false}
-                trackColor={{ false: theme.backgroundTertiary, true: theme.primary + "50" }}
-                thumbColor={theme.backgroundDefault}
-              />
-            }
+            icon="clock"
+            title="Prayer Alarms"
+            subtitle="Set alarms for each prayer time"
+            onPress={() => navigation.navigate("Alarm")}
             theme={theme}
           />
         </View>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TextInput, Pressable } from "react-native";
+import { View, StyleSheet, TextInput, Pressable, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
@@ -23,9 +24,11 @@ export default function EditProfileScreen() {
 
   const [profile, setProfile] = useState<UserProfile>({
     name: "",
+    email: "",
     age: undefined,
     nationality: "",
     gender: "",
+    avatarUri: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,7 +42,22 @@ export default function EditProfileScreen() {
     if (saved) {
       setProfile(saved);
     } else if (authUser) {
-      setProfile({ name: authUser.name });
+      setProfile({ name: authUser.name, email: authUser.email });
+    }
+  };
+
+  const pickImage = async () => {
+    await Haptics.selectionAsync();
+    
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setProfile({ ...profile, avatarUri: result.assets[0].uri });
     }
   };
 
@@ -77,10 +95,18 @@ export default function EditProfileScreen() {
         entering={FadeInDown.delay(100).duration(500)}
         style={styles.avatarSection}
       >
-        <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
-          <Feather name="user" size={40} color="#FFFFFF" />
-        </View>
+        <Pressable onPress={pickImage} style={[styles.avatar, { backgroundColor: theme.primary }]}>
+          {profile.avatarUri ? (
+            <Image source={{ uri: profile.avatarUri }} style={styles.avatarImage} />
+          ) : (
+            <Feather name="user" size={40} color="#FFFFFF" />
+          )}
+          <View style={[styles.cameraOverlay, { backgroundColor: theme.primary }]}>
+            <Feather name="camera" size={14} color="#FFFFFF" />
+          </View>
+        </Pressable>
         <Pressable
+          onPress={pickImage}
           style={[styles.changePhotoBtn, { backgroundColor: theme.backgroundDefault }]}
         >
           <Feather name="camera" size={16} color={theme.primary} />
@@ -111,6 +137,27 @@ export default function EditProfileScreen() {
             placeholder="Enter your name"
             placeholderTextColor={theme.textSecondary}
             autoCapitalize="words"
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            Email Address
+          </ThemedText>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.backgroundSecondary,
+                color: theme.text,
+              },
+            ]}
+            value={profile.email}
+            onChangeText={(text) => setProfile({ ...profile, email: text })}
+            placeholder="Enter your email"
+            placeholderTextColor={theme.textSecondary}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
         </View>
 
@@ -228,6 +275,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: Spacing.lg,
     ...Shadows.lg,
+    overflow: "hidden",
+    position: "relative",
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  cameraOverlay: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
   changePhotoBtn: {
     flexDirection: "row",
