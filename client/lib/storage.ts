@@ -10,6 +10,9 @@ const KEYS = {
   ALARM_SETTINGS: "@day_with_islam:alarm_settings",
   NOTIFICATION_SETTINGS: "@day_with_islam:notification_settings",
   USER_LOCATION: "@day_with_islam:user_location",
+  DAILY_TASKS: "@day_with_islam:daily_tasks",
+  DIET_LOGS: "@day_with_islam:diet_logs",
+  EXERCISE_LOGS: "@day_with_islam:exercise_logs",
 };
 
 export interface UserProfile {
@@ -310,5 +313,134 @@ export async function saveUserLocation(location: UserLocation): Promise<void> {
     await AsyncStorage.setItem(KEYS.USER_LOCATION, JSON.stringify(location));
   } catch (error) {
     console.error("Failed to save user location:", error);
+  }
+}
+
+export interface DailyTask {
+  id: string;
+  title: string;
+  completed: boolean;
+  date: string;
+  createdAt: number;
+}
+
+export async function getDailyTasks(date: string): Promise<DailyTask[]> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.DAILY_TASKS);
+    const tasks: DailyTask[] = data ? JSON.parse(data) : [];
+    return tasks.filter((t) => t.date === date);
+  } catch {
+    return [];
+  }
+}
+
+export async function saveDailyTask(task: DailyTask): Promise<void> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.DAILY_TASKS);
+    let tasks: DailyTask[] = data ? JSON.parse(data) : [];
+    const existingIndex = tasks.findIndex((t) => t.id === task.id);
+    if (existingIndex >= 0) {
+      tasks[existingIndex] = task;
+    } else {
+      tasks.push(task);
+    }
+    await AsyncStorage.setItem(KEYS.DAILY_TASKS, JSON.stringify(tasks));
+  } catch (error) {
+    console.error("Failed to save daily task:", error);
+  }
+}
+
+export async function deleteDailyTask(taskId: string): Promise<void> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.DAILY_TASKS);
+    let tasks: DailyTask[] = data ? JSON.parse(data) : [];
+    tasks = tasks.filter((t) => t.id !== taskId);
+    await AsyncStorage.setItem(KEYS.DAILY_TASKS, JSON.stringify(tasks));
+  } catch (error) {
+    console.error("Failed to delete daily task:", error);
+  }
+}
+
+export interface Meal {
+  id: string;
+  type: string;
+  name: string;
+  calories?: number;
+  time: string;
+}
+
+export interface DietLog {
+  date: string;
+  meals: Meal[];
+  waterGlasses: number;
+  weight?: number;
+  notes: string;
+}
+
+export async function getDietLog(date: string): Promise<DietLog | null> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.DIET_LOGS);
+    const logs: DietLog[] = data ? JSON.parse(data) : [];
+    return logs.find((l) => l.date === date) || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveDietLog(log: DietLog): Promise<void> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.DIET_LOGS);
+    let logs: DietLog[] = data ? JSON.parse(data) : [];
+    const existingIndex = logs.findIndex((l) => l.date === log.date);
+    if (existingIndex >= 0) {
+      logs[existingIndex] = log;
+    } else {
+      logs.push(log);
+    }
+    await AsyncStorage.setItem(KEYS.DIET_LOGS, JSON.stringify(logs));
+  } catch (error) {
+    console.error("Failed to save diet log:", error);
+  }
+}
+
+export interface Exercise {
+  id: string;
+  name: string;
+  duration: number;
+  caloriesBurned: number;
+  time: string;
+}
+
+export interface ExerciseLog {
+  date: string;
+  exercises: Exercise[];
+  totalCalories: number;
+  totalMinutes: number;
+  steps: number;
+}
+
+export async function getExerciseLog(date: string): Promise<ExerciseLog | null> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.EXERCISE_LOGS);
+    const logs: ExerciseLog[] = data ? JSON.parse(data) : [];
+    return logs.find((l) => l.date === date) || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveExerciseLog(log: ExerciseLog): Promise<void> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.EXERCISE_LOGS);
+    let logs: ExerciseLog[] = data ? JSON.parse(data) : [];
+    const existingIndex = logs.findIndex((l) => l.date === log.date);
+    if (existingIndex >= 0) {
+      logs[existingIndex] = log;
+    } else {
+      logs.push(log);
+    }
+    await AsyncStorage.setItem(KEYS.EXERCISE_LOGS, JSON.stringify(logs));
+  } catch (error) {
+    console.error("Failed to save exercise log:", error);
   }
 }

@@ -378,6 +378,75 @@ export default function HomeScreen() {
           </Animated.View>
         ) : null}
 
+        <Animated.View entering={FadeInDown.delay(450).duration(600)}>
+          <ThemedText style={styles.sectionTitle}>Dashboard</ThemedText>
+          <View style={styles.dashboardGrid}>
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("DailyTask");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: AppColors.accent + "20" }]}>
+                <Feather name="check-square" size={24} color={AppColors.accent} />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Daily Tasks</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Organize your day
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("DietHealth");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: "#10B981" + "20" }]}>
+                <Feather name="heart" size={24} color="#10B981" />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Diet & Health</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Track nutrition
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("Exercise");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: AppColors.gold + "20" }]}>
+                <Feather name="activity" size={24} color={AppColors.gold} />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Exercise</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Stay active
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("DailySalah");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: theme.primary + "20" }]}>
+                <Feather name="sun" size={24} color={theme.primary} />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Daily Salah</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Prayer times
+              </ThemedText>
+            </Pressable>
+          </View>
+        </Animated.View>
+
         <Animated.View entering={FadeInDown.delay(500).duration(600)}>
           <View style={styles.salahTrackerHeader}>
             <ThemedText style={styles.sectionTitle}>Daily Salah</ThemedText>
@@ -679,5 +748,34 @@ const styles = StyleSheet.create({
   salahName: {
     fontSize: 12,
     fontFamily: "Poppins_500Medium",
+  },
+  dashboardGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.md,
+    marginBottom: Spacing["2xl"],
+  },
+  dashboardCard: {
+    width: "47%",
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    ...Shadows.sm,
+  },
+  dashboardIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.md,
+  },
+  dashboardTitle: {
+    fontSize: 14,
+    fontFamily: "Poppins_600SemiBold",
+    marginBottom: 2,
+  },
+  dashboardSubtitle: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
   },
 });
