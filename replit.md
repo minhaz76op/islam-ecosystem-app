@@ -40,8 +40,8 @@ Preferred communication style: Simple, everyday language.
 Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih (Counter), Settings
 
 ### Menu Features (6 screens accessible from Menu tab)
-- **Duas**: Collection of authentic duas with Arabic text, English transliteration, English and Bengali translations, source references
-- **Quran**: Full Quran reader with Arabic text, English and Bengali translations (Al-Fatihah fully implemented with all 7 verses)
+- **Duas**: Comprehensive collection of 40+ authentic duas organized by 20+ categories (Morning & Evening, Sleep, Waking Up, Bathroom, Wudu, Mosque, Food & Drink, Travel, Clothing, Home, Distress & Anxiety, Forgiveness, Weather, Sickness, Parents, Marriage, Knowledge, Protection, Guidance, Debt & Provision, Death & Afterlife, Fasting, Hajj & Umrah, Character, Gratitude, Daily Life, Gatherings) with Arabic text, transliteration, English and Bengali translations, and hadith source references
+- **Quran**: Complete Quran reader with all 114 surahs including surah number, name, Arabic name, verse count, revelation type (Meccan/Medinan), English translation, and Bengali translation. Al-Fatihah fully implemented with all 7 verses readable.
 - **Islamic Articles**: Curated Islamic articles organized by category (Prayer, Basics, Ramadan, Charity, Worship)
 - **Islamic Quiz**: AI-based quiz with multiple choice questions, explanations, score tracking
 - **Mosque Locator**: GPS-based mosque finder using expo-location (requires location permission)
@@ -83,9 +83,15 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
   - HomeStackNavigator: Added Calendar, DailySalah, DailyTask, DietHealth, Exercise screens
   - SettingsStackNavigator: Added EditProfile, Login, Signup, LanguageSelect, Alarm, Notifications screens
 - **HomeScreen Enhancements**: 
-  - Added Dashboard section with 4 quick access cards (Daily Tasks, Diet & Health, Exercise, Daily Salah)
-  - Added calendar quick access button, navigation to DailySalah from prayer card
-- **Storage Extensions**: DailyTask, Meal, DietLog, Exercise, ExerciseLog, AlarmSettings, NotificationSettings, UserLocation, CompletedPrayer interfaces
+  - Dashboard section at top showing level progress bar with XP tracking (100 XP per level), XP badge, and 4 activity stat cards (tasks, prayers, water, exercise minutes)
+  - 4 quick access cards: Daily Tasks, Health (unified diet/exercise), Daily Salah, Calendar
+  - Calendar quick access button, navigation to DailySalah from prayer card
+- **Unified HealthScreen**: Combined Diet & Health + Exercise into single screen with tabs (overview, diet, exercise), height/weight input, BMI calculation with categories, and personalized health suggestions
+- **Gamified Level System**: Profile leveling based on activity completion with addXP function tracking total XP and level
+- **Data Files**:
+  - `client/data/quran-surahs.ts`: Complete Quran with all 114 surahs metadata
+  - `client/data/duas.ts`: Comprehensive collection of 40+ authentic duas with categories, getDuasByCategory() and searchDuas() utilities
+- **Storage Extensions**: DailyTask, Meal, DietLog, Exercise, ExerciseLog, AlarmSettings, NotificationSettings, UserLocation, CompletedPrayer, HealthProfile, UserLevel interfaces
 
 ## External Dependencies
 
