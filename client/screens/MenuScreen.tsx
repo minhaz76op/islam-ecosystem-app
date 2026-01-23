@@ -70,6 +70,41 @@ export default function MenuScreen() {
       screen: "Quran",
     },
     {
+      icon: "star",
+      title: "99 Names of Allah",
+      subtitle: "Asma-ul-Husna",
+      color: "#F59E0B",
+      screen: "NamesOfAllah",
+    },
+    {
+      icon: "users",
+      title: "Islamic Names",
+      subtitle: "Baby names with meanings",
+      color: "#EC4899",
+      screen: "IslamicNames",
+    },
+    {
+      icon: "compass",
+      title: "Qibla Direction",
+      subtitle: "Find Makkah direction",
+      color: "#10B981",
+      screen: "QiblaDirection",
+    },
+    {
+      icon: "calculator",
+      title: "Zakat Calculator",
+      subtitle: "Calculate your Zakat",
+      color: "#6366F1",
+      screen: "ZakatCalculator",
+    },
+    {
+      icon: "gift",
+      title: "Charity Reminder",
+      subtitle: "Track your donations",
+      color: "#14B8A6",
+      screen: "CharityReminder",
+    },
+    {
       icon: "file-text",
       title: t("articles"),
       subtitle: "Learn about Islam",
@@ -80,21 +115,21 @@ export default function MenuScreen() {
       icon: "help-circle",
       title: t("quiz"),
       subtitle: "Test your knowledge",
-      color: "#F59E0B",
+      color: "#F97316",
       screen: "Quiz",
     },
     {
       icon: "map-pin",
       title: t("mosqueLocator"),
       subtitle: "Find nearby mosques",
-      color: "#10B981",
+      color: "#22C55E",
       screen: "MosqueLocator",
     },
     {
       icon: "sunrise",
       title: t("rozaTimetable"),
       subtitle: "Sehri & Iftar times",
-      color: "#EC4899",
+      color: "#A855F7",
       screen: "RozaTimetable",
     },
   ];
@@ -108,8 +143,8 @@ export default function MenuScreen() {
     <LinearGradient
       colors={
         isDark
-          ? ["#0F1419", "#1A1F26", "#0F1419"]
-          : [AppColors.background, "#E8F5E9", AppColors.background]
+          ? ["#0F172A", "#1E293B", "#0F172A"]
+          : [AppColors.background, "#E0F2FE", AppColors.background]
       }
       style={styles.container}
     >

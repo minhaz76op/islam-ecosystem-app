@@ -1,20 +1,22 @@
 import { Platform } from "react-native";
 
 export const AppColors = {
-  primary: "#064E3B",
-  accent: "#4A90E2",
-  gold: "#D4AF37",
-  background: "#F9FAFB",
+  primary: "#1E40AF",
+  primaryLight: "#3B82F6",
+  accent: "#0EA5E9",
+  gold: "#F59E0B",
+  background: "#F8FAFC",
   surface: "#FFFFFF",
-  textPrimary: "#1F2937",
-  textSecondary: "#6B7280",
+  textPrimary: "#1E293B",
+  textSecondary: "#64748B",
   success: "#10B981",
   error: "#EF4444",
   warning: "#F59E0B",
+  islamic: "#1E3A5F",
 };
 
 const tintColorLight = AppColors.primary;
-const tintColorDark = "#10B981";
+const tintColorDark = "#60A5FA";
 
 export const Colors = {
   light: {
@@ -25,33 +27,37 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     link: AppColors.primary,
     primary: AppColors.primary,
+    primaryLight: AppColors.primaryLight,
     accent: AppColors.accent,
     gold: AppColors.gold,
+    islamic: AppColors.islamic,
     backgroundRoot: AppColors.background,
     backgroundDefault: AppColors.surface,
-    backgroundSecondary: "#F3F4F6",
-    backgroundTertiary: "#E5E7EB",
+    backgroundSecondary: "#F1F5F9",
+    backgroundTertiary: "#E2E8F0",
     success: AppColors.success,
     error: AppColors.error,
-    cardBorder: "rgba(0,0,0,0.05)",
+    cardBorder: "rgba(30,64,175,0.1)",
   },
   dark: {
-    text: "#ECEDEE",
-    textSecondary: "#9BA1A6",
+    text: "#F1F5F9",
+    textSecondary: "#94A3B8",
     buttonText: "#FFFFFF",
-    tabIconDefault: "#9BA1A6",
+    tabIconDefault: "#94A3B8",
     tabIconSelected: tintColorDark,
-    link: "#10B981",
-    primary: "#10B981",
-    accent: "#60A5FA",
-    gold: "#F59E0B",
-    backgroundRoot: "#0F1419",
-    backgroundDefault: "#1A1F26",
-    backgroundSecondary: "#252B33",
-    backgroundTertiary: "#303740",
+    link: "#60A5FA",
+    primary: "#3B82F6",
+    primaryLight: "#60A5FA",
+    accent: "#38BDF8",
+    gold: "#FBBF24",
+    islamic: "#1E3A5F",
+    backgroundRoot: "#0F172A",
+    backgroundDefault: "#1E293B",
+    backgroundSecondary: "#334155",
+    backgroundTertiary: "#475569",
     success: "#10B981",
     error: "#F87171",
-    cardBorder: "rgba(255,255,255,0.1)",
+    cardBorder: "rgba(59,130,246,0.2)",
   },
 };
 
