@@ -37,6 +37,7 @@ export const Colors = {
     backgroundTertiary: "#E2E8F0",
     success: AppColors.success,
     error: AppColors.error,
+    warning: AppColors.warning,
     cardBorder: "rgba(30,64,175,0.1)",
   },
   dark: {
@@ -57,6 +58,7 @@ export const Colors = {
     backgroundTertiary: "#475569",
     success: "#10B981",
     error: "#F87171",
+    warning: "#FBBF24",
     cardBorder: "rgba(59,130,246,0.2)",
   },
 };

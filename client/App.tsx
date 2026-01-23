@@ -21,6 +21,7 @@ import RootStackNavigator from "@/navigation/RootStackNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
 
 SplashScreen.preventAutoHideAsync();
@@ -64,7 +65,9 @@ export default function App() {
             <KeyboardProvider>
               <ThemeProvider>
                 <LanguageProvider>
-                  <AppContent />
+                  <AuthProvider>
+                    <AppContent />
+                  </AuthProvider>
                 </LanguageProvider>
               </ThemeProvider>
             </KeyboardProvider>

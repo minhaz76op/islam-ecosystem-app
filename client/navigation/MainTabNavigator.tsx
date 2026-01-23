@@ -5,7 +5,7 @@ import { BlurView } from "expo-blur";
 import { Platform, StyleSheet } from "react-native";
 import HomeStackNavigator from "@/navigation/HomeStackNavigator";
 import MenuStackNavigator from "@/navigation/MenuStackNavigator";
-import IslamicGPTStackNavigator from "@/navigation/IslamicGPTStackNavigator";
+import FriendsStackNavigator from "@/navigation/FriendsStackNavigator";
 import TasbihStackNavigator from "@/navigation/TasbihStackNavigator";
 import SettingsStackNavigator from "@/navigation/SettingsStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
@@ -14,7 +14,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 export type MainTabParamList = {
   HomeTab: undefined;
   MenuTab: undefined;
-  IslamicGPTTab: undefined;
+  FriendsTab: undefined;
   TasbihTab: undefined;
   SettingsTab: undefined;
 };
@@ -81,12 +81,12 @@ export default function MainTabNavigator() {
         }}
       />
       <Tab.Screen
-        name="IslamicGPTTab"
-        component={IslamicGPTStackNavigator}
+        name="FriendsTab"
+        component={FriendsStackNavigator}
         options={{
-          title: "AI",
+          title: "Friends",
           tabBarIcon: ({ color, size }) => (
-            <Feather name="message-circle" size={size} color={color} />
+            <Feather name="users" size={size} color={color} />
           ),
         }}
       />
