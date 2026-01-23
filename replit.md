@@ -37,7 +37,27 @@ Preferred communication style: Simple, everyday language.
 - **Error Handling**: React Error Boundary with development-mode debugging
 
 ### Navigation Structure
-Five main tabs: Home (Dashboard), Tasks (Salah Tracker), IslamicGPT (AI Chat), Tasbih (Counter), Settings
+Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih (Counter), Settings
+
+### Menu Features (6 screens accessible from Menu tab)
+- **Duas**: Collection of authentic duas with Arabic text, English transliteration, English and Bengali translations, source references
+- **Quran**: Full Quran reader with Arabic text, English and Bengali translations (Al-Fatihah fully implemented with all 7 verses)
+- **Islamic Articles**: Curated Islamic articles organized by category (Prayer, Basics, Ramadan, Charity, Worship)
+- **Islamic Quiz**: AI-based quiz with multiple choice questions, explanations, score tracking
+- **Mosque Locator**: GPS-based mosque finder using expo-location (requires location permission)
+- **Roza Timetable**: Complete Ramadan 2025 Sehri and Iftar timetable with 30 days
+
+### Theme & Language Context
+- **ThemeContext**: Manages dark/light theme with system preference support, persisted to AsyncStorage
+- **LanguageContext**: Supports English, Arabic, Bengali with translation function t()
+- Theme and language preferences are persisted and applied app-wide
+
+### Recent Changes
+- Added Menu tab with 6 feature screens replacing previous Tasks tab
+- Implemented ThemeProvider and LanguageProvider contexts in App.tsx
+- Fixed dark mode toggle to properly switch between light/dark themes
+- Fixed language selection to immediately update app language
+- Added debouncing to Tasbih button to prevent duplicate clicks (100ms timeout)
 
 ## External Dependencies
 
