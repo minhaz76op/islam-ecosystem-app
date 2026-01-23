@@ -75,12 +75,17 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
   - AlarmScreen: Prayer alarm settings with customizable azan sounds and reminder times
   - NotificationsScreen: Notification preferences for prayer reminders, events, and daily verses
   - DailySalahScreen: Location-based prayer times with prayer completion tracking
+  - DailyTaskScreen: Daily task management with add/complete/delete functionality
+  - DietHealthScreen: Diet and nutrition tracking with water intake, meal logging
+  - ExerciseScreen: Exercise tracking with presets, custom workouts, and step counter
 - **Enhanced EditProfileScreen**: Added avatar image picker with expo-image-picker, email field
 - **Navigation Updates**:
-  - HomeStackNavigator: Added Calendar and DailySalah screens
+  - HomeStackNavigator: Added Calendar, DailySalah, DailyTask, DietHealth, Exercise screens
   - SettingsStackNavigator: Added EditProfile, Login, Signup, LanguageSelect, Alarm, Notifications screens
-- **HomeScreen Enhancements**: Added calendar quick access button, navigation to DailySalah from prayer card
-- **Storage Extensions**: AlarmSettings, NotificationSettings, UserLocation, CompletedPrayer interfaces
+- **HomeScreen Enhancements**: 
+  - Added Dashboard section with 4 quick access cards (Daily Tasks, Diet & Health, Exercise, Daily Salah)
+  - Added calendar quick access button, navigation to DailySalah from prayer card
+- **Storage Extensions**: DailyTask, Meal, DietLog, Exercise, ExerciseLog, AlarmSettings, NotificationSettings, UserLocation, CompletedPrayer interfaces
 
 ## External Dependencies
 
