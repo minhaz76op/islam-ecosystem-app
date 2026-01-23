@@ -269,18 +269,30 @@ export default function FriendsScreen() {
 
   if (!user) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="users" size={64} color={theme.textSecondary} />
-        <ThemedText style={styles.emptyTitle}>Sign in to Connect</ThemedText>
-        <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-          Create an account to find friends and compete in Islamic challenges
-        </ThemedText>
-        <Pressable
-          style={[styles.primaryButton, { backgroundColor: theme.primary }]}
-          onPress={() => navigation.navigate("Settings", { screen: "Login" })}
-        >
-          <ThemedText style={styles.primaryButtonText}>Sign In</ThemedText>
-        </Pressable>
+      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.backgroundRoot, paddingHorizontal: Spacing.xl }]}>
+        <View style={[styles.signInCard, { backgroundColor: theme.backgroundDefault }]}>
+          <View style={[styles.iconCircle, { backgroundColor: theme.primary + "20" }]}>
+            <Feather name="users" size={48} color={theme.primary} />
+          </View>
+          <ThemedText style={styles.emptyTitle}>Sign in to Connect</ThemedText>
+          <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary, textAlign: "center" }]}>
+            Create an account to find friends, chat, and compete in Islamic challenges together
+          </ThemedText>
+          <Pressable
+            style={[styles.primaryButton, { backgroundColor: theme.primary }]}
+            onPress={() => navigation.getParent()?.navigate("Login")}
+          >
+            <Feather name="log-in" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+            <ThemedText style={styles.primaryButtonText}>Sign In</ThemedText>
+          </Pressable>
+          <Pressable
+            style={[styles.secondaryButton, { borderColor: theme.primary }]}
+            onPress={() => navigation.getParent()?.navigate("Signup")}
+          >
+            <Feather name="user-plus" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+            <ThemedText style={[styles.secondaryButtonText, { color: theme.primary }]}>Create Account</ThemedText>
+          </Pressable>
+        </View>
       </View>
     );
   }
@@ -653,13 +665,47 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing.xl,
   },
+  signInCard: {
+    padding: Spacing["2xl"],
+    borderRadius: BorderRadius["2xl"],
+    alignItems: "center",
+    width: "100%",
+    ...Shadows.md,
+  },
+  iconCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: Spacing.lg,
+  },
   primaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing["2xl"],
     borderRadius: BorderRadius.lg,
+    width: "100%",
+    marginBottom: Spacing.md,
   },
   primaryButtonText: {
     color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "Poppins_600SemiBold",
+  },
+  secondaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing["2xl"],
+    borderRadius: BorderRadius.lg,
+    width: "100%",
+    borderWidth: 2,
+  },
+  secondaryButtonText: {
     fontSize: 16,
     fontFamily: "Poppins_600SemiBold",
   },
