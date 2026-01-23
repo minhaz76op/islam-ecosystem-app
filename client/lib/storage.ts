@@ -13,6 +13,8 @@ const KEYS = {
   DAILY_TASKS: "@day_with_islam:daily_tasks",
   DIET_LOGS: "@day_with_islam:diet_logs",
   EXERCISE_LOGS: "@day_with_islam:exercise_logs",
+  HEALTH_PROFILE: "@day_with_islam:health_profile",
+  USER_LEVEL: "@day_with_islam:user_level",
 };
 
 export interface UserProfile {
@@ -442,5 +444,64 @@ export async function saveExerciseLog(log: ExerciseLog): Promise<void> {
     await AsyncStorage.setItem(KEYS.EXERCISE_LOGS, JSON.stringify(logs));
   } catch (error) {
     console.error("Failed to save exercise log:", error);
+  }
+}
+
+export interface HealthProfile {
+  height?: number;
+  weight?: number;
+  updatedAt: number;
+}
+
+export async function getHealthProfile(): Promise<HealthProfile | null> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.HEALTH_PROFILE);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveHealthProfile(profile: HealthProfile): Promise<void> {
+  try {
+    await AsyncStorage.setItem(KEYS.HEALTH_PROFILE, JSON.stringify(profile));
+  } catch (error) {
+    console.error("Failed to save health profile:", error);
+  }
+}
+
+export interface UserLevel {
+  level: number;
+  xp: number;
+  totalXp: number;
+}
+
+export async function getUserLevel(): Promise<UserLevel> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.USER_LEVEL);
+    return data ? JSON.parse(data) : { level: 1, xp: 0, totalXp: 0 };
+  } catch {
+    return { level: 1, xp: 0, totalXp: 0 };
+  }
+}
+
+export async function addXP(amount: number): Promise<UserLevel> {
+  try {
+    const current = await getUserLevel();
+    const newTotalXp = current.totalXp + amount;
+    let newXp = current.xp + amount;
+    let newLevel = current.level;
+    
+    const xpPerLevel = 100;
+    while (newXp >= xpPerLevel) {
+      newXp -= xpPerLevel;
+      newLevel++;
+    }
+    
+    const updated = { level: newLevel, xp: newXp, totalXp: newTotalXp };
+    await AsyncStorage.setItem(KEYS.USER_LEVEL, JSON.stringify(updated));
+    return updated;
+  } catch {
+    return { level: 1, xp: 0, totalXp: 0 };
   }
 }

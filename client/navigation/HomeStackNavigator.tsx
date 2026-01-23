@@ -4,8 +4,7 @@ import HomeScreen from "@/screens/HomeScreen";
 import CalendarScreen from "@/screens/CalendarScreen";
 import DailySalahScreen from "@/screens/DailySalahScreen";
 import DailyTaskScreen from "@/screens/DailyTaskScreen";
-import DietHealthScreen from "@/screens/DietHealthScreen";
-import ExerciseScreen from "@/screens/ExerciseScreen";
+import HealthScreen from "@/screens/HealthScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type HomeStackParamList = {
@@ -13,8 +12,7 @@ export type HomeStackParamList = {
   Calendar: undefined;
   DailySalah: undefined;
   DailyTask: undefined;
-  DietHealth: undefined;
-  Exercise: undefined;
+  Health: undefined;
 };
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
@@ -53,17 +51,10 @@ export default function HomeStackNavigator() {
         }}
       />
       <Stack.Screen
-        name="DietHealth"
-        component={DietHealthScreen}
+        name="Health"
+        component={HealthScreen}
         options={{
-          headerTitle: "Diet & Health",
-        }}
-      />
-      <Stack.Screen
-        name="Exercise"
-        component={ExerciseScreen}
-        options={{
-          headerTitle: "Exercise",
+          headerTitle: "Health",
         }}
       />
     </Stack.Navigator>

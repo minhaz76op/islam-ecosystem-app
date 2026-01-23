@@ -40,8 +40,14 @@ import {
   saveCompletedPrayer,
   getSunnahHabits,
   saveSunnahHabit,
+  getUserLevel,
+  addXP,
+  getDailyTasks,
+  getDietLog,
+  getExerciseLog,
   CompletedPrayer,
   SunnahHabit,
+  UserLevel,
 } from "@/lib/storage";
 
 const SUNNAH_HABITS = [
@@ -92,6 +98,8 @@ export default function HomeScreen() {
   const [currentDua, setCurrentDua] = useState<Dua | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [timeUntil, setTimeUntil] = useState("");
+  const [userLevel, setUserLevel] = useState<UserLevel>({ level: 1, xp: 0, totalXp: 0 });
+  const [activityStats, setActivityStats] = useState({ tasks: 0, prayers: 0, water: 0, exercise: 0 });
 
   const pulseScale = useSharedValue(1);
 
@@ -117,6 +125,20 @@ export default function HomeScreen() {
     setSunnahHabits(habits);
 
     setCurrentDua(getDuaForTimeOfDay());
+
+    const level = await getUserLevel();
+    setUserLevel(level);
+
+    const tasks = await getDailyTasks(today);
+    const completedTasks = tasks.filter((t) => t.completed).length;
+    const diet = await getDietLog(today);
+    const exercise = await getExerciseLog(today);
+    setActivityStats({
+      tasks: completedTasks,
+      prayers: Object.values(completed || {}).filter(Boolean).length,
+      water: diet?.waterGlasses || 0,
+      exercise: exercise?.totalMinutes || 0,
+    });
   }, []);
 
   useEffect(() => {
@@ -251,6 +273,116 @@ export default function HomeScreen() {
           </ThemedText>
         </Animated.View>
 
+        <Animated.View entering={FadeInDown.delay(150).duration(600)}>
+          <View style={[styles.levelCard, { backgroundColor: theme.primary }]}>
+            <View style={styles.levelHeader}>
+              <View style={styles.levelBadge}>
+                <ThemedText style={styles.levelNumber}>{userLevel.level}</ThemedText>
+              </View>
+              <View style={styles.levelInfo}>
+                <ThemedText style={styles.levelTitle}>Level {userLevel.level}</ThemedText>
+                <ThemedText style={styles.levelSubtitle}>{userLevel.xp}/100 XP to next level</ThemedText>
+              </View>
+              <View style={styles.xpBadge}>
+                <Feather name="star" size={14} color={AppColors.gold} />
+                <ThemedText style={styles.xpText}>{userLevel.totalXp}</ThemedText>
+              </View>
+            </View>
+            <View style={styles.levelProgressBar}>
+              <View style={[styles.levelProgressFill, { width: `${userLevel.xp}%` }]} />
+            </View>
+          </View>
+
+          <View style={styles.activityRow}>
+            <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
+              <Feather name="check-square" size={18} color={AppColors.accent} />
+              <ThemedText style={styles.activityValue}>{activityStats.tasks}</ThemedText>
+              <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Tasks</ThemedText>
+            </View>
+            <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
+              <Feather name="sun" size={18} color={theme.primary} />
+              <ThemedText style={styles.activityValue}>{activityStats.prayers}/5</ThemedText>
+              <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Prayers</ThemedText>
+            </View>
+            <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
+              <Feather name="droplet" size={18} color={AppColors.accent} />
+              <ThemedText style={styles.activityValue}>{activityStats.water}</ThemedText>
+              <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Water</ThemedText>
+            </View>
+            <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
+              <Feather name="activity" size={18} color={AppColors.gold} />
+              <ThemedText style={styles.activityValue}>{activityStats.exercise}m</ThemedText>
+              <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Active</ThemedText>
+            </View>
+          </View>
+
+          <View style={styles.dashboardGrid}>
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("DailyTask");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: AppColors.accent + "20" }]}>
+                <Feather name="check-square" size={24} color={AppColors.accent} />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Daily Tasks</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Organize your day
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("Health");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: "#10B981" + "20" }]}>
+                <Feather name="heart" size={24} color="#10B981" />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Health</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Diet & Exercise
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("DailySalah");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: theme.primary + "20" }]}>
+                <Feather name="sun" size={24} color={theme.primary} />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Daily Salah</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Prayer times
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate("Calendar");
+              }}
+              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
+            >
+              <View style={[styles.dashboardIcon, { backgroundColor: AppColors.gold + "20" }]}>
+                <Feather name="calendar" size={24} color={AppColors.gold} />
+              </View>
+              <ThemedText style={styles.dashboardTitle}>Calendar</ThemedText>
+              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
+                Islamic dates
+              </ThemedText>
+            </Pressable>
+          </View>
+        </Animated.View>
+
         <Animated.View entering={FadeInRight.delay(200).duration(600)}>
           <ThemedText style={styles.sectionTitle}>Sunnah Habits</ThemedText>
           <ScrollView
@@ -378,74 +510,6 @@ export default function HomeScreen() {
           </Animated.View>
         ) : null}
 
-        <Animated.View entering={FadeInDown.delay(450).duration(600)}>
-          <ThemedText style={styles.sectionTitle}>Dashboard</ThemedText>
-          <View style={styles.dashboardGrid}>
-            <Pressable
-              onPress={() => {
-                Haptics.selectionAsync();
-                navigation.navigate("DailyTask");
-              }}
-              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
-            >
-              <View style={[styles.dashboardIcon, { backgroundColor: AppColors.accent + "20" }]}>
-                <Feather name="check-square" size={24} color={AppColors.accent} />
-              </View>
-              <ThemedText style={styles.dashboardTitle}>Daily Tasks</ThemedText>
-              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
-                Organize your day
-              </ThemedText>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                Haptics.selectionAsync();
-                navigation.navigate("DietHealth");
-              }}
-              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
-            >
-              <View style={[styles.dashboardIcon, { backgroundColor: "#10B981" + "20" }]}>
-                <Feather name="heart" size={24} color="#10B981" />
-              </View>
-              <ThemedText style={styles.dashboardTitle}>Diet & Health</ThemedText>
-              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
-                Track nutrition
-              </ThemedText>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                Haptics.selectionAsync();
-                navigation.navigate("Exercise");
-              }}
-              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
-            >
-              <View style={[styles.dashboardIcon, { backgroundColor: AppColors.gold + "20" }]}>
-                <Feather name="activity" size={24} color={AppColors.gold} />
-              </View>
-              <ThemedText style={styles.dashboardTitle}>Exercise</ThemedText>
-              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
-                Stay active
-              </ThemedText>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                Haptics.selectionAsync();
-                navigation.navigate("DailySalah");
-              }}
-              style={[styles.dashboardCard, { backgroundColor: theme.backgroundDefault }]}
-            >
-              <View style={[styles.dashboardIcon, { backgroundColor: theme.primary + "20" }]}>
-                <Feather name="sun" size={24} color={theme.primary} />
-              </View>
-              <ThemedText style={styles.dashboardTitle}>Daily Salah</ThemedText>
-              <ThemedText style={[styles.dashboardSubtitle, { color: theme.textSecondary }]}>
-                Prayer times
-              </ThemedText>
-            </Pressable>
-          </View>
-        </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(500).duration(600)}>
           <View style={styles.salahTrackerHeader}>
@@ -776,6 +840,90 @@ const styles = StyleSheet.create({
   },
   dashboardSubtitle: {
     fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+  },
+  levelCard: {
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+    ...Shadows.lg,
+  },
+  levelHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: Spacing.md,
+  },
+  levelBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: Spacing.md,
+  },
+  levelNumber: {
+    fontSize: 18,
+    fontFamily: "Poppins_700Bold",
+    color: "#FFFFFF",
+  },
+  levelInfo: {
+    flex: 1,
+  },
+  levelTitle: {
+    fontSize: 16,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#FFFFFF",
+  },
+  levelSubtitle: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+    color: "rgba(255,255,255,0.8)",
+  },
+  xpBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+    gap: 4,
+  },
+  xpText: {
+    fontSize: 13,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#FFFFFF",
+  },
+  levelProgressBar: {
+    height: 6,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  levelProgressFill: {
+    height: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 3,
+  },
+  activityRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
+  activityCard: {
+    flex: 1,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    alignItems: "center",
+    ...Shadows.sm,
+  },
+  activityValue: {
+    fontSize: 16,
+    fontFamily: "Poppins_700Bold",
+    marginTop: 4,
+  },
+  activityLabel: {
+    fontSize: 10,
     fontFamily: "Poppins_400Regular",
   },
 });
