@@ -145,7 +145,7 @@ export default function ZakatCalculatorScreen() {
         onPress={calculateZakat}
         style={[styles.calculateButton, { backgroundColor: theme.primary }]}
       >
-        <Feather name="calculator" size={20} color="#FFFFFF" />
+        <Feather name="percent" size={20} color="#FFFFFF" />
         <ThemedText style={styles.calculateButtonText}>Calculate Zakat</ThemedText>
       </Pressable>
 

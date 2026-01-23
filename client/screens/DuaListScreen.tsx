@@ -18,10 +18,36 @@ export default function DuaListScreen() {
   const { theme, isDark } = useTheme();
   const { language } = useLanguage();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const categories = useMemo(() => {
+    const cats = [...new Set(DUAS.map((d) => d.category))];
+    return cats.sort();
+  }, []);
+
+  const filteredDuas = useMemo(() => {
+    return DUAS.filter((dua) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        dua.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        dua.arabic.includes(searchQuery) ||
+        dua.english.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        dua.bengali.includes(searchQuery) ||
+        dua.category.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = !selectedCategory || dua.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, selectedCategory]);
 
   const handleExpand = async (id: string) => {
     await Haptics.selectionAsync();
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  const handleCategorySelect = async (category: string | null) => {
+    await Haptics.selectionAsync();
+    setSelectedCategory(category);
   };
 
   return (
@@ -34,7 +60,70 @@ export default function DuaListScreen() {
       }}
       showsVerticalScrollIndicator={false}
     >
-      {DUAS.map((dua, index) => (
+      <View style={[styles.searchContainer, { backgroundColor: theme.backgroundDefault }]}>
+        <Feather name="search" size={20} color={theme.textSecondary} />
+        <TextInput
+          style={[styles.searchInput, { color: theme.text }]}
+          placeholder="Search duas..."
+          placeholderTextColor={theme.textSecondary}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery.length > 0 ? (
+          <Pressable onPress={() => setSearchQuery("")}>
+            <Feather name="x" size={18} color={theme.textSecondary} />
+          </Pressable>
+        ) : null}
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.categoryScroll}
+      >
+        <Pressable
+          onPress={() => handleCategorySelect(null)}
+          style={[
+            styles.categoryChip,
+            {
+              backgroundColor: !selectedCategory ? theme.primary : theme.backgroundDefault,
+            },
+          ]}
+        >
+          <ThemedText
+            style={[styles.categoryChipText, { color: !selectedCategory ? "#FFFFFF" : theme.text }]}
+          >
+            All
+          </ThemedText>
+        </Pressable>
+        {categories.map((cat) => (
+          <Pressable
+            key={cat}
+            onPress={() => handleCategorySelect(cat)}
+            style={[
+              styles.categoryChip,
+              {
+                backgroundColor: selectedCategory === cat ? theme.primary : theme.backgroundDefault,
+              },
+            ]}
+          >
+            <ThemedText
+              style={[
+                styles.categoryChipText,
+                { color: selectedCategory === cat ? "#FFFFFF" : theme.text },
+              ]}
+            >
+              {cat}
+            </ThemedText>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      <ThemedText style={[styles.resultCount, { color: theme.textSecondary }]}>
+        {filteredDuas.length} duas found
+      </ThemedText>
+
+      {filteredDuas.map((dua, index) => (
         <Animated.View
           key={dua.id}
           entering={FadeInDown.delay(100 + index * 50).duration(500)}
@@ -109,6 +198,38 @@ export default function DuaListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: "Poppins_400Regular",
+  },
+  categoryScroll: {
+    paddingBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  categoryChip: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+  },
+  categoryChipText: {
+    fontSize: 13,
+    fontFamily: "Poppins_500Medium",
+  },
+  resultCount: {
+    fontSize: 13,
+    fontFamily: "Poppins_400Regular",
+    marginBottom: Spacing.md,
   },
   duaCard: {
     borderRadius: BorderRadius.xl,

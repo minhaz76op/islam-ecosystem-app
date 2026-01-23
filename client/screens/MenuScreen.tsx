@@ -132,6 +132,13 @@ export default function MenuScreen() {
       color: "#A855F7",
       screen: "RozaTimetable",
     },
+    {
+      icon: "clock",
+      title: "Missed Prayer Tracker",
+      subtitle: "Track Qada prayers",
+      color: "#EF4444",
+      screen: "MissedPrayer",
+    },
   ];
 
   const handlePress = async (screen: string) => {
