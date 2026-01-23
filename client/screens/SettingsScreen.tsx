@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, StyleSheet, Pressable, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -10,16 +10,9 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
-import {
-  getThemePreference,
-  setThemePreference,
-  getLanguagePreference,
-  setLanguagePreference,
-  ThemePreference,
-  LanguagePreference,
-  LANGUAGES,
-} from "@/lib/settings";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
+import { LANGUAGES } from "@/lib/settings";
 import { getAuthUser, isLoggedIn, logout, AuthUser } from "@/lib/auth";
 
 interface SettingsRowProps {
@@ -67,7 +60,7 @@ function SettingsRow({
       </View>
       <View style={styles.rowContent}>
         <ThemedText
-          style={[styles.rowTitle, danger && { color: theme.error }]}
+          style={[styles.rowTitle, danger ? { color: theme.error } : undefined]}
         >
           {title}
         </ThemedText>
@@ -91,12 +84,11 @@ export default function SettingsScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation<any>();
-  const { theme, isDark } = useTheme();
+  const { theme, isDark, themePreference, setTheme } = useTheme();
+  const { language, t } = useLanguage();
 
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [themePreference, setThemePref] = useState<ThemePreference>("system");
-  const [languagePreference, setLanguagePref] = useState<LanguagePreference>("en");
 
   useEffect(() => {
     loadSettings();
@@ -105,20 +97,14 @@ export default function SettingsScreen() {
   const loadSettings = async () => {
     const authUser = await getAuthUser();
     const loggedInStatus = await isLoggedIn();
-    const themePref = await getThemePreference();
-    const langPref = await getLanguagePreference();
-
     setUser(authUser);
     setLoggedIn(loggedInStatus);
-    setThemePref(themePref);
-    setLanguagePref(langPref);
   };
 
   const handleThemeChange = async (value: boolean) => {
     await Haptics.selectionAsync();
-    const newTheme: ThemePreference = value ? "dark" : "light";
-    setThemePref(newTheme);
-    await setThemePreference(newTheme);
+    const newTheme = value ? "dark" : "light";
+    await setTheme(newTheme);
   };
 
   const handleLanguagePress = async () => {
@@ -143,7 +129,7 @@ export default function SettingsScreen() {
     setLoggedIn(false);
   };
 
-  const currentLanguage = LANGUAGES.find((l) => l.code === languagePreference);
+  const currentLanguage = LANGUAGES.find((l) => l.code === language);
 
   return (
     <ScrollView
@@ -187,7 +173,7 @@ export default function SettingsScreen() {
           >
             <Feather name="log-in" size={28} color={theme.primary} />
           </View>
-          <ThemedText style={styles.loginTitle}>Welcome</ThemedText>
+          <ThemedText style={styles.loginTitle}>{t("welcome")}</ThemedText>
           <ThemedText
             style={[styles.loginSubtitle, { color: theme.textSecondary }]}
           >
@@ -197,7 +183,7 @@ export default function SettingsScreen() {
             onPress={handleLogin}
             style={[styles.loginButton, { backgroundColor: theme.primary }]}
           >
-            <ThemedText style={styles.loginButtonText}>Sign In</ThemedText>
+            <ThemedText style={styles.loginButtonText}>{t("signIn")}</ThemedText>
           </Pressable>
         </Animated.View>
       )}
@@ -207,7 +193,7 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <SettingsRow
             icon="user"
-            title="Edit Profile"
+            title={t("editProfile")}
             subtitle="Update your personal information"
             onPress={handleEditProfile}
             theme={theme}
@@ -220,11 +206,11 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <SettingsRow
             icon="moon"
-            title="Dark Mode"
-            subtitle={isDark ? "Enabled" : "Disabled"}
+            title={t("darkMode")}
+            subtitle={isDark ? t("enabled") : t("disabled")}
             rightElement={
               <Switch
-                value={themePreference === "dark" || (themePreference === "system" && isDark)}
+                value={isDark}
                 onValueChange={handleThemeChange}
                 trackColor={{ false: theme.backgroundTertiary, true: theme.primary + "50" }}
                 thumbColor={isDark ? theme.primary : theme.backgroundDefault}
@@ -234,7 +220,7 @@ export default function SettingsScreen() {
           />
           <SettingsRow
             icon="globe"
-            title="Language"
+            title={t("language")}
             subtitle={currentLanguage?.nativeName || "English"}
             onPress={handleLanguagePress}
             theme={theme}
@@ -301,7 +287,7 @@ export default function SettingsScreen() {
           <View style={[styles.section, { marginTop: Spacing.xl }]}>
             <SettingsRow
               icon="log-out"
-              title="Sign Out"
+              title={t("signOut")}
               onPress={handleLogout}
               danger
               theme={theme}

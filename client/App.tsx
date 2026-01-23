@@ -19,8 +19,24 @@ import { queryClient } from "@/lib/query-client";
 
 import RootStackNavigator from "@/navigation/RootStackNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import { useTheme } from "@/hooks/useTheme";
 
 SplashScreen.preventAutoHideAsync();
+
+function AppContent() {
+  const { isDark } = useTheme();
+
+  return (
+    <>
+      <NavigationContainer>
+        <RootStackNavigator />
+      </NavigationContainer>
+      <StatusBar style={isDark ? "light" : "dark"} />
+    </>
+  );
+}
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
@@ -46,10 +62,11 @@ export default function App() {
         <SafeAreaProvider>
           <GestureHandlerRootView style={styles.root}>
             <KeyboardProvider>
-              <NavigationContainer>
-                <RootStackNavigator />
-              </NavigationContainer>
-              <StatusBar style="auto" />
+              <ThemeProvider>
+                <LanguageProvider>
+                  <AppContent />
+                </LanguageProvider>
+              </ThemeProvider>
             </KeyboardProvider>
           </GestureHandlerRootView>
         </SafeAreaProvider>

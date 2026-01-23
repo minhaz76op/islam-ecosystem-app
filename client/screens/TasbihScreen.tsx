@@ -72,7 +72,12 @@ export default function TasbihScreen() {
     setHistory(savedHistory);
   };
 
+  const [isTapping, setIsTapping] = useState(false);
+
   const handleTap = useCallback(async () => {
+    if (isTapping) return;
+    setIsTapping(true);
+
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     buttonScale.value = withSequence(
@@ -85,19 +90,23 @@ export default function TasbihScreen() {
     rippleScale.value = withTiming(2, { duration: 400 });
     rippleOpacity.value = withTiming(0, { duration: 400 });
 
-    const newCount = count + 1;
-    setCount(newCount);
-    await saveTasbihCount(newCount);
+    setCount((prev) => {
+      const newCount = prev + 1;
+      saveTasbihCount(newCount);
 
-    if (newCount >= selectedPreset.count && selectedPreset.id !== "custom") {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      await saveTasbihSession({
-        date: getTodayDate(),
-        preset: selectedPreset.english,
-        count: newCount,
-      });
-    }
-  }, [count, selectedPreset]);
+      if (newCount >= selectedPreset.count && selectedPreset.id !== "custom") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        saveTasbihSession({
+          date: getTodayDate(),
+          preset: selectedPreset.english,
+          count: newCount,
+        });
+      }
+      return newCount;
+    });
+
+    setTimeout(() => setIsTapping(false), 100);
+  }, [isTapping, selectedPreset]);
 
   const handleReset = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);

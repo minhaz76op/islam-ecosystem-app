@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -10,35 +10,20 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
-import {
-  getLanguagePreference,
-  setLanguagePreference,
-  LanguagePreference,
-  LANGUAGES,
-} from "@/lib/settings";
+import { LANGUAGES, LanguagePreference } from "@/lib/settings";
 
 export default function LanguageSelectScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation();
   const { theme } = useTheme();
-
-  const [selectedLanguage, setSelectedLanguage] = useState<LanguagePreference>("en");
-
-  useEffect(() => {
-    loadLanguage();
-  }, []);
-
-  const loadLanguage = async () => {
-    const lang = await getLanguagePreference();
-    setSelectedLanguage(lang);
-  };
+  const { language, setLanguage } = useLanguage();
 
   const handleSelectLanguage = async (langCode: LanguagePreference) => {
     await Haptics.selectionAsync();
-    setSelectedLanguage(langCode);
-    await setLanguagePreference(langCode);
+    await setLanguage(langCode);
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     navigation.goBack();
   };
@@ -63,12 +48,12 @@ export default function LanguageSelectScreen() {
         entering={FadeInDown.delay(200).duration(500)}
         style={[styles.languageList, { backgroundColor: theme.backgroundDefault }]}
       >
-        {LANGUAGES.map((language, index) => {
-          const isSelected = selectedLanguage === language.code;
+        {LANGUAGES.map((lang, index) => {
+          const isSelected = language === lang.code;
           return (
             <Pressable
-              key={language.code}
-              onPress={() => handleSelectLanguage(language.code as LanguagePreference)}
+              key={lang.code}
+              onPress={() => handleSelectLanguage(lang.code as LanguagePreference)}
               style={[
                 styles.languageRow,
                 index < LANGUAGES.length - 1 && {
@@ -79,12 +64,12 @@ export default function LanguageSelectScreen() {
             >
               <View style={styles.languageInfo}>
                 <ThemedText style={styles.languageName}>
-                  {language.name}
+                  {lang.name}
                 </ThemedText>
                 <ThemedText
                   style={[styles.languageNative, { color: theme.textSecondary }]}
                 >
-                  {language.nativeName}
+                  {lang.nativeName}
                 </ThemedText>
               </View>
               <View
