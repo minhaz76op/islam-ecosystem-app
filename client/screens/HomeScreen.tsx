@@ -26,6 +26,7 @@ import Animated, {
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuth } from "@/contexts/AuthContext";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 import {
   calculatePrayerTimes,
@@ -90,6 +91,7 @@ export default function HomeScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation<any>();
   const { theme, isDark } = useTheme();
+  const { user } = useAuth();
 
   const [userName, setUserName] = useState("Guest");
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
@@ -107,12 +109,22 @@ export default function HomeScreen() {
 
   const loadData = useCallback(async () => {
     const today = getTodayDate();
-    const profile = await getUserProfile();
-    if (profile?.name) {
-      setUserName(profile.name);
-    }
-    if (profile?.avatarUri) {
-      setUserAvatar(profile.avatarUri);
+    
+    if (user) {
+      setUserName(user.displayName || user.username || "Guest");
+      if (user.avatarUrl) {
+        setUserAvatar(user.avatarUrl);
+      }
+    } else {
+      const profile = await getUserProfile();
+      if (profile?.name) {
+        setUserName(profile.name);
+      } else {
+        setUserName("Guest");
+      }
+      if (profile?.avatarUri) {
+        setUserAvatar(profile.avatarUri);
+      }
     }
 
     const prayerTimes = calculatePrayerTimes();
@@ -144,11 +156,13 @@ export default function HomeScreen() {
       water: diet?.waterGlasses || 0,
       exercise: exercise?.totalMinutes || 0,
     });
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     loadData();
+  }, [user, loadData]);
 
+  useEffect(() => {
     pulseScale.value = withRepeat(
       withSequence(
         withSpring(1.05, { damping: 10 }),
