@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, Pressable } from "react-native";
+import { View, StyleSheet, TextInput, Pressable, Alert, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "@react-navigation/native";
@@ -20,11 +20,12 @@ export default function LoginScreen() {
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation<any>();
   const { theme } = useTheme();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
@@ -54,6 +55,36 @@ export default function LoginScreen() {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsGoogleLoading(true);
+    setError("");
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      const result = await loginWithGoogle();
+      if (result.success) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        navigation.goBack();
+      } else {
+        if (result.error?.includes("not configured")) {
+          Alert.alert(
+            "Google Sign-In Setup Required",
+            "To enable Google Sign-In, you need to configure Google OAuth credentials in your app settings. Please contact the developer for assistance.",
+            [{ text: "OK" }]
+          );
+        } else {
+          setError(result.error || "Google Sign-In failed");
+        }
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
@@ -193,22 +224,19 @@ export default function LoginScreen() {
         style={styles.socialRow}
       >
         <Pressable
+          onPress={handleGoogleLogin}
+          disabled={isGoogleLoading}
           style={[
-            styles.socialButton,
+            styles.googleButton,
             { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder },
           ]}
         >
-          <Feather name="smartphone" size={22} color={theme.text} />
-          <ThemedText style={styles.socialText}>Phone</ThemedText>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.socialButton,
-            { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder },
-          ]}
-        >
-          <Feather name="mail" size={22} color={theme.text} />
-          <ThemedText style={styles.socialText}>Google</ThemedText>
+          <View style={styles.googleIconContainer}>
+            <ThemedText style={styles.googleIcon}>G</ThemedText>
+          </View>
+          <ThemedText style={styles.googleText}>
+            {isGoogleLoading ? "Signing in..." : "Sign in with Google"}
+          </ThemedText>
         </Pressable>
       </Animated.View>
 
@@ -321,22 +349,32 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
   },
   socialRow: {
-    flexDirection: "row",
-    gap: Spacing.md,
     marginBottom: Spacing["3xl"],
   },
-  socialButton: {
-    flex: 1,
+  googleButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: Spacing.sm,
+    gap: Spacing.md,
     paddingVertical: Spacing.lg,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
   },
-  socialText: {
+  googleIconContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#4285F4",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleIcon: {
+    color: "#FFFFFF",
     fontSize: 14,
+    fontFamily: "Poppins_700Bold",
+  },
+  googleText: {
+    fontSize: 15,
     fontFamily: "Poppins_500Medium",
   },
   footer: {

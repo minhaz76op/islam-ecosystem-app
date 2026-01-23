@@ -15,6 +15,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (username: string, password: string, displayName?: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
 }
@@ -88,6 +89,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+    const WebBrowser = await import("expo-web-browser");
+    const AuthSession = await import("expo-auth-session");
+    
+    const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+    
+    if (!GOOGLE_CLIENT_ID) {
+      return { 
+        success: false, 
+        error: "Google Sign-In requires configuration. Please contact the developer to enable this feature." 
+      };
+    }
+
+    try {
+      const redirectUri = AuthSession.makeRedirectUri();
+      
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `client_id=${GOOGLE_CLIENT_ID}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&response_type=token` +
+        `&scope=${encodeURIComponent("openid email profile")}`;
+
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+      
+      if (result.type === "success" && result.url) {
+        const params = new URLSearchParams(result.url.split("#")[1]);
+        const accessToken = params.get("access_token");
+        
+        if (accessToken) {
+          const userInfoResponse = await fetch(
+            "https://www.googleapis.com/userinfo/v2/me",
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+          const googleUser = await userInfoResponse.json();
+
+          if (googleUser.email) {
+            const registerResponse = await fetch(new URL("/api/auth/google", getApiUrl()).toString(), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                googleId: googleUser.id,
+                email: googleUser.email,
+                displayName: googleUser.name,
+                avatarUrl: googleUser.picture,
+              }),
+            });
+
+            if (registerResponse.ok) {
+              const userData = await registerResponse.json();
+              setUser(userData);
+              await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userData));
+              return { success: true };
+            }
+          }
+        }
+      }
+      
+      return { success: false, error: "Google Sign-In was cancelled or failed" };
+    } catch (error) {
+      return { success: false, error: "Failed to sign in with Google" };
+    }
+  };
+
   const logout = async () => {
     setUser(null);
     await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
@@ -102,7 +166,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isLoading, 
+      login, 
+      register, 
+      loginWithGoogle,
+      logout, 
+      updateUser,
+    }}>
       {children}
     </AuthContext.Provider>
   );
