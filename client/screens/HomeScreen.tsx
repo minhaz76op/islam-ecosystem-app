@@ -6,6 +6,7 @@ import {
   Image,
   Pressable,
   RefreshControl,
+  ImageBackground,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -91,6 +92,7 @@ export default function HomeScreen() {
   const { theme, isDark } = useTheme();
 
   const [userName, setUserName] = useState("Guest");
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<DailyPrayers | null>(null);
   const [completedPrayers, setCompletedPrayers] =
     useState<CompletedPrayer | null>(null);
@@ -108,6 +110,9 @@ export default function HomeScreen() {
     const profile = await getUserProfile();
     if (profile?.name) {
       setUserName(profile.name);
+    }
+    if (profile?.avatarUri) {
+      setUserAvatar(profile.avatarUri);
     }
 
     const prayerTimes = calculatePrayerTimes();
@@ -241,14 +246,19 @@ export default function HomeScreen() {
           style={styles.header}
         >
           <View style={styles.profileRow}>
-            <View
+            <Pressable
+              onPress={() => navigation.navigate("SettingsTab", { screen: "EditProfile" })}
               style={[
                 styles.avatarContainer,
                 { backgroundColor: theme.primary },
               ]}
             >
-              <Feather name="user" size={20} color="#FFFFFF" />
-            </View>
+              {userAvatar ? (
+                <Image source={{ uri: userAvatar }} style={styles.avatarImage} />
+              ) : (
+                <Feather name="user" size={20} color="#FFFFFF" />
+              )}
+            </Pressable>
             <View style={styles.headerButtons}>
               <Pressable 
                 onPress={() => navigation.navigate("Calendar")}
@@ -606,6 +616,12 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
   headerButtons: {
     flexDirection: "row",

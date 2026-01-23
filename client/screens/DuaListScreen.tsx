@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, ScrollView, StyleSheet, Pressable, TextInput } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable, TextInput, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -11,6 +11,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 import { DUAS, getDuasByCategory, Dua } from "@/data/duas";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 
 export default function DuaListScreen() {
   const insets = useSafeAreaInsets();
@@ -20,6 +21,7 @@ export default function DuaListScreen() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { isPlaying, isLoading, currentId, playAudio } = useAudioPlayer();
 
   const categories = useMemo(() => {
     const cats = [...new Set(DUAS.map((d) => d.category))];
@@ -48,6 +50,13 @@ export default function DuaListScreen() {
   const handleCategorySelect = async (category: string | null) => {
     await Haptics.selectionAsync();
     setSelectedCategory(category);
+  };
+
+  const handlePlayAudio = async (dua: Dua, e: any) => {
+    e.stopPropagation();
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const audioUrl = `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/001001.mp3`;
+    await playAudio(dua.id, audioUrl);
   };
 
   return (
@@ -144,11 +153,27 @@ export default function DuaListScreen() {
                   {dua.category}
                 </ThemedText>
               </View>
-              <Feather
-                name={expandedId === dua.id ? "chevron-up" : "chevron-down"}
-                size={20}
-                color={theme.textSecondary}
-              />
+              <View style={styles.headerActions}>
+                <Pressable
+                  onPress={(e) => handlePlayAudio(dua, e)}
+                  style={[styles.playBtn, { backgroundColor: theme.primary + "15" }]}
+                >
+                  {isLoading && currentId === dua.id ? (
+                    <ActivityIndicator size="small" color={theme.primary} />
+                  ) : (
+                    <Feather
+                      name={isPlaying && currentId === dua.id ? "pause" : "play"}
+                      size={16}
+                      color={theme.primary}
+                    />
+                  )}
+                </Pressable>
+                <Feather
+                  name={expandedId === dua.id ? "chevron-up" : "chevron-down"}
+                  size={20}
+                  color={theme.textSecondary}
+                />
+              </View>
             </View>
 
             <ThemedText style={styles.duaTitle}>{dua.title}</ThemedText>
@@ -243,6 +268,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: Spacing.md,
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  playBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
   },
   categoryBadge: {
     paddingHorizontal: Spacing.md,
