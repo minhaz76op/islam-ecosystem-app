@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, Pressable, FlatList, TextInput } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable, FlatList, TextInput, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -10,6 +10,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 import { SURAHS } from "@/data/quran-surahs";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 
 const SURAH_AL_FATIHA = [
   {
@@ -61,10 +62,20 @@ export default function QuranScreen() {
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
   const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
+  const { isPlaying, isLoading, currentId, playAudio } = useAudioPlayer();
 
   const handleSelectSurah = async (number: number) => {
     await Haptics.selectionAsync();
     setSelectedSurah(number === 1 ? 1 : null);
+  };
+
+  const handlePlayVerse = async (surahNum: number, verseNum: number, e: any) => {
+    e.stopPropagation();
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const paddedSurah = String(surahNum).padStart(3, "0");
+    const paddedVerse = String(verseNum).padStart(3, "0");
+    const audioUrl = `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${paddedSurah}${paddedVerse}.mp3`;
+    await playAudio(`${surahNum}-${verseNum}`, audioUrl);
   };
 
   if (selectedSurah === 1) {
@@ -118,6 +129,20 @@ export default function QuranScreen() {
                     {verse.verse}
                   </ThemedText>
                 </View>
+                <Pressable
+                  onPress={(e) => handlePlayVerse(1, verse.verse, e)}
+                  style={[styles.playBtn, { backgroundColor: theme.primary + "15" }]}
+                >
+                  {isLoading && currentId === `1-${verse.verse}` ? (
+                    <ActivityIndicator size="small" color={theme.primary} />
+                  ) : (
+                    <Feather
+                      name={isPlaying && currentId === `1-${verse.verse}` ? "pause" : "play"}
+                      size={16}
+                      color={theme.primary}
+                    />
+                  )}
+                </Pressable>
               </View>
 
               <ThemedText style={styles.verseArabic}>{verse.arabic}</ThemedText>
@@ -314,10 +339,19 @@ const styles = StyleSheet.create({
     ...Shadows.sm,
   },
   verseNumberContainer: {
-    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: Spacing.lg,
   },
   verseNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  playBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
