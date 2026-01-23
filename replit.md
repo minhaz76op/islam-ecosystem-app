@@ -58,6 +58,10 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
 - Fixed dark mode toggle to properly switch between light/dark themes
 - Fixed language selection to immediately update app language
 - Added debouncing to Tasbih button to prevent duplicate clicks (100ms timeout)
+- **Unified Authentication System**: LoginScreen and SignupScreen now use AuthContext backend APIs for unified login/registration with username/password
+- **Audio Playback**: Added audio playback to Duas and Quran screens using expo-audio with useAudioPlayer hook
+- **Settings Enhancements**: AboutScreen, PrivacyPolicyScreen, TermsOfServiceScreen, AdhanSettingsScreen added
+- **Profile Display**: HomeScreen shows user avatar from storage, Settings shows username and unique ID
 
 ### Latest Session Changes (January 2026)
 - **Islamic Calendar System**: Full Gregorian-Islamic date conversion using astronomical algorithms
