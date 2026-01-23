@@ -12,8 +12,8 @@ import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollV
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuth } from "@/contexts/AuthContext";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
-import { login } from "@/lib/auth";
 import { saveUserProfile } from "@/lib/storage";
 
 export default function SignupScreen() {
@@ -21,9 +21,10 @@ export default function SignupScreen() {
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation<any>();
   const { theme } = useTheme();
+  const { register } = useAuth();
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,13 +35,15 @@ export default function SignupScreen() {
     const newErrors: { [key: string]: string } = {};
 
     if (!name.trim()) {
-      newErrors.name = "Name is required";
+      newErrors.name = "Display name is required";
     }
 
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Please enter a valid email";
+    if (!username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      newErrors.username = "Username can only contain letters, numbers, and underscores";
     }
 
     if (!password) {
@@ -67,11 +70,17 @@ export default function SignupScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      await login(email.trim(), name.trim());
-      await saveUserProfile({ name: name.trim(), email: email.trim() });
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      navigation.goBack();
+      const result = await register(username.trim().toLowerCase(), password, name.trim());
+      if (result.success) {
+        await saveUserProfile({ name: name.trim() });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        navigation.goBack();
+      } else {
+        setErrors({ general: result.error || "Registration failed" });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
     } catch (error) {
+      setErrors({ general: "An error occurred. Please try again." });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsLoading(false);
@@ -83,14 +92,16 @@ export default function SignupScreen() {
     setIsLoading(true);
 
     try {
-      const mockGoogleUser = {
-        name: "Google User",
-        email: "user@gmail.com",
-      };
-      await login(mockGoogleUser.email, mockGoogleUser.name);
-      await saveUserProfile({ name: mockGoogleUser.name, email: mockGoogleUser.email });
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      navigation.goBack();
+      const randomId = Math.random().toString(36).substring(2, 8);
+      const result = await register(`google_user_${randomId}`, `google_${randomId}_pass`, "Google User");
+      if (result.success) {
+        await saveUserProfile({ name: "Google User" });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        navigation.goBack();
+      } else {
+        setErrors({ general: result.error || "Google sign in failed" });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
     } catch (error) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -110,12 +121,18 @@ export default function SignupScreen() {
       const userName = credential.fullName
         ? `${credential.fullName.givenName || ""} ${credential.fullName.familyName || ""}`.trim()
         : "Apple User";
-      const userEmail = credential.email || "apple@user.com";
+      const randomId = Math.random().toString(36).substring(2, 8);
+      const appleUsername = `apple_user_${randomId}`;
 
-      await login(userEmail, userName);
-      await saveUserProfile({ name: userName, email: userEmail });
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      navigation.goBack();
+      const result = await register(appleUsername, `apple_${randomId}_pass`, userName);
+      if (result.success) {
+        await saveUserProfile({ name: userName });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        navigation.goBack();
+      } else {
+        setErrors({ general: result.error || "Apple sign in failed" });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
     } catch (error: any) {
       if (error.code !== "ERR_REQUEST_CANCELED") {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -176,29 +193,34 @@ export default function SignupScreen() {
 
         <View style={styles.inputGroup}>
           <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
-            Email Address
+            Username
           </ThemedText>
           <View style={styles.inputWrapper}>
-            <Feather name="mail" size={20} color={theme.textSecondary} style={styles.inputIcon} />
+            <Feather name="at-sign" size={20} color={theme.textSecondary} style={styles.inputIcon} />
             <TextInput
               style={[
                 styles.input,
                 { backgroundColor: theme.backgroundSecondary, color: theme.text },
-                errors.email ? { borderWidth: 1, borderColor: theme.error } : null,
+                errors.username ? { borderWidth: 1, borderColor: theme.error } : null,
               ]}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter your email"
+              value={username}
+              onChangeText={setUsername}
+              placeholder="Choose a username"
               placeholderTextColor={theme.textSecondary}
-              keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
             />
           </View>
-          {errors.email ? (
-            <ThemedText style={[styles.errorText, { color: theme.error }]}>{errors.email}</ThemedText>
+          {errors.username ? (
+            <ThemedText style={[styles.errorText, { color: theme.error }]}>{errors.username}</ThemedText>
           ) : null}
         </View>
+        
+        {errors.general ? (
+          <ThemedText style={[styles.errorText, { color: theme.error, textAlign: "center", marginBottom: Spacing.md }]}>
+            {errors.general}
+          </ThemedText>
+        ) : null}
 
         <View style={styles.inputGroup}>
           <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>

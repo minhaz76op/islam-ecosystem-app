@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, Pressable, Alert } from "react-native";
+import { View, StyleSheet, TextInput, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "@react-navigation/native";
@@ -11,8 +11,8 @@ import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollV
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuth } from "@/contexts/AuthContext";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
-import { login } from "@/lib/auth";
 import { saveUserProfile } from "@/lib/storage";
 
 export default function LoginScreen() {
@@ -20,28 +20,37 @@ export default function LoginScreen() {
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation<any>();
   const { theme } = useTheme();
+  const { login } = useAuth();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    if (!name.trim() || !email.trim()) {
+    if (!username.trim() || !password.trim()) {
+      setError("Please enter your username and password");
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
 
     setIsLoading(true);
+    setError("");
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      await login(email.trim(), name.trim());
-      await saveUserProfile({ name: name.trim() });
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      navigation.goBack();
-    } catch (error) {
+      const result = await login(username.trim().toLowerCase(), password);
+      if (result.success) {
+        await saveUserProfile({ name: username.trim() });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        navigation.goBack();
+      } else {
+        setError(result.error || "Login failed");
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsLoading(false);
@@ -79,41 +88,19 @@ export default function LoginScreen() {
           { backgroundColor: theme.backgroundDefault },
         ]}
       >
-        <View style={styles.inputGroup}>
-          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
-            Full Name
+        {error ? (
+          <ThemedText style={[styles.errorText, { color: theme.error, textAlign: "center", marginBottom: Spacing.md }]}>
+            {error}
           </ThemedText>
-          <View style={styles.inputWrapper}>
-            <Feather
-              name="user"
-              size={20}
-              color={theme.textSecondary}
-              style={styles.inputIcon}
-            />
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: theme.backgroundSecondary,
-                  color: theme.text,
-                },
-              ]}
-              value={name}
-              onChangeText={setName}
-              placeholder="Enter your name"
-              placeholderTextColor={theme.textSecondary}
-              autoCapitalize="words"
-            />
-          </View>
-        </View>
+        ) : null}
 
         <View style={styles.inputGroup}>
           <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
-            Email Address
+            Username
           </ThemedText>
           <View style={styles.inputWrapper}>
             <Feather
-              name="mail"
+              name="at-sign"
               size={20}
               color={theme.textSecondary}
               style={styles.inputIcon}
@@ -126,11 +113,10 @@ export default function LoginScreen() {
                   color: theme.text,
                 },
               ]}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter your email"
+              value={username}
+              onChangeText={setUsername}
+              placeholder="Enter your username"
               placeholderTextColor={theme.textSecondary}
-              keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
             />
@@ -184,7 +170,7 @@ export default function LoginScreen() {
 
         <Button
           onPress={handleLogin}
-          disabled={isLoading || !name.trim() || !email.trim()}
+          disabled={isLoading || !username.trim() || !password.trim()}
           style={styles.loginButton}
         >
           {isLoading ? "Signing In..." : "Sign In"}
@@ -364,5 +350,9 @@ const styles = StyleSheet.create({
   signUpText: {
     fontSize: 14,
     fontFamily: "Poppins_600SemiBold",
+  },
+  errorText: {
+    fontSize: 13,
+    fontFamily: "Poppins_400Regular",
   },
 });
