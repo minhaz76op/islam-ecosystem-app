@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, Pressable, FlatList } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable, FlatList, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -9,63 +9,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
-
-const SURAHS = [
-  {
-    number: 1,
-    name: "Al-Fatihah",
-    arabic: "الفاتحة",
-    verses: 7,
-    revelation: "Meccan",
-    translation: "The Opening",
-    bengali: "প্রারম্ভিকা",
-  },
-  {
-    number: 2,
-    name: "Al-Baqarah",
-    arabic: "البقرة",
-    verses: 286,
-    revelation: "Medinan",
-    translation: "The Cow",
-    bengali: "গাভী",
-  },
-  {
-    number: 3,
-    name: "Al-Imran",
-    arabic: "آل عمران",
-    verses: 200,
-    revelation: "Medinan",
-    translation: "The Family of Imran",
-    bengali: "ইমরানের পরিবার",
-  },
-  {
-    number: 112,
-    name: "Al-Ikhlas",
-    arabic: "الإخلاص",
-    verses: 4,
-    revelation: "Meccan",
-    translation: "Sincerity",
-    bengali: "একনিষ্ঠতা",
-  },
-  {
-    number: 113,
-    name: "Al-Falaq",
-    arabic: "الفلق",
-    verses: 5,
-    revelation: "Meccan",
-    translation: "The Daybreak",
-    bengali: "প্রভাত",
-  },
-  {
-    number: 114,
-    name: "An-Nas",
-    arabic: "الناس",
-    verses: 6,
-    revelation: "Meccan",
-    translation: "Mankind",
-    bengali: "মানবজাতি",
-  },
-];
+import { SURAHS } from "@/data/quran-surahs";
 
 const SURAH_AL_FATIHA = [
   {
