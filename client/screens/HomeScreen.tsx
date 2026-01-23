@@ -110,21 +110,18 @@ export default function HomeScreen() {
   const loadData = useCallback(async () => {
     const today = getTodayDate();
     
+    // Show username when signed in, "Guest" when not signed in
     if (user) {
-      setUserName(user.displayName || user.username || "Guest");
+      setUserName(user.displayName || user.username || "User");
       if (user.avatarUrl) {
         setUserAvatar(user.avatarUrl);
+      } else {
+        setUserAvatar(null);
       }
     } else {
-      const profile = await getUserProfile();
-      if (profile?.name) {
-        setUserName(profile.name);
-      } else {
-        setUserName("Guest");
-      }
-      if (profile?.avatarUri) {
-        setUserAvatar(profile.avatarUri);
-      }
+      // Not signed in - always show Guest
+      setUserName("Guest");
+      setUserAvatar(null);
     }
 
     const prayerTimes = calculatePrayerTimes();
