@@ -272,6 +272,13 @@ export default function SettingsScreen() {
             theme={theme}
           />
           <SettingsRow
+            icon="award"
+            title="Credits"
+            subtitle="Developer & acknowledgements"
+            onPress={() => navigation.navigate("Credits")}
+            theme={theme}
+          />
+          <SettingsRow
             icon="shield"
             title="Privacy Policy"
             onPress={() => navigation.navigate("PrivacyPolicy")}

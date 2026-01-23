@@ -8,6 +8,7 @@ import LanguageSelectScreen from "@/screens/LanguageSelectScreen";
 import AlarmScreen from "@/screens/AlarmScreen";
 import NotificationsScreen from "@/screens/NotificationsScreen";
 import AboutScreen from "@/screens/AboutScreen";
+import CreditsScreen from "@/screens/CreditsScreen";
 import PrivacyPolicyScreen from "@/screens/PrivacyPolicyScreen";
 import TermsOfServiceScreen from "@/screens/TermsOfServiceScreen";
 import AdhanSettingsScreen from "@/screens/AdhanSettingsScreen";
@@ -22,6 +23,7 @@ export type SettingsStackParamList = {
   Alarm: undefined;
   Notifications: undefined;
   About: undefined;
+  Credits: undefined;
   PrivacyPolicy: undefined;
   TermsOfService: undefined;
   AdhanSettings: undefined;
@@ -88,6 +90,13 @@ export default function SettingsStackNavigator() {
         component={AboutScreen}
         options={{
           headerTitle: "About",
+        }}
+      />
+      <Stack.Screen
+        name="Credits"
+        component={CreditsScreen}
+        options={{
+          headerTitle: "Credits",
         }}
       />
       <Stack.Screen
