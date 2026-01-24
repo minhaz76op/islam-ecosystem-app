@@ -95,6 +95,42 @@ function SurahAudioPlayer({ surah, theme }: SurahAudioPlayerProps) {
   );
 }
 
+interface VerseAudioPlayerProps {
+  audioUrl: string;
+  theme: any;
+}
+
+function VerseAudioPlayer({ audioUrl, theme }: VerseAudioPlayerProps) {
+  const player = useAudioPlayer(audioUrl);
+  const status = useAudioPlayerStatus(player);
+
+  const handlePlayPause = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (status.playing) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  };
+
+  return (
+    <Pressable
+      onPress={handlePlayPause}
+      style={[styles.versePlayButton, { backgroundColor: AppColors.primary + "15" }]}
+    >
+      {status.isBuffering ? (
+        <ActivityIndicator size="small" color={AppColors.primary} />
+      ) : (
+        <Feather
+          name={status.playing ? "pause" : "play"}
+          size={16}
+          color={AppColors.primary}
+        />
+      )}
+    </Pressable>
+  );
+}
+
 interface VerseCardProps {
   verse: Verse;
   theme: any;
@@ -109,6 +145,7 @@ function VerseCard({ verse, theme, index }: VerseCardProps) {
           <View style={[styles.verseNumberBadge, { backgroundColor: AppColors.primary }]}>
             <ThemedText style={styles.verseNumberText}>{verse.number}</ThemedText>
           </View>
+          <VerseAudioPlayer audioUrl={verse.audioUrl} theme={theme} />
         </View>
 
         <ThemedText style={[styles.verseArabic, { color: theme.text }]}>
@@ -676,13 +713,22 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   verseHeader: {
-    alignItems: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: Spacing.md,
   },
   verseNumberBadge: {
     width: 32,
     height: 32,
     borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  versePlayButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
   },
