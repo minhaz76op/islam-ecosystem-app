@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, ScrollView, StyleSheet, Pressable, FlatList, TextInput, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -9,8 +9,9 @@ import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
+import { Spacing, BorderRadius, AppColors } from "@/constants/theme";
 import { SURAHS, Surah } from "@/data/quran-surahs";
+import { getVersesBySurah, hasVerses, Verse } from "@/data/quran-verses";
 
 interface SurahAudioPlayerProps {
   surah: Surah;
@@ -94,6 +95,59 @@ function SurahAudioPlayer({ surah, theme }: SurahAudioPlayerProps) {
   );
 }
 
+interface VerseCardProps {
+  verse: Verse;
+  theme: any;
+  index: number;
+}
+
+function VerseCard({ verse, theme, index }: VerseCardProps) {
+  return (
+    <Animated.View entering={FadeInDown.delay(100 + index * 50).duration(400)}>
+      <View style={[styles.verseCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder }]}>
+        <View style={styles.verseHeader}>
+          <View style={[styles.verseNumberBadge, { backgroundColor: AppColors.primary }]}>
+            <ThemedText style={styles.verseNumberText}>{verse.number}</ThemedText>
+          </View>
+        </View>
+
+        <ThemedText style={[styles.verseArabic, { color: theme.text }]}>
+          {verse.arabic}
+        </ThemedText>
+
+        <View style={[styles.verseDivider, { backgroundColor: theme.cardBorder }]} />
+
+        <View style={styles.transliterationSection}>
+          <ThemedText style={[styles.sectionLabel, { color: AppColors.primary }]}>
+            Transliteration
+          </ThemedText>
+          <ThemedText style={[styles.transliterationVerse, { color: theme.textSecondary }]}>
+            {verse.transliteration}
+          </ThemedText>
+        </View>
+
+        <View style={styles.translationSection}>
+          <ThemedText style={[styles.sectionLabel, { color: AppColors.primary }]}>
+            English
+          </ThemedText>
+          <ThemedText style={[styles.translationText, { color: theme.text }]}>
+            {verse.english}
+          </ThemedText>
+        </View>
+
+        <View style={styles.translationSection}>
+          <ThemedText style={[styles.sectionLabel, { color: AppColors.primary }]}>
+            বাংলা
+          </ThemedText>
+          <ThemedText style={[styles.translationText, { color: theme.text }]}>
+            {verse.bengali}
+          </ThemedText>
+        </View>
+      </View>
+    </Animated.View>
+  );
+}
+
 export default function QuranScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -118,6 +172,9 @@ export default function QuranScreen() {
   };
 
   if (selectedSurah) {
+    const verses = getVersesBySurah(selectedSurah.number);
+    const surahHasVerses = hasVerses(selectedSurah.number);
+
     return (
       <ScrollView
         style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
@@ -206,60 +263,90 @@ export default function QuranScreen() {
           <SurahAudioPlayer surah={selectedSurah} theme={theme} />
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-          <View style={[styles.tipCard, { backgroundColor: AppColors.primary + "10" }]}>
-            <Feather name="book-open" size={20} color={AppColors.primary} />
-            <ThemedText style={[styles.tipText, { color: theme.text }]}>
-              Listen to the beautiful recitation by Sheikh Mishary Rashid Alafasy. Follow along with the Quran to improve your Tajweed.
-            </ThemedText>
-          </View>
-        </Animated.View>
+        {surahHasVerses && verses ? (
+          <>
+            <Animated.View entering={FadeInDown.delay(150).duration(400)}>
+              <View style={styles.versesHeader}>
+                <Feather name="book-open" size={18} color={AppColors.primary} />
+                <ThemedText style={[styles.versesTitle, { color: theme.text }]}>
+                  Verses ({verses.length})
+                </ThemedText>
+              </View>
+            </Animated.View>
+
+            {verses.map((verse, index) => (
+              <VerseCard key={verse.number} verse={verse} theme={theme} index={index} />
+            ))}
+          </>
+        ) : (
+          <Animated.View entering={FadeInDown.delay(200).duration(400)}>
+            <View style={[styles.tipCard, { backgroundColor: AppColors.primary + "10" }]}>
+              <Feather name="book-open" size={20} color={AppColors.primary} />
+              <ThemedText style={[styles.tipText, { color: theme.text }]}>
+                Listen to the beautiful recitation by Sheikh Mishary Rashid Alafasy. Follow along with the Quran to improve your Tajweed.
+              </ThemedText>
+            </View>
+          </Animated.View>
+        )}
       </ScrollView>
     );
   }
 
-  const renderSurahItem = ({ item, index }: { item: Surah; index: number }) => (
-    <Animated.View entering={FadeInDown.delay(50 + index * 20).duration(400)}>
-      <Pressable
-        onPress={() => handleSelectSurah(item)}
-        style={[styles.surahCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder }]}
-      >
-        <View style={[styles.surahNumber, { backgroundColor: AppColors.primary + "15" }]}>
-          <ThemedText style={[styles.numberText, { color: AppColors.primary }]}>
-            {item.number}
-          </ThemedText>
-        </View>
+  const renderSurahItem = ({ item, index }: { item: Surah; index: number }) => {
+    const surahHasVerses = hasVerses(item.number);
+    
+    return (
+      <Animated.View entering={FadeInDown.delay(50 + index * 20).duration(400)}>
+        <Pressable
+          onPress={() => handleSelectSurah(item)}
+          style={[styles.surahCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder }]}
+        >
+          <View style={[styles.surahNumber, { backgroundColor: AppColors.primary + "15" }]}>
+            <ThemedText style={[styles.numberText, { color: AppColors.primary }]}>
+              {item.number}
+            </ThemedText>
+          </View>
 
-        <View style={styles.surahInfo}>
-          <View style={styles.surahNameRow}>
-            <ThemedText style={styles.surahName}>{item.name}</ThemedText>
-            <ThemedText style={[styles.surahArabic, { color: AppColors.primary }]}>
-              {item.arabic}
-            </ThemedText>
+          <View style={styles.surahInfo}>
+            <View style={styles.surahNameRow}>
+              <View style={styles.surahNameWithBadge}>
+                <ThemedText style={styles.surahName}>{item.name}</ThemedText>
+                {surahHasVerses ? (
+                  <View style={[styles.versesBadge, { backgroundColor: "#10B981" + "20" }]}>
+                    <ThemedText style={[styles.versesBadgeText, { color: "#10B981" }]}>
+                      Verses
+                    </ThemedText>
+                  </View>
+                ) : null}
+              </View>
+              <ThemedText style={[styles.surahArabic, { color: AppColors.primary }]}>
+                {item.arabic}
+              </ThemedText>
+            </View>
+            <View style={styles.surahMeta}>
+              <ThemedText style={[styles.translitSmall, { color: theme.textSecondary }]}>
+                {item.transliteration} • {item.transliterationBengali}
+              </ThemedText>
+            </View>
+            <View style={styles.surahMeta}>
+              <ThemedText style={[styles.metaText, { color: theme.textSecondary }]}>
+                {item.translation} • {item.bengali}
+              </ThemedText>
+            </View>
+            <View style={styles.surahMeta}>
+              <ThemedText style={[styles.metaSmall, { color: theme.textSecondary }]}>
+                {item.verses} verses • {item.revelation}
+              </ThemedText>
+            </View>
           </View>
-          <View style={styles.surahMeta}>
-            <ThemedText style={[styles.translitSmall, { color: theme.textSecondary }]}>
-              {item.transliteration} • {item.transliterationBengali}
-            </ThemedText>
-          </View>
-          <View style={styles.surahMeta}>
-            <ThemedText style={[styles.metaText, { color: theme.textSecondary }]}>
-              {item.translation} • {item.bengali}
-            </ThemedText>
-          </View>
-          <View style={styles.surahMeta}>
-            <ThemedText style={[styles.metaSmall, { color: theme.textSecondary }]}>
-              {item.verses} verses • {item.revelation}
-            </ThemedText>
-          </View>
-        </View>
 
-        <View style={styles.playIconContainer}>
-          <Feather name="play-circle" size={24} color={AppColors.primary} />
-        </View>
-      </Pressable>
-    </Animated.View>
-  );
+          <View style={styles.playIconContainer}>
+            <Feather name="play-circle" size={24} color={AppColors.primary} />
+          </View>
+        </Pressable>
+      </Animated.View>
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
@@ -375,8 +462,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  surahNameWithBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+  },
   surahName: {
     fontSize: 16,
+    fontFamily: "Poppins_600SemiBold",
+  },
+  versesBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  versesBadgeText: {
+    fontSize: 9,
     fontFamily: "Poppins_600SemiBold",
   },
   surahArabic: {
@@ -557,5 +658,72 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Poppins_400Regular",
     lineHeight: 20,
+  },
+  versesHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  versesTitle: {
+    fontSize: 18,
+    fontFamily: "Poppins_600SemiBold",
+  },
+  verseCard: {
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+  },
+  verseHeader: {
+    alignItems: "flex-start",
+    marginBottom: Spacing.md,
+  },
+  verseNumberBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  verseNumberText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontFamily: "Poppins_700Bold",
+  },
+  verseArabic: {
+    fontSize: 24,
+    fontFamily: "Poppins_400Regular",
+    textAlign: "right",
+    lineHeight: 40,
+    marginBottom: Spacing.md,
+  },
+  verseDivider: {
+    height: 1,
+    marginVertical: Spacing.md,
+  },
+  transliterationSection: {
+    marginBottom: Spacing.md,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontFamily: "Poppins_600SemiBold",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  transliterationVerse: {
+    fontSize: 14,
+    fontFamily: "Poppins_500Medium",
+    fontStyle: "italic",
+    lineHeight: 22,
+  },
+  translationSection: {
+    marginBottom: Spacing.md,
+  },
+  translationText: {
+    fontSize: 14,
+    fontFamily: "Poppins_400Regular",
+    lineHeight: 22,
   },
 });
