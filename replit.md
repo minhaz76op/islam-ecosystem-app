@@ -46,6 +46,8 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
 - **Islamic Quiz**: AI-based quiz with multiple choice questions, explanations, score tracking
 - **Mosque Locator**: GPS-based mosque finder using expo-location (requires location permission)
 - **Roza Timetable**: Complete Ramadan 2025 Sehri and Iftar timetable with 30 days
+- **History of Islam**: Comprehensive timeline of Islamic history with 7 chronological periods (Pre-Islamic Arabia, Prophetic Era, Rashidun Caliphate, Umayyad Caliphate, Abbasid Caliphate, Later Islamic Empires, Modern Era) featuring 100+ major historical events with dates, Arabic titles, descriptions, and significance
+- **Islamic Stories**: Collection of 17+ detailed stories organized in 5 categories (Stories of the Prophets, Stories of the Companions, Stories of the Scholars, Miracles and Signs, Moral Stories) with Arabic titles, full narrative content, lessons/wisdom, and Quranic/Hadith references
 
 ### Theme & Language Context
 - **ThemeContext**: Manages dark/light theme with system preference support, persisted to AsyncStorage

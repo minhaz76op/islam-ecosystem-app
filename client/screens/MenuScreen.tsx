@@ -146,6 +146,20 @@ export default function MenuScreen() {
       color: "#0EA5E9",
       screen: "Ruqyah",
     },
+    {
+      icon: "clock",
+      title: "History of Islam",
+      subtitle: "Major events & periods",
+      color: "#8B5CF6",
+      screen: "IslamicHistory",
+    },
+    {
+      icon: "book",
+      title: "Islamic Stories",
+      subtitle: "Prophets & companions",
+      color: "#F59E0B",
+      screen: "IslamicStories",
+    },
   ];
 
   const handlePress = async (screen: string) => {
