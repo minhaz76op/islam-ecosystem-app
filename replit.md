@@ -93,8 +93,10 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
 - **Unified HealthScreen**: Combined Diet & Health + Exercise into single screen with tabs (overview, diet, exercise), height/weight input, BMI calculation with categories, and personalized health suggestions
 - **Gamified Level System**: Profile leveling based on activity completion with addXP function tracking total XP and level
 - **Data Files**:
-  - `client/data/quran-surahs.ts`: Complete Quran with all 114 surahs metadata
+  - `client/data/quran-surahs.ts`: Complete Quran with all 114 surahs metadata, audio URLs (Sheikh Mishary Alafasy), transliteration in English and Bengali
   - `client/data/duas.ts`: Comprehensive collection of 40+ authentic duas with categories, getDuasByCategory() and searchDuas() utilities
+  - `client/data/islamic-names.ts`: 200 Islamic names (100 male, 100 female) with Arabic, English meanings, Bengali meanings
+- **Quran Audio Enhancement**: Full surah audio playback for all 114 surahs using expo-audio (useAudioPlayer, useAudioPlayerStatus hooks), progress bar, time display, reciter info
 - **Storage Extensions**: DailyTask, Meal, DietLog, Exercise, ExerciseLog, AlarmSettings, NotificationSettings, UserLocation, CompletedPrayer, HealthProfile, UserLevel interfaces
 
 ## External Dependencies
