@@ -33,12 +33,14 @@ import {
 import { getApiUrl } from "@/lib/query-client";
 
 const SUGGESTED_QUESTIONS = [
-  "How do I perform Wudu correctly?",
-  "What are the pillars of Islam?",
-  "Tell me about Surah Al-Fatiha",
-  "What is the meaning of Tawakkul?",
-  "Explain the importance of Friday prayer",
-  "What are the benefits of reciting Ayatul Kursi?",
+  "How can I manage stress and anxiety in an Islamic way?",
+  "What does Islam say about healthy eating and nutrition?",
+  "How to balance work/career with spiritual life?",
+  "Islamic perspective on investing and saving money",
+  "What are the best morning routines according to Sunnah?",
+  "How to strengthen family relationships in Islam?",
+  "Tips for being productive while staying connected to Allah",
+  "What does Islam teach about self-improvement?",
 ];
 
 interface ExtendedChatMessage extends ChatMessage {
@@ -143,16 +145,20 @@ function EmptyState({ theme, onSuggest }: { theme: any; onSuggest: (q: string) =
       </View>
       <ThemedText style={styles.emptyTitle}>IslamicGPT</ThemedText>
       <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-        Your AI-powered Islamic knowledge assistant. Ask questions about Quran, Hadith, prayer, and more.
+        Your advanced AI assistant that answers any question with Islamic wisdom. Ask about health, relationships, finance, career, or anything else!
       </ThemedText>
       <View style={styles.featureBadges}>
         <View style={[styles.badge, { backgroundColor: theme.primary + "15" }]}>
-          <Feather name="image" size={14} color={theme.primary} />
-          <ThemedText style={[styles.badgeText, { color: theme.primary }]}>Image Analysis</ThemedText>
+          <Feather name="globe" size={14} color={theme.primary} />
+          <ThemedText style={[styles.badgeText, { color: theme.primary }]}>Any Topic</ThemedText>
         </View>
         <View style={[styles.badge, { backgroundColor: theme.primary + "15" }]}>
-          <Feather name="book" size={14} color={theme.primary} />
-          <ThemedText style={[styles.badgeText, { color: theme.primary }]}>Quran & Hadith</ThemedText>
+          <Feather name="book-open" size={14} color={theme.primary} />
+          <ThemedText style={[styles.badgeText, { color: theme.primary }]}>Islamic Wisdom</ThemedText>
+        </View>
+        <View style={[styles.badge, { backgroundColor: theme.primary + "15" }]}>
+          <Feather name="image" size={14} color={theme.primary} />
+          <ThemedText style={[styles.badgeText, { color: theme.primary }]}>Image Analysis</ThemedText>
         </View>
       </View>
       <View style={styles.suggestions}>
@@ -247,7 +253,7 @@ export default function IslamicGPTScreen() {
         
         if (!base64Data && asset.uri) {
           base64Data = await FileSystem.readAsStringAsync(asset.uri, {
-            encoding: FileSystem.EncodingType.Base64,
+            encoding: 'base64',
           });
         }
         

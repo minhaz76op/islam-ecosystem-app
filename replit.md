@@ -41,7 +41,7 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
 
 ### Menu Features (6 screens accessible from Menu tab)
 - **Duas**: Comprehensive collection of 40+ authentic duas organized by 20+ categories (Morning & Evening, Sleep, Waking Up, Bathroom, Wudu, Mosque, Food & Drink, Travel, Clothing, Home, Distress & Anxiety, Forgiveness, Weather, Sickness, Parents, Marriage, Knowledge, Protection, Guidance, Debt & Provision, Death & Afterlife, Fasting, Hajj & Umrah, Character, Gratitude, Daily Life, Gatherings) with Arabic text, transliteration, English and Bengali translations, and hadith source references
-- **Quran**: Complete Quran reader with all 114 surahs including surah number, name, Arabic name, verse count, revelation type (Meccan/Medinan), English translation, and Bengali translation. Al-Fatihah fully implemented with all 7 verses readable.
+- **Quran**: Complete Quran reader with all 114 surahs and 6,236 verses. Each verse includes Arabic text (Uthmani script), English transliteration, Saheeh International translation, Bengali translation (Muhiuddin Khan), and individual verse audio playback (Sheikh Mishary Alafasy via everyayah.com).
 - **Islamic Articles**: Curated Islamic articles organized by category (Prayer, Basics, Ramadan, Charity, Worship)
 - **Islamic Quiz**: AI-based quiz with multiple choice questions, explanations, score tracking
 - **Mosque Locator**: GPS-based mosque finder using expo-location (requires location permission)
@@ -97,6 +97,12 @@ Five main tabs: Home (Dashboard), Menu (Resources), IslamicGPT (AI Chat), Tasbih
   - `client/data/duas.ts`: Comprehensive collection of 40+ authentic duas with categories, getDuasByCategory() and searchDuas() utilities
   - `client/data/islamic-names.ts`: 200 Islamic names (100 male, 100 female) with Arabic, English meanings, Bengali meanings
 - **Quran Audio Enhancement**: Full surah audio playback for all 114 surahs using expo-audio (useAudioPlayer, useAudioPlayerStatus hooks), progress bar, time display, reciter info
+- **Advanced IslamicGPT**: Enhanced AI assistant powered by GPT-5 that answers ANY question with Islamic wisdom
+  - Answers all topics: health, relationships, finance, career, science, technology, psychology, etc.
+  - Integrates Quran verses, Hadith citations, and Islamic principles naturally
+  - Image analysis capability for Islamic perspective on uploaded images
+  - Suggested questions cover diverse topics (stress management, nutrition, work-life balance, etc.)
+  - Uses max 4000 tokens for comprehensive responses
 - **Storage Extensions**: DailyTask, Meal, DietLog, Exercise, ExerciseLog, AlarmSettings, NotificationSettings, UserLocation, CompletedPrayer, HealthProfile, UserLevel interfaces
 
 ## External Dependencies
