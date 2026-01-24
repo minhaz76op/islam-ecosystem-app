@@ -601,6 +601,27 @@ export default function HomeScreen() {
           </View>
         </Animated.View>
       </ScrollView>
+      
+      {/* Floating IslamicGPT Chat Button */}
+      <Pressable
+        style={[styles.fabContainer, { bottom: tabBarHeight + Spacing.lg }]}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          navigation.navigate("IslamicGPTTab");
+        }}
+      >
+        <LinearGradient
+          colors={[theme.primary, theme.accent]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabGradient}
+        >
+          <Feather name="message-circle" size={24} color="#FFFFFF" />
+        </LinearGradient>
+        <View style={[styles.fabLabel, { backgroundColor: theme.backgroundDefault }]}>
+          <ThemedText style={[styles.fabLabelText, { color: theme.text }]}>IslamicGPT</ThemedText>
+        </View>
+      </Pressable>
     </LinearGradient>
   );
 }
@@ -952,5 +973,30 @@ const styles = StyleSheet.create({
   activityLabel: {
     fontSize: 10,
     fontFamily: "Poppins_400Regular",
+  },
+  fabContainer: {
+    position: "absolute",
+    right: Spacing.lg,
+    alignItems: "center",
+    zIndex: 100,
+  },
+  fabGradient: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    ...Shadows.lg,
+  },
+  fabLabel: {
+    marginTop: 6,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.sm,
+    ...Shadows.sm,
+  },
+  fabLabelText: {
+    fontSize: 9,
+    fontFamily: "Poppins_600SemiBold",
   },
 });
