@@ -19,25 +19,45 @@ interface SurahAudioPlayerProps {
 }
 
 function SurahAudioPlayer({ surah, theme }: SurahAudioPlayerProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const player = useAudioPlayer(surah.audioUrl);
   const status = useAudioPlayerStatus(player);
 
   const handlePlayPause = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (status.playing) {
-      player.pause();
-    } else {
-      player.play();
+    setHasError(false);
+    
+    try {
+      if (status.playing) {
+        player.pause();
+      } else {
+        setIsLoading(true);
+        await player.play();
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log("Audio playback error:", error);
+      setHasError(true);
+      setIsLoading(false);
     }
   };
 
   const handleReplay = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    player.seekTo(0);
-    player.play();
+    setHasError(false);
+    
+    try {
+      player.seekTo(0);
+      await player.play();
+    } catch (error) {
+      console.log("Audio replay error:", error);
+      setHasError(true);
+    }
   };
 
   const progress = status.duration > 0 ? (status.currentTime / status.duration) * 100 : 0;
+  const showLoading = isLoading || status.isBuffering;
 
   const formatTime = (seconds: number): string => {
     if (!seconds || isNaN(seconds)) return "0:00";
@@ -57,12 +77,20 @@ function SurahAudioPlayer({ surah, theme }: SurahAudioPlayerProps) {
           Sheikh Mishary Alafasy
         </ThemedText>
       </View>
+      {hasError ? (
+        <View style={styles.errorContainer}>
+          <Feather name="alert-circle" size={16} color="#EF4444" />
+          <ThemedText style={[styles.errorText, { color: "#EF4444" }]}>
+            Unable to load audio. Tap play to retry.
+          </ThemedText>
+        </View>
+      ) : null}
       <View style={styles.audioControls}>
         <Pressable
           onPress={handlePlayPause}
           style={[styles.playButton, { backgroundColor: AppColors.primary }]}
         >
-          {status.isBuffering ? (
+          {showLoading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
             <Feather
@@ -682,6 +710,20 @@ const styles = StyleSheet.create({
   },
   replayButton: {
     padding: Spacing.sm,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    backgroundColor: "#FEE2E2",
+    borderRadius: BorderRadius.md,
+  },
+  errorText: {
+    fontSize: 12,
+    fontFamily: "Poppins_500Medium",
   },
   tipCard: {
     flexDirection: "row",
