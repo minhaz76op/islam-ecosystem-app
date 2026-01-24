@@ -1,89 +1,128 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, StyleSheet, Pressable, FlatList, TextInput, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
-import { SURAHS } from "@/data/quran-surahs";
-import { useAudioPlayer } from "@/hooks/useAudioPlayer";
+import { SURAHS, Surah } from "@/data/quran-surahs";
 
-const SURAH_AL_FATIHA = [
-  {
-    verse: 1,
-    arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-    english: "In the name of Allah, the Entirely Merciful, the Especially Merciful.",
-    bengali: "পরম করুণাময় অসীম দয়ালু আল্লাহর নামে।",
-  },
-  {
-    verse: 2,
-    arabic: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
-    english: "All praise is due to Allah, Lord of the worlds.",
-    bengali: "সকল প্রশংসা আল্লাহর জন্য, যিনি জগতসমূহের প্রতিপালক।",
-  },
-  {
-    verse: 3,
-    arabic: "الرَّحْمَٰنِ الرَّحِيمِ",
-    english: "The Entirely Merciful, the Especially Merciful.",
-    bengali: "যিনি পরম করুণাময়, অসীম দয়ালু।",
-  },
-  {
-    verse: 4,
-    arabic: "مَالِكِ يَوْمِ الدِّينِ",
-    english: "Sovereign of the Day of Recompense.",
-    bengali: "প্রতিদান দিবসের মালিক।",
-  },
-  {
-    verse: 5,
-    arabic: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
-    english: "It is You we worship and You we ask for help.",
-    bengali: "আমরা শুধু তোমারই ইবাদত করি এবং শুধু তোমারই কাছে সাহায্য প্রার্থনা করি।",
-  },
-  {
-    verse: 6,
-    arabic: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
-    english: "Guide us to the straight path.",
-    bengali: "আমাদের সরল পথ প্রদর্শন করুন।",
-  },
-  {
-    verse: 7,
-    arabic: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
-    english: "The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray.",
-    bengali: "তাদের পথ, যাদের প্রতি তুমি অনুগ্রহ করেছ। তাদের পথ নয়, যাদের প্রতি তোমার গজব নাযিল হয়েছে এবং যারা পথভ্রষ্ট হয়েছে।",
-  },
-];
+interface SurahAudioPlayerProps {
+  surah: Surah;
+  theme: any;
+}
+
+function SurahAudioPlayer({ surah, theme }: SurahAudioPlayerProps) {
+  const player = useAudioPlayer(surah.audioUrl);
+  const status = useAudioPlayerStatus(player);
+
+  const handlePlayPause = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (status.playing) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  };
+
+  const handleReplay = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    player.seekTo(0);
+    player.play();
+  };
+
+  const progress = status.duration > 0 ? (status.currentTime / status.duration) * 100 : 0;
+
+  const formatTime = (seconds: number): string => {
+    if (!seconds || isNaN(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <View style={[styles.audioContainer, { backgroundColor: theme.backgroundSecondary }]}>
+      <View style={styles.audioHeader}>
+        <Feather name="headphones" size={16} color={AppColors.primary} />
+        <ThemedText style={[styles.audioTitle, { color: theme.text }]}>
+          Listen to Full Surah
+        </ThemedText>
+        <ThemedText style={[styles.reciterText, { color: theme.textSecondary }]}>
+          Sheikh Mishary Alafasy
+        </ThemedText>
+      </View>
+      <View style={styles.audioControls}>
+        <Pressable
+          onPress={handlePlayPause}
+          style={[styles.playButton, { backgroundColor: AppColors.primary }]}
+        >
+          {status.isBuffering ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Feather
+              name={status.playing ? "pause" : "play"}
+              size={20}
+              color="#FFFFFF"
+            />
+          )}
+        </Pressable>
+
+        <View style={styles.progressContainer}>
+          <View style={[styles.progressBar, { backgroundColor: theme.cardBorder }]}>
+            <View
+              style={[
+                styles.progressFill,
+                { backgroundColor: AppColors.primary, width: `${progress}%` },
+              ]}
+            />
+          </View>
+          <ThemedText style={[styles.timeText, { color: theme.textSecondary }]}>
+            {formatTime(status.currentTime)} / {formatTime(status.duration)}
+          </ThemedText>
+        </View>
+
+        <Pressable onPress={handleReplay} style={styles.replayButton}>
+          <Feather name="rotate-ccw" size={18} color={theme.textSecondary} />
+        </Pressable>
+      </View>
+    </View>
+  );
+}
 
 export default function QuranScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
-  const { isPlaying, isLoading, currentId, playAudio } = useAudioPlayer();
+  const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSelectSurah = async (number: number) => {
+  const filteredSurahs = searchQuery
+    ? SURAHS.filter(s =>
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.arabic.includes(searchQuery) ||
+        s.translation.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.bengali.includes(searchQuery) ||
+        s.transliteration.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        String(s.number).includes(searchQuery)
+      )
+    : SURAHS;
+
+  const handleSelectSurah = async (surah: Surah) => {
     await Haptics.selectionAsync();
-    setSelectedSurah(number === 1 ? 1 : null);
+    setSelectedSurah(surah);
   };
 
-  const handlePlayVerse = async (surahNum: number, verseNum: number, e: any) => {
-    e.stopPropagation();
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const paddedSurah = String(surahNum).padStart(3, "0");
-    const paddedVerse = String(verseNum).padStart(3, "0");
-    const audioUrl = `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${paddedSurah}${paddedVerse}.mp3`;
-    await playAudio(`${surahNum}-${verseNum}`, audioUrl);
-  };
-
-  if (selectedSurah === 1) {
+  if (selectedSurah) {
     return (
       <ScrollView
         style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
         contentContainerStyle={{
-          paddingTop: headerHeight + Spacing.xl,
+          paddingTop: headerHeight + Spacing.lg,
           paddingBottom: insets.bottom + Spacing["2xl"],
           paddingHorizontal: Spacing.lg,
         }}
@@ -93,145 +132,180 @@ export default function QuranScreen() {
           onPress={() => setSelectedSurah(null)}
           style={styles.backButton}
         >
-          <Feather name="arrow-left" size={20} color={theme.primary} />
-          <ThemedText style={[styles.backText, { color: theme.primary }]}>
+          <Feather name="arrow-left" size={20} color={AppColors.primary} />
+          <ThemedText style={[styles.backText, { color: AppColors.primary }]}>
             Back to Surahs
           </ThemedText>
         </Pressable>
 
-        <View style={[styles.surahHeader, { backgroundColor: theme.primary }]}>
-          <ThemedText style={styles.surahHeaderArabic}>الفاتحة</ThemedText>
-          <ThemedText style={styles.surahHeaderName}>Al-Fatihah</ThemedText>
-          <ThemedText style={styles.surahHeaderInfo}>
-            7 Verses | Meccan
-          </ThemedText>
-        </View>
+        <Animated.View entering={FadeInDown.duration(400)}>
+          <View style={[styles.surahDetailCard, { backgroundColor: theme.backgroundDefault }]}>
+            <View style={[styles.surahNumberBadge, { backgroundColor: AppColors.primary }]}>
+              <ThemedText style={styles.surahNumberText}>{selectedSurah.number}</ThemedText>
+            </View>
 
-        {SURAH_AL_FATIHA.map((verse, index) => (
-          <Animated.View
-            key={verse.verse}
-            entering={FadeInDown.delay(100 + index * 50).duration(500)}
-          >
-            <View
-              style={[
-                styles.verseCard,
-                { backgroundColor: theme.backgroundDefault },
-              ]}
-            >
-              <View style={styles.verseNumberContainer}>
-                <View
-                  style={[
-                    styles.verseNumber,
-                    { backgroundColor: theme.primary },
-                  ]}
-                >
-                  <ThemedText style={styles.verseNumberText}>
-                    {verse.verse}
-                  </ThemedText>
-                </View>
-                <Pressable
-                  onPress={(e) => handlePlayVerse(1, verse.verse, e)}
-                  style={[styles.playBtn, { backgroundColor: theme.primary + "15" }]}
-                >
-                  {isLoading && currentId === `1-${verse.verse}` ? (
-                    <ActivityIndicator size="small" color={theme.primary} />
-                  ) : (
-                    <Feather
-                      name={isPlaying && currentId === `1-${verse.verse}` ? "pause" : "play"}
-                      size={16}
-                      color={theme.primary}
-                    />
-                  )}
-                </Pressable>
-              </View>
+            <ThemedText style={[styles.surahDetailArabic, { color: AppColors.primary }]}>
+              {selectedSurah.arabic}
+            </ThemedText>
 
-              <ThemedText style={styles.verseArabic}>{verse.arabic}</ThemedText>
-              
-              <View style={[styles.divider, { backgroundColor: theme.cardBorder }]} />
-              
-              <ThemedText style={[styles.verseEnglish, { color: theme.textSecondary }]}>
-                {verse.english}
+            <ThemedText style={styles.surahDetailName}>{selectedSurah.name}</ThemedText>
+
+            <View style={styles.transliterationRow}>
+              <ThemedText style={[styles.transliterationLabel, { color: theme.textSecondary }]}>
+                Transliteration:
               </ThemedText>
-              
-              <ThemedText style={[styles.verseBengali, { color: theme.primary }]}>
-                {verse.bengali}
+              <ThemedText style={[styles.transliterationText, { color: theme.text }]}>
+                {selectedSurah.transliteration}
               </ThemedText>
             </View>
-          </Animated.View>
-        ))}
+
+            <View style={styles.transliterationRow}>
+              <ThemedText style={[styles.transliterationLabel, { color: theme.textSecondary }]}>
+                বাংলা উচ্চারণ:
+              </ThemedText>
+              <ThemedText style={[styles.transliterationText, { color: theme.text }]}>
+                {selectedSurah.transliterationBengali}
+              </ThemedText>
+            </View>
+
+            <View style={styles.meaningRow}>
+              <View style={styles.meaningItem}>
+                <ThemedText style={[styles.meaningLabel, { color: theme.textSecondary }]}>
+                  English
+                </ThemedText>
+                <ThemedText style={[styles.meaningValue, { color: theme.text }]}>
+                  {selectedSurah.translation}
+                </ThemedText>
+              </View>
+              <View style={styles.meaningItem}>
+                <ThemedText style={[styles.meaningLabel, { color: theme.textSecondary }]}>
+                  বাংলা
+                </ThemedText>
+                <ThemedText style={[styles.meaningValue, { color: theme.text }]}>
+                  {selectedSurah.bengali}
+                </ThemedText>
+              </View>
+            </View>
+
+            <View style={styles.surahInfoRow}>
+              <View style={[styles.infoBadge, { backgroundColor: selectedSurah.revelation === "Meccan" ? "#10B981" + "20" : "#3B82F6" + "20" }]}>
+                <ThemedText style={[styles.infoBadgeText, { color: selectedSurah.revelation === "Meccan" ? "#10B981" : "#3B82F6" }]}>
+                  {selectedSurah.revelation}
+                </ThemedText>
+              </View>
+              <View style={[styles.infoBadge, { backgroundColor: theme.backgroundSecondary }]}>
+                <ThemedText style={[styles.infoBadgeText, { color: theme.textSecondary }]}>
+                  {selectedSurah.verses} Verses
+                </ThemedText>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.delay(100).duration(400)}>
+          <SurahAudioPlayer surah={selectedSurah} theme={theme} />
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.delay(200).duration(400)}>
+          <View style={[styles.tipCard, { backgroundColor: AppColors.primary + "10" }]}>
+            <Feather name="book-open" size={20} color={AppColors.primary} />
+            <ThemedText style={[styles.tipText, { color: theme.text }]}>
+              Listen to the beautiful recitation by Sheikh Mishary Rashid Alafasy. Follow along with the Quran to improve your Tajweed.
+            </ThemedText>
+          </View>
+        </Animated.View>
       </ScrollView>
     );
   }
 
+  const renderSurahItem = ({ item, index }: { item: Surah; index: number }) => (
+    <Animated.View entering={FadeInDown.delay(50 + index * 20).duration(400)}>
+      <Pressable
+        onPress={() => handleSelectSurah(item)}
+        style={[styles.surahCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder }]}
+      >
+        <View style={[styles.surahNumber, { backgroundColor: AppColors.primary + "15" }]}>
+          <ThemedText style={[styles.numberText, { color: AppColors.primary }]}>
+            {item.number}
+          </ThemedText>
+        </View>
+
+        <View style={styles.surahInfo}>
+          <View style={styles.surahNameRow}>
+            <ThemedText style={styles.surahName}>{item.name}</ThemedText>
+            <ThemedText style={[styles.surahArabic, { color: AppColors.primary }]}>
+              {item.arabic}
+            </ThemedText>
+          </View>
+          <View style={styles.surahMeta}>
+            <ThemedText style={[styles.translitSmall, { color: theme.textSecondary }]}>
+              {item.transliteration} • {item.transliterationBengali}
+            </ThemedText>
+          </View>
+          <View style={styles.surahMeta}>
+            <ThemedText style={[styles.metaText, { color: theme.textSecondary }]}>
+              {item.translation} • {item.bengali}
+            </ThemedText>
+          </View>
+          <View style={styles.surahMeta}>
+            <ThemedText style={[styles.metaSmall, { color: theme.textSecondary }]}>
+              {item.verses} verses • {item.revelation}
+            </ThemedText>
+          </View>
+        </View>
+
+        <View style={styles.playIconContainer}>
+          <Feather name="play-circle" size={24} color={AppColors.primary} />
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
-      contentContainerStyle={{
-        paddingTop: headerHeight + Spacing.xl,
-        paddingBottom: insets.bottom + Spacing["2xl"],
-        paddingHorizontal: Spacing.lg,
-      }}
-      showsVerticalScrollIndicator={false}
-    >
-      <Animated.View entering={FadeInDown.delay(100).duration(500)}>
-        <ThemedText style={styles.title}>Holy Quran</ThemedText>
-        <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Read with Arabic, English & Bengali translations
-        </ThemedText>
-      </Animated.View>
-
-      <View style={styles.surahList}>
-        {SURAHS.map((surah, index) => (
-          <Animated.View
-            key={surah.number}
-            entering={FadeInDown.delay(200 + index * 50).duration(500)}
-          >
-            <Pressable
-              onPress={() => handleSelectSurah(surah.number)}
-              style={[
-                styles.surahItem,
-                { backgroundColor: theme.backgroundDefault },
-              ]}
-            >
-              <View
-                style={[
-                  styles.surahNumberBadge,
-                  { backgroundColor: theme.primary },
-                ]}
-              >
-                <ThemedText style={styles.surahNumberText}>
-                  {surah.number}
-                </ThemedText>
-              </View>
-
-              <View style={styles.surahInfo}>
-                <View style={styles.surahNameRow}>
-                  <ThemedText style={styles.surahName}>{surah.name}</ThemedText>
-                  <ThemedText style={styles.surahArabic}>{surah.arabic}</ThemedText>
-                </View>
-                <View style={styles.surahMeta}>
-                  <ThemedText style={[styles.surahTranslation, { color: theme.textSecondary }]}>
-                    {surah.translation}
-                  </ThemedText>
-                  <ThemedText style={[styles.surahVerses, { color: theme.textSecondary }]}>
-                    {surah.verses} verses
-                  </ThemedText>
-                </View>
-              </View>
-
-              <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+    <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
+      <View style={[styles.headerSection, { paddingTop: headerHeight + Spacing.md }]}>
+        <View style={[styles.searchBox, { backgroundColor: theme.backgroundDefault }]}>
+          <Feather name="search" size={20} color={theme.textSecondary} />
+          <TextInput
+            style={[styles.searchInput, { color: theme.text }]}
+            placeholder="Search surahs..."
+            placeholderTextColor={theme.textSecondary}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 ? (
+            <Pressable onPress={() => setSearchQuery("")}>
+              <Feather name="x" size={18} color={theme.textSecondary} />
             </Pressable>
-          </Animated.View>
-        ))}
+          ) : null}
+        </View>
+
+        <View style={styles.statsRow}>
+          <View style={[styles.statBadge, { backgroundColor: AppColors.primary + "15" }]}>
+            <ThemedText style={[styles.statText, { color: AppColors.primary }]}>
+              114 Surahs
+            </ThemedText>
+          </View>
+          <View style={[styles.statBadge, { backgroundColor: theme.backgroundDefault }]}>
+            <Feather name="headphones" size={14} color={theme.textSecondary} />
+            <ThemedText style={[styles.statText, { color: theme.textSecondary }]}>
+              Full Audio
+            </ThemedText>
+          </View>
+        </View>
       </View>
 
-      <View style={[styles.infoBox, { backgroundColor: theme.backgroundSecondary }]}>
-        <Feather name="info" size={18} color={theme.textSecondary} />
-        <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
-          Full Quran with all 114 Surahs coming soon. Currently showing sample Surahs.
-        </ThemedText>
-      </View>
-    </ScrollView>
+      <FlatList
+        data={filteredSurahs}
+        renderItem={renderSurahItem}
+        keyExtractor={(item) => String(item.number)}
+        contentContainerStyle={{
+          paddingHorizontal: Spacing.lg,
+          paddingBottom: insets.bottom + Spacing["2xl"],
+        }}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 }
 
@@ -239,58 +313,67 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  backButton: {
+  headerSection: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
+    gap: Spacing.md,
+  },
+  searchBox: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
     gap: Spacing.sm,
-    marginBottom: Spacing.xl,
   },
-  backText: {
-    fontSize: 15,
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: "Poppins_400Regular",
+  },
+  statsRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+  },
+  statBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+    gap: Spacing.xs,
+  },
+  statText: {
+    fontSize: 12,
     fontFamily: "Poppins_500Medium",
   },
-  title: {
-    fontSize: 28,
-    fontFamily: "Poppins_700Bold",
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
-    marginBottom: Spacing["2xl"],
-  },
-  surahList: {
-    gap: Spacing.md,
-    marginBottom: Spacing["2xl"],
-  },
-  surahItem: {
+  surahCard: {
     flexDirection: "row",
     alignItems: "center",
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.xl,
-    ...Shadows.sm,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    marginBottom: Spacing.sm,
+    gap: Spacing.md,
   },
-  surahNumberBadge: {
+  surahNumber: {
     width: 44,
     height: 44,
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: Spacing.lg,
   },
-  surahNumberText: {
+  numberText: {
     fontSize: 14,
-    fontFamily: "Poppins_600SemiBold",
-    color: "#FFFFFF",
+    fontFamily: "Poppins_700Bold",
   },
   surahInfo: {
     flex: 1,
   },
   surahNameRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 4,
+    justifyContent: "space-between",
   },
   surahName: {
     fontSize: 16,
@@ -298,100 +381,178 @@ const styles = StyleSheet.create({
   },
   surahArabic: {
     fontSize: 18,
+    fontFamily: "Poppins_400Regular",
   },
   surahMeta: {
     flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  surahTranslation: {
-    fontSize: 12,
-    fontFamily: "Poppins_400Regular",
-  },
-  surahVerses: {
-    fontSize: 12,
-    fontFamily: "Poppins_400Regular",
-  },
-  surahHeader: {
-    padding: Spacing["2xl"],
-    borderRadius: BorderRadius.xl,
     alignItems: "center",
-    marginBottom: Spacing["2xl"],
+    marginTop: 2,
   },
-  surahHeaderArabic: {
-    fontSize: 36,
-    color: "#FFFFFF",
-    marginBottom: Spacing.sm,
+  translitSmall: {
+    fontSize: 12,
+    fontFamily: "Poppins_500Medium",
+    fontStyle: "italic",
   },
-  surahHeaderName: {
-    fontSize: 24,
-    fontFamily: "Poppins_700Bold",
-    color: "#FFFFFF",
-  },
-  surahHeaderInfo: {
-    fontSize: 14,
+  metaText: {
+    fontSize: 12,
     fontFamily: "Poppins_400Regular",
-    color: "rgba(255,255,255,0.8)",
   },
-  verseCard: {
+  metaSmall: {
+    fontSize: 11,
+    fontFamily: "Poppins_400Regular",
+  },
+  playIconContainer: {
+    padding: Spacing.xs,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
+  backText: {
+    fontSize: 16,
+    fontFamily: "Poppins_500Medium",
+  },
+  surahDetailCard: {
     padding: Spacing.xl,
     borderRadius: BorderRadius.xl,
-    marginBottom: Spacing.md,
-    ...Shadows.sm,
-  },
-  verseNumberContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: Spacing.lg,
   },
-  verseNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  surahNumberBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: Spacing.md,
   },
-  playBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  surahNumberText: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontFamily: "Poppins_700Bold",
+  },
+  surahDetailArabic: {
+    fontSize: 36,
+    fontFamily: "Poppins_400Regular",
+    marginBottom: Spacing.sm,
+  },
+  surahDetailName: {
+    fontSize: 24,
+    fontFamily: "Poppins_700Bold",
+    marginBottom: Spacing.md,
+  },
+  transliterationRow: {
+    width: "100%",
+    marginBottom: Spacing.sm,
+  },
+  transliterationLabel: {
+    fontSize: 11,
+    fontFamily: "Poppins_600SemiBold",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 2,
+  },
+  transliterationText: {
+    fontSize: 15,
+    fontFamily: "Poppins_500Medium",
+    fontStyle: "italic",
+  },
+  meaningRow: {
+    flexDirection: "row",
+    width: "100%",
+    gap: Spacing.lg,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  meaningItem: {
+    flex: 1,
+  },
+  meaningLabel: {
+    fontSize: 11,
+    fontFamily: "Poppins_600SemiBold",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 2,
+  },
+  meaningValue: {
+    fontSize: 15,
+    fontFamily: "Poppins_500Medium",
+  },
+  surahInfoRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+  },
+  infoBadge: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+  },
+  infoBadgeText: {
+    fontSize: 12,
+    fontFamily: "Poppins_600SemiBold",
+  },
+  audioContainer: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  audioHeader: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
-  verseNumberText: {
+  audioTitle: {
     fontSize: 14,
     fontFamily: "Poppins_600SemiBold",
-    color: "#FFFFFF",
+    flex: 1,
   },
-  verseArabic: {
-    fontSize: 26,
-    lineHeight: 44,
-    textAlign: "right",
-    marginBottom: Spacing.lg,
-  },
-  divider: {
-    height: 1,
-    marginBottom: Spacing.lg,
-  },
-  verseEnglish: {
-    fontSize: 14,
+  reciterText: {
+    fontSize: 11,
     fontFamily: "Poppins_400Regular",
-    lineHeight: 22,
-    marginBottom: Spacing.md,
   },
-  verseBengali: {
-    fontSize: 14,
+  audioControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  playButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  progressContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 3,
+  },
+  timeText: {
+    fontSize: 11,
     fontFamily: "Poppins_400Regular",
-    lineHeight: 22,
   },
-  infoBox: {
+  replayButton: {
+    padding: Spacing.sm,
+  },
+  tipCard: {
     flexDirection: "row",
     alignItems: "flex-start",
     gap: Spacing.md,
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
   },
-  infoText: {
+  tipText: {
     flex: 1,
     fontSize: 13,
     fontFamily: "Poppins_400Regular",
