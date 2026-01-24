@@ -139,6 +139,13 @@ export default function MenuScreen() {
       color: "#EF4444",
       screen: "MissedPrayer",
     },
+    {
+      icon: "shield",
+      title: "Ruqyah",
+      subtitle: "Islamic healing & protection",
+      color: "#0EA5E9",
+      screen: "Ruqyah",
+    },
   ];
 
   const handlePress = async (screen: string) => {

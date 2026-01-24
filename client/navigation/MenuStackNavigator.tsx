@@ -13,6 +13,7 @@ import QiblaDirectionScreen from "@/screens/QiblaDirectionScreen";
 import ZakatCalculatorScreen from "@/screens/ZakatCalculatorScreen";
 import CharityReminderScreen from "@/screens/CharityReminderScreen";
 import MissedPrayerScreen from "@/screens/MissedPrayerScreen";
+import RuqyahScreen from "@/screens/RuqyahScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type MenuStackParamList = {
@@ -29,6 +30,7 @@ export type MenuStackParamList = {
   ZakatCalculator: undefined;
   CharityReminder: undefined;
   MissedPrayer: undefined;
+  Ruqyah: undefined;
 };
 
 const Stack = createNativeStackNavigator<MenuStackParamList>();
@@ -127,6 +129,13 @@ export default function MenuStackNavigator() {
         component={MissedPrayerScreen}
         options={{
           headerTitle: "Missed Prayer Tracker",
+        }}
+      />
+      <Stack.Screen
+        name="Ruqyah"
+        component={RuqyahScreen}
+        options={{
+          headerTitle: "Ruqyah",
         }}
       />
     </Stack.Navigator>
