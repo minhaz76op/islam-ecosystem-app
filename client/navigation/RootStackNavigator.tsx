@@ -10,6 +10,7 @@ import ArticlesScreen from "@/screens/ArticlesScreen";
 import QuizScreen from "@/screens/QuizScreen";
 import MosqueLocatorScreen from "@/screens/MosqueLocatorScreen";
 import RozaTimetableScreen from "@/screens/RozaTimetableScreen";
+import IslamicGPTScreen from "@/screens/IslamicGPTScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
@@ -23,6 +24,7 @@ export type RootStackParamList = {
   Quiz: undefined;
   MosqueLocator: undefined;
   RozaTimetable: undefined;
+  IslamicGPT: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -101,6 +103,13 @@ export default function RootStackNavigator() {
         component={RozaTimetableScreen}
         options={{
           headerTitle: "Roza Timetable",
+        }}
+      />
+      <Stack.Screen
+        name="IslamicGPT"
+        component={IslamicGPTScreen}
+        options={{
+          headerTitle: "IslamicGPT",
         }}
       />
     </Stack.Navigator>

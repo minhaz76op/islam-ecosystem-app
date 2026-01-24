@@ -607,7 +607,7 @@ export default function HomeScreen() {
         style={[styles.fabContainer, { bottom: tabBarHeight + Spacing.lg }]}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          navigation.navigate("IslamicGPTTab");
+          navigation.getParent()?.navigate("IslamicGPT");
         }}
       >
         <LinearGradient

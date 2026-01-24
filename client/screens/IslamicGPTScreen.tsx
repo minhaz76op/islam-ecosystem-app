@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -211,7 +210,6 @@ function EmptyState({ theme, onSuggest }: { theme: any; onSuggest: (q: string) =
 export default function IslamicGPTScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const flatListRef = useRef<FlatList>(null);
 
@@ -322,7 +320,7 @@ export default function IslamicGPTScreen() {
           styles.inputContainer,
           {
             backgroundColor: theme.backgroundDefault,
-            paddingBottom: tabBarHeight + Spacing.md,
+            paddingBottom: insets.bottom + Spacing.md,
             borderTopColor: theme.cardBorder,
           },
         ]}
