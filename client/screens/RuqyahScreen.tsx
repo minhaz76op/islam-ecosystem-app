@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
@@ -20,6 +21,7 @@ interface RuqyahItem {
   translation: string;
   benefit: string;
   repetitions: number;
+  audioUrl: string;
 }
 
 const RUQYAH_COLLECTION: RuqyahItem[] = [
@@ -32,6 +34,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "In the name of Allah, the Most Gracious, the Most Merciful. All praise is due to Allah, Lord of the worlds. The Most Gracious, the Most Merciful. Master of the Day of Judgment. You alone we worship, and You alone we ask for help. Guide us to the straight path. The path of those upon whom You have bestowed favor, not of those who have earned anger or of those who are astray.",
     benefit: "The greatest Surah in the Quran. Used for healing and protection from all types of harm.",
     repetitions: 7,
+    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3",
   },
   {
     id: "2",
@@ -42,6 +45,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "Allah! There is no god but He, the Living, the Self-subsisting, Eternal. No slumber can seize Him nor sleep. His are all things in the heavens and on earth. Who is there can intercede in His presence except as He permits? He knows what is before them and what is behind them. Nor shall they compass anything of His knowledge except as He wills. His Throne extends over the heavens and the earth, and He feels no fatigue in guarding and preserving them. For He is the Most High, the Supreme.",
     benefit: "The greatest verse in the Quran. Provides powerful protection from evil and harm.",
     repetitions: 3,
+    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/255.mp3",
   },
   {
     id: "3",
@@ -52,6 +56,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "Say: He is Allah, the One. Allah, the Eternal, Absolute. He begets not, nor is He begotten. And there is none comparable to Him.",
     benefit: "Equal to one-third of the Quran. Recited for protection and blessings.",
     repetitions: 3,
+    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/112.mp3",
   },
   {
     id: "4",
@@ -62,6 +67,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "Say: I seek refuge with the Lord of the Dawn. From the mischief of created things. From the mischief of darkness as it overspreads. From the mischief of those who practice secret arts. And from the mischief of the envious one as he practices envy.",
     benefit: "Protection from evil, black magic, and envy. Part of Al-Mu'awwidhatayn.",
     repetitions: 3,
+    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/113.mp3",
   },
   {
     id: "5",
@@ -72,6 +78,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "Say: I seek refuge with the Lord of mankind. The King of mankind. The God of mankind. From the evil of the sneaking whisperer. Who whispers in the hearts of mankind. Among jinn and among mankind.",
     benefit: "Protection from evil whispers and Satan. Part of Al-Mu'awwidhatayn.",
     repetitions: 3,
+    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/114.mp3",
   },
   {
     id: "6",
@@ -82,6 +89,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "In the name of Allah, with Whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, the All-Knowing.",
     benefit: "Recite 3 times morning and evening for complete protection from harm.",
     repetitions: 3,
+    audioUrl: "",
   },
   {
     id: "7",
@@ -92,6 +100,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "O Allah, Lord of mankind, remove the affliction. Heal, for You are the Healer. There is no healing except Your healing, a healing that leaves no illness behind.",
     benefit: "Prophetic dua for healing from all types of illness.",
     repetitions: 7,
+    audioUrl: "",
   },
   {
     id: "8",
@@ -102,8 +111,106 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     translation: "I seek refuge in the perfect words of Allah from every devil and every poisonous creature, and from every evil eye.",
     benefit: "Prophetic protection from evil eye, jinn, and harmful creatures.",
     repetitions: 3,
+    audioUrl: "",
   },
 ];
+
+interface AudioPlayerProps {
+  audioUrl: string;
+  theme: any;
+  itemId: string;
+  currentPlayingId: string | null;
+  onPlay: (id: string) => void;
+}
+
+function AudioPlayer({ audioUrl, theme, itemId, currentPlayingId, onPlay }: AudioPlayerProps) {
+  const player = useAudioPlayer(audioUrl);
+  const status = useAudioPlayerStatus(player);
+  const isThisPlaying = currentPlayingId === itemId;
+
+  useEffect(() => {
+    if (!isThisPlaying && status.playing) {
+      player.pause();
+    }
+  }, [currentPlayingId, isThisPlaying]);
+
+  const handlePlayPause = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
+    if (status.playing) {
+      player.pause();
+    } else {
+      onPlay(itemId);
+      player.play();
+    }
+  };
+
+  const handleReplay = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    player.seekTo(0);
+    onPlay(itemId);
+    player.play();
+  };
+
+  if (!audioUrl) {
+    return (
+      <View style={[styles.audioDisabled, { backgroundColor: theme.backgroundSecondary }]}>
+        <Feather name="volume-x" size={16} color={theme.textSecondary} />
+        <ThemedText style={[styles.audioDisabledText, { color: theme.textSecondary }]}>
+          Audio not available
+        </ThemedText>
+      </View>
+    );
+  }
+
+  const progress = status.duration > 0 ? (status.currentTime / status.duration) * 100 : 0;
+
+  return (
+    <View style={[styles.audioContainer, { backgroundColor: theme.backgroundSecondary }]}>
+      <View style={styles.audioControls}>
+        <Pressable
+          onPress={handlePlayPause}
+          style={[styles.playButton, { backgroundColor: AppColors.accent }]}
+        >
+          {status.isBuffering ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Feather
+              name={status.playing ? "pause" : "play"}
+              size={18}
+              color="#FFFFFF"
+            />
+          )}
+        </Pressable>
+
+        <View style={styles.progressContainer}>
+          <View style={[styles.progressBar, { backgroundColor: theme.cardBorder }]}>
+            <View
+              style={[
+                styles.progressFill,
+                { backgroundColor: AppColors.accent, width: `${progress}%` },
+              ]}
+            />
+          </View>
+          <ThemedText style={[styles.timeText, { color: theme.textSecondary }]}>
+            {formatTime(status.currentTime)} / {formatTime(status.duration)}
+          </ThemedText>
+        </View>
+
+        <Pressable onPress={handleReplay} style={styles.replayButton}>
+          <Feather name="rotate-ccw" size={18} color={theme.textSecondary} />
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+function formatTime(seconds: number): string {
+  if (!seconds || isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
 
 interface RuqyahCardProps {
   item: RuqyahItem;
@@ -111,9 +218,11 @@ interface RuqyahCardProps {
   isExpanded: boolean;
   onToggle: () => void;
   index: number;
+  currentPlayingId: string | null;
+  onPlay: (id: string) => void;
 }
 
-function RuqyahCard({ item, theme, isExpanded, onToggle, index }: RuqyahCardProps) {
+function RuqyahCard({ item, theme, isExpanded, onToggle, index, currentPlayingId, onPlay }: RuqyahCardProps) {
   return (
     <Animated.View entering={FadeInDown.delay(index * 100).duration(400)}>
       <Pressable
@@ -135,15 +244,28 @@ function RuqyahCard({ item, theme, isExpanded, onToggle, index }: RuqyahCardProp
               {item.arabicTitle}
             </ThemedText>
           </View>
-          <Feather
-            name={isExpanded ? "chevron-up" : "chevron-down"}
-            size={24}
-            color={theme.textSecondary}
-          />
+          <View style={styles.headerIcons}>
+            {item.audioUrl ? (
+              <Feather name="volume-2" size={16} color={AppColors.accent} style={{ marginRight: 8 }} />
+            ) : null}
+            <Feather
+              name={isExpanded ? "chevron-up" : "chevron-down"}
+              size={24}
+              color={theme.textSecondary}
+            />
+          </View>
         </View>
 
         {isExpanded ? (
           <View style={styles.expandedContent}>
+            <AudioPlayer
+              audioUrl={item.audioUrl}
+              theme={theme}
+              itemId={item.id}
+              currentPlayingId={currentPlayingId}
+              onPlay={onPlay}
+            />
+
             <View style={[styles.arabicBox, { backgroundColor: AppColors.gold + "10", borderColor: AppColors.gold + "30" }]}>
               <ThemedText style={[styles.arabicText, { color: theme.text }]}>
                 {item.arabic}
@@ -186,6 +308,7 @@ export default function RuqyahScreen() {
   const headerHeight = useHeaderHeight();
   const { theme, isDark } = useTheme();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
 
   return (
     <LinearGradient
@@ -211,7 +334,7 @@ export default function RuqyahScreen() {
             </View>
             <ThemedText style={styles.introTitle}>Islamic Ruqyah</ThemedText>
             <ThemedText style={[styles.introText, { color: theme.textSecondary }]}>
-              Ruqyah is the practice of reciting Quran and authentic duas for protection and healing. These are from the Sunnah of Prophet Muhammad (PBUH).
+              Ruqyah is the practice of reciting Quran and authentic duas for protection and healing. Tap play to listen to the beautiful recitations.
             </ThemedText>
           </View>
         </Animated.View>
@@ -225,14 +348,16 @@ export default function RuqyahScreen() {
               isExpanded={expandedId === item.id}
               onToggle={() => setExpandedId(expandedId === item.id ? null : item.id)}
               index={index}
+              currentPlayingId={currentPlayingId}
+              onPlay={setCurrentPlayingId}
             />
           ))}
         </View>
 
         <View style={[styles.tipCard, { backgroundColor: AppColors.primary + "10" }]}>
-          <Feather name="book-open" size={20} color={AppColors.primary} />
+          <Feather name="headphones" size={20} color={AppColors.primary} />
           <ThemedText style={[styles.tipText, { color: theme.text }]}>
-            Recite with sincerity and faith in Allah's power to heal and protect. Maintain wudu and face the Qibla when possible.
+            Listen to the recitations by Sheikh Mishary Rashid Alafasy. Recite along with sincerity and faith in Allah's power to heal and protect.
           </ThemedText>
         </View>
       </ScrollView>
@@ -283,6 +408,10 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     gap: Spacing.md,
   },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   numberBadge: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
@@ -307,6 +436,53 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     paddingTop: 0,
     gap: Spacing.lg,
+  },
+  audioContainer: {
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+  },
+  audioControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  playButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  progressContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  progressBar: {
+    height: 4,
+    borderRadius: 2,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 2,
+  },
+  timeText: {
+    fontSize: 11,
+    fontFamily: "Poppins_400Regular",
+  },
+  replayButton: {
+    padding: Spacing.sm,
+  },
+  audioDisabled: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  audioDisabledText: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
   },
   arabicBox: {
     padding: Spacing.lg,
