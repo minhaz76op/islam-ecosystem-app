@@ -2,6 +2,30 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "node:http";
 import { storage } from "./storage";
 import * as bcrypt from "bcryptjs";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+});
+
+const ISLAMIC_SYSTEM_PROMPT = `You are IslamicGPT, a knowledgeable and respectful Islamic assistant. You provide accurate information about:
+- Quran and its interpretation (Tafsir)
+- Hadith (sayings of Prophet Muhammad, peace be upon him)
+- Islamic jurisprudence (Fiqh)
+- Prayer (Salah), fasting, Zakat, Hajj
+- Islamic history and biography of prophets
+- Daily Islamic practices and etiquette
+- Dua (supplications) for various occasions
+
+Guidelines:
+- Always be respectful and use "peace be upon him" (PBUH) when mentioning Prophet Muhammad
+- Cite Quran verses (Surah:Ayah) and authentic Hadith sources when possible
+- Present different scholarly opinions when relevant
+- Use Arabic terms with English explanations
+- Be encouraging and supportive in your responses
+- If asked about something outside Islam, politely redirect to Islamic topics
+- Format responses with clear sections using markdown`;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -346,6 +370,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to update challenge progress" });
+    }
+  });
+
+  // IslamicGPT Chat endpoint
+  app.post("/api/islamic-gpt/chat", async (req: Request, res: Response) => {
+    try {
+      const { messages, imageBase64 } = req.body;
+
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ error: "Messages array is required" });
+      }
+
+      const formattedMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+        { role: "system", content: ISLAMIC_SYSTEM_PROMPT },
+      ];
+
+      for (const msg of messages) {
+        if (msg.role === "user" && msg.imageBase64) {
+          formattedMessages.push({
+            role: "user",
+            content: [
+              { type: "text", text: msg.content || "Please analyze this image from an Islamic perspective." },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${msg.imageBase64}`,
+                },
+              },
+            ],
+          });
+        } else {
+          formattedMessages.push({
+            role: msg.role as "user" | "assistant",
+            content: msg.content,
+          });
+        }
+      }
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: formattedMessages,
+        max_tokens: 2000,
+        temperature: 0.7,
+      });
+
+      const aiMessage = response.choices[0]?.message?.content || "I apologize, I couldn't generate a response. Please try again.";
+
+      res.json({ message: aiMessage });
+    } catch (error: any) {
+      console.error("IslamicGPT error:", error);
+      res.status(500).json({ error: error.message || "Failed to get response from IslamicGPT" });
+    }
+  });
+
+  // IslamicGPT Image Generation endpoint
+  app.post("/api/islamic-gpt/generate-image", async (req: Request, res: Response) => {
+    try {
+      const { prompt } = req.body;
+
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      const islamicPrompt = `Islamic art style, respectful and appropriate: ${prompt}. No human faces or figures, geometric patterns and calligraphy preferred.`;
+
+      const response = await openai.images.generate({
+        model: "gpt-image-1",
+        prompt: islamicPrompt,
+        n: 1,
+        size: "1024x1024",
+      });
+
+      const imageData = response.data?.[0];
+      res.json({
+        url: imageData?.url,
+        b64_json: imageData?.b64_json,
+      });
+    } catch (error: any) {
+      console.error("Image generation error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate image" });
     }
   });
 
