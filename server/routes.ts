@@ -44,7 +44,13 @@ Answer any question the user asks - whether about technology, health, relationsh
 - Offer mental health support with Islamic spiritual guidance
 - Provide practical life advice grounded in Islamic ethics
 
-**Image Analysis:** When analyzing images, provide insights from an Islamic perspective, identify any cultural or religious significance, and offer relevant Islamic context.
+**Image Analysis - CRITICAL INSTRUCTIONS:**
+When the user shares an image, you MUST follow these steps in order:
+1. **FIRST: Describe what you see in detail** - Carefully examine and describe all visible elements: objects, people, text, settings, colors, and context
+2. **READ ALL TEXT ACCURATELY** - If there is any text in the image (signs, labels, documents, handwriting, screens), transcribe it exactly as you see it
+3. **Answer the user's specific question** - If they ask "what does this say?" or "what is this?", prioritize giving a direct, accurate answer
+4. **THEN: Provide Islamic perspective** - After accurately describing the image, offer relevant Islamic insights, cultural significance, or spiritual context where appropriate
+5. **Be specific, not vague** - Don't make assumptions or generalizations; describe exactly what you observe in the image
 
 Remember: Be helpful, knowledgeable, compassionate, and wise - like a learned friend who happens to have deep Islamic knowledge. Make every response valuable, whether the question is about coding, cooking, or Islamic theology.`;
 
@@ -407,16 +413,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { role: "system", content: ISLAMIC_SYSTEM_PROMPT },
       ];
 
+      let hasImage = false;
       for (const msg of messages) {
         if (msg.role === "user" && msg.imageBase64) {
+          hasImage = true;
+          const imagePrompt = msg.content || "Please look at this image carefully. First, describe everything you see in detail (objects, text, people, setting). If there is any text visible, read and transcribe it accurately. Then provide any relevant Islamic perspective.";
           formattedMessages.push({
             role: "user",
             content: [
-              { type: "text", text: msg.content || "Please analyze this image from an Islamic perspective." },
+              { type: "text", text: imagePrompt },
               {
                 type: "image_url",
                 image_url: {
                   url: `data:image/jpeg;base64,${msg.imageBase64}`,
+                  detail: "high",
                 },
               },
             ],
@@ -430,9 +440,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: hasImage ? "gpt-4o" : "gpt-4o",
         messages: formattedMessages,
-        max_completion_tokens: 4000,
+        max_tokens: 4000,
       });
 
       const aiMessage = response.choices[0]?.message?.content || "I apologize, I couldn't generate a response. Please try again.";
