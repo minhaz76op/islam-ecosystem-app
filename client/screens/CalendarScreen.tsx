@@ -15,6 +15,8 @@ import {
   getHolidaysForIslamicDate,
   formatIslamicDate,
   getUpcomingHolidays,
+  getDaysInIslamicMonth,
+  islamicToGregorian,
   IslamicDate,
   IslamicHoliday,
 } from "@/lib/islamic-calendar";
@@ -44,6 +46,49 @@ export default function CalendarScreen() {
   const upcomingHolidays = useMemo(() => getUpcomingHolidays(5), []);
 
   const calendarDays = useMemo(() => {
+    if (isIslamicMode) {
+      const year = todayIslamic.year; // Simple implementation for current Islamic month
+      const month = todayIslamic.month;
+      const daysInMonth = getDaysInIslamicMonth(month);
+      const firstDayOfMonth = islamicToGregorian(year, month, 1);
+      const startOffset = firstDayOfMonth.getDay();
+
+      const days: { date: Date; islamicDate: IslamicDate; isCurrentMonth: boolean }[] = [];
+
+      // Prev month days
+      for (let i = startOffset - 1; i >= 0; i--) {
+        const date = new Date(firstDayOfMonth);
+        date.setDate(firstDayOfMonth.getDate() - (i + 1));
+        days.push({
+          date,
+          islamicDate: gregorianToIslamic(date),
+          isCurrentMonth: false,
+        });
+      }
+
+      // Current month days
+      for (let i = 1; i <= daysInMonth; i++) {
+        const date = islamicToGregorian(year, month, i);
+        days.push({
+          date,
+          islamicDate: { day: i, month, year, monthName: todayIslamic.monthName, monthNameArabic: todayIslamic.monthNameArabic },
+          isCurrentMonth: true,
+        });
+      }
+
+      // Next month days
+      const remaining = 42 - days.length;
+      for (let i = 1; i <= remaining; i++) {
+        const date = islamicToGregorian(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1, i);
+        days.push({
+          date,
+          islamicDate: gregorianToIslamic(date),
+          isCurrentMonth: false,
+        });
+      }
+      return days;
+    }
+
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -82,16 +127,25 @@ export default function CalendarScreen() {
     }
 
     return days;
-  }, [currentDate]);
+  }, [currentDate, isIslamicMode, todayIslamic]);
 
   const handlePrevMonth = async () => {
     await Haptics.selectionAsync();
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    if (isIslamicMode) {
+      // For simplicity, just decrementing Gregorian month for now as full Hijri navigation is complex
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    } else {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    }
   };
 
   const handleNextMonth = async () => {
     await Haptics.selectionAsync();
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    if (isIslamicMode) {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    } else {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    }
   };
 
   const handleDateSelect = async (date: Date) => {
@@ -190,7 +244,7 @@ export default function CalendarScreen() {
             <Feather name="chevron-left" size={24} color={theme.text} />
           </Pressable>
           <ThemedText style={styles.monthTitle}>
-            {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
+            {isIslamicMode ? `${todayIslamic.monthName} ${todayIslamic.year}` : `${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`}
           </ThemedText>
           <Pressable onPress={handleNextMonth} style={styles.navButton}>
             <Feather name="chevron-right" size={24} color={theme.text} />
