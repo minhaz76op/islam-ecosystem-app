@@ -71,8 +71,23 @@ export default function EditProfileScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
+      const authUser = await getAuthUser();
+      if (!authUser) throw new Error("Not authenticated");
+
+      const response = await fetch(new URL(`/api/users/${authUser.id}`, getApiUrl()).toString(), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayName: profile.name,
+          avatarUrl: profile.avatarUri,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update profile");
+
+      const updatedUser = await response.json();
       await saveUserProfile(profile);
-      await updateAuthUser({ name: profile.name });
+      await updateAuthUser(updatedUser);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       navigation.goBack();
     } catch (error) {

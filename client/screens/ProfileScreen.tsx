@@ -33,16 +33,43 @@ export default function ProfileScreen() {
   }, []);
 
   const loadProfile = async () => {
+    const authUser = await getAuthUser();
+    if (authUser) {
+      setProfile({
+        name: authUser.displayName || authUser.username,
+        avatarUri: authUser.avatarUrl,
+      });
+    }
     const saved = await getUserProfile();
     if (saved) {
-      setProfile(saved);
+      setProfile(prev => ({ ...prev, ...saved }));
     }
   };
 
   const handleSave = async () => {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await saveUserProfile(profile);
-    setIsEditing(false);
+    try {
+      const authUser = await getAuthUser();
+      if (!authUser) return;
+
+      const response = await fetch(new URL(`/api/users/${authUser.id}`, getApiUrl()).toString(), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayName: profile.name,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Update failed");
+
+      const updatedUser = await response.json();
+      await updateAuthUser(updatedUser);
+      await saveUserProfile(profile);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setIsEditing(false);
+    } catch (error) {
+      Alert.alert("Error", "Failed to update profile");
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
   };
 
   return (
