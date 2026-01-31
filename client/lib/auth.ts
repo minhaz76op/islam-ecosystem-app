@@ -6,9 +6,12 @@ const KEYS = {
 };
 
 export interface AuthUser {
+  id?: string;
   email: string;
   name: string;
   username?: string;
+  displayName?: string | null;
+  avatarUrl?: string | null;
   uniqueId?: string;
   createdAt: number;
 }

@@ -14,7 +14,8 @@ import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
 import { getUserProfile, saveUserProfile, UserProfile } from "@/lib/storage";
-import { getAuthUser, updateAuthUser } from "@/lib/auth";
+import { getAuthUser, updateAuthUser, AuthUser } from "@/lib/auth";
+import { getApiUrl } from "@/lib/query-client";
 
 export default function EditProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -74,7 +75,10 @@ export default function EditProfileScreen() {
       const authUser = await getAuthUser();
       if (!authUser) throw new Error("Not authenticated");
 
-      const response = await fetch(new URL(`/api/users/${authUser.id}`, getApiUrl()).toString(), {
+      // Use uniqueId or email as the identifier for now, 
+      // since the current AuthUser interface doesn't have a database 'id'
+      const identifier = authUser.uniqueId || authUser.email;
+      const response = await fetch(new URL(`/api/users/${identifier}`, getApiUrl()).toString(), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

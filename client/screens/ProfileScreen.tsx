@@ -13,6 +13,8 @@ import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 import { getUserProfile, saveUserProfile, UserProfile } from "@/lib/storage";
+import { getAuthUser, updateAuthUser } from "@/lib/auth";
+import { getApiUrl } from "@/lib/query-client";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -36,8 +38,8 @@ export default function ProfileScreen() {
     const authUser = await getAuthUser();
     if (authUser) {
       setProfile({
-        name: authUser.displayName || authUser.username,
-        avatarUri: authUser.avatarUrl,
+        name: authUser.displayName || authUser.name || authUser.username || "",
+        avatarUri: authUser.avatarUrl || "",
       });
     }
     const saved = await getUserProfile();
@@ -51,7 +53,8 @@ export default function ProfileScreen() {
       const authUser = await getAuthUser();
       if (!authUser) return;
 
-      const response = await fetch(new URL(`/api/users/${authUser.id}`, getApiUrl()).toString(), {
+      const identifier = authUser.uniqueId || authUser.email;
+      const response = await fetch(new URL(`/api/users/${identifier}`, getApiUrl()).toString(), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
