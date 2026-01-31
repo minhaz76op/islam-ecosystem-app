@@ -92,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     const WebBrowser = await import("expo-web-browser");
     const AuthSession = await import("expo-auth-session");
+    const Google = await import("expo-auth-session/providers/google");
     
     const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
     
@@ -103,19 +104,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const redirectUri = AuthSession.makeRedirectUri();
-      
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-        `client_id=${GOOGLE_CLIENT_ID}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&response_type=token` +
-        `&scope=${encodeURIComponent("openid email profile")}`;
+      const [request, response, promptAsync] = Google.useAuthRequest({
+        webClientId: GOOGLE_CLIENT_ID,
+        iosClientId: GOOGLE_CLIENT_ID,
+        androidClientId: GOOGLE_CLIENT_ID,
+      });
 
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+      const result = await promptAsync();
       
-      if (result.type === "success" && result.url) {
-        const params = new URLSearchParams(result.url.split("#")[1]);
-        const accessToken = params.get("access_token");
+      if (result.type === "success") {
+        const { authentication } = result;
+        const accessToken = authentication?.accessToken;
         
         if (accessToken) {
           const userInfoResponse = await fetch(

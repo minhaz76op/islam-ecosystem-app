@@ -153,17 +153,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:id", async (req: Request, res: Response) => {
+  app.patch("/api/users/:id", async (req: Request, res: Response) => {
     try {
       const id = req.params.id as string;
-      const user = await storage.getUser(id);
-      if (!user) {
+      const { displayName, avatarUrl } = req.body;
+      
+      const updatedUser = await storage.updateUser(id, { displayName, avatarUrl });
+      if (!updatedUser) {
         return res.status(404).json({ error: "User not found" });
       }
-      const { password, ...userWithoutPassword } = user;
+      
+      const { password, ...userWithoutPassword } = updatedUser;
       res.json(userWithoutPassword);
     } catch (error) {
-      res.status(500).json({ error: "Failed to get user" });
+      res.status(500).json({ error: "Failed to update user" });
     }
   });
 
