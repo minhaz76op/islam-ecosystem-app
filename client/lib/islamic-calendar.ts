@@ -48,6 +48,30 @@ export const ISLAMIC_HOLIDAYS: IslamicHoliday[] = [
     type: "fasting",
   },
   {
+    name: "Ayyām al-Bīḍ (White Days)",
+    nameArabic: "الأيام البيض",
+    description: "Sunnah fasting on the 13th, 14th, and 15th of every lunar month",
+    islamicMonth: 0, // Special case for every month
+    islamicDay: 13,
+    type: "fasting",
+  },
+  {
+    name: "Ayyām al-Bīḍ (White Days)",
+    nameArabic: "الأيام البيض",
+    description: "Sunnah fasting on the 13th, 14th, and 15th of every lunar month",
+    islamicMonth: 0,
+    islamicDay: 14,
+    type: "fasting",
+  },
+  {
+    name: "Ayyām al-Bīḍ (White Days)",
+    nameArabic: "الأيام البيض",
+    description: "Sunnah fasting on the 13th, 14th, and 15th of every lunar month",
+    islamicMonth: 0,
+    islamicDay: 15,
+    type: "fasting",
+  },
+  {
     name: "Mawlid al-Nabi",
     nameArabic: "المولد النبوي",
     description: "Birth of Prophet Muhammad (PBUH)",
@@ -178,7 +202,7 @@ function julianToGregorian(jd: number): Date {
 export function getHolidaysForIslamicDate(islamicDate: IslamicDate): IslamicHoliday[] {
   return ISLAMIC_HOLIDAYS.filter(
     (holiday) =>
-      holiday.islamicMonth === islamicDate.month &&
+      (holiday.islamicMonth === islamicDate.month || holiday.islamicMonth === 0) &&
       holiday.islamicDay === islamicDate.day
   );
 }

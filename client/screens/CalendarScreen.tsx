@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, ScrollView, StyleSheet, Pressable } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -33,6 +33,7 @@ export default function CalendarScreen() {
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [isIslamicMode, setIsIslamicMode] = useState(false);
 
   const todayIslamic = useMemo(() => gregorianToIslamic(new Date()), []);
   const selectedIslamic = useMemo(
@@ -169,6 +170,21 @@ export default function CalendarScreen() {
         entering={FadeInDown.delay(200).duration(500)}
         style={[styles.calendarCard, { backgroundColor: theme.backgroundDefault }]}
       >
+        <View style={styles.viewToggle}>
+          <Pressable
+            onPress={() => setIsIslamicMode(false)}
+            style={[styles.toggleBtn, !isIslamicMode && { backgroundColor: theme.primary }]}
+          >
+            <ThemedText style={[styles.toggleText, !isIslamicMode && { color: "#FFF" }]}>Gregorian</ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => setIsIslamicMode(true)}
+            style={[styles.toggleBtn, isIslamicMode && { backgroundColor: theme.primary }]}
+          >
+            <ThemedText style={[styles.toggleText, isIslamicMode && { color: "#FFF" }]}>Hijri</ThemedText>
+          </Pressable>
+        </View>
+
         <View style={styles.calendarHeader}>
           <Pressable onPress={handlePrevMonth} style={styles.navButton}>
             <Feather name="chevron-left" size={24} color={theme.text} />
@@ -398,6 +414,23 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
+  },
+  viewToggle: {
+    flexDirection: "row",
+    backgroundColor: "rgba(0,0,0,0.05)",
+    borderRadius: BorderRadius.full,
+    padding: 4,
+    marginBottom: Spacing.lg,
+  },
+  toggleBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: "center",
+    borderRadius: BorderRadius.full,
+  },
+  toggleText: {
+    fontSize: 12,
+    fontFamily: "Poppins_500Medium",
   },
   monthTitle: {
     fontSize: 18,
