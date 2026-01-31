@@ -55,7 +55,10 @@ export default function DuaListScreen() {
   const handlePlayAudio = async (dua: Dua, e: any) => {
     e.stopPropagation();
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const audioUrl = `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/001001.mp3`;
+    
+    // For duas without explicit audioUrl, we'll use a placeholder or generic recited audio
+    // In a real app, each dua would have its own specific audio URL
+    const audioUrl = (dua as any).audioUrl || `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/001001.mp3`;
     await playAudio(dua.id, audioUrl);
   };
 
