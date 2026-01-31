@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -28,7 +29,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
   {
     id: "1",
     title: "Surah Al-Fatiha (Complete)",
-    arabicTitle: "سورة الفاتحة",
+    arabicTitle: "سورة الفাতحة",
     arabic: `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿١﴾
 الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ﴿٢﴾
 الرَّحْمَٰنِ الرَّحِيمِ ﴿٣﴾
@@ -292,109 +293,33 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
   },
 ];
 
-interface AudioPlayerProps {
-  audioUrl: string;
-  theme: any;
-  itemId: string;
-  currentPlayingId: string | null;
-  onPlay: (id: string) => void;
-}
-
-function AudioPlayer({ audioUrl, theme, itemId, currentPlayingId, onPlay }: AudioPlayerProps) {
-  const player = useAudioPlayer(audioUrl || undefined);
-  const status = useAudioPlayerStatus(player);
-  const isThisPlaying = currentPlayingId === itemId;
-
-  useEffect(() => {
-    if (!isThisPlaying && status.playing) {
-      player.pause();
-    }
-  }, [currentPlayingId, isThisPlaying]);
-
-  const handlePlayPause = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    if (status.playing) {
-      player.pause();
-    } else {
-      onPlay(itemId);
-      player.play();
-    }
-  };
-
-  const handleReplay = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    player.seekTo(0);
-    onPlay(itemId);
-    player.play();
-  };
-
-  if (!audioUrl) {
-    return null;
-  }
-
-  const progress = status.duration > 0 ? (status.currentTime / status.duration) * 100 : 0;
-
-  return (
-    <View style={[styles.audioContainer, { backgroundColor: theme.backgroundSecondary }]}>
-      <View style={styles.audioControls}>
-        <Pressable
-          onPress={handlePlayPause}
-          style={[styles.playButton, { backgroundColor: AppColors.accent }]}
-        >
-          {status.isBuffering ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Feather
-              name={status.playing ? "pause" : "play"}
-              size={18}
-              color="#FFFFFF"
-            />
-          )}
-        </Pressable>
-
-        <View style={styles.progressContainer}>
-          <View style={[styles.progressBar, { backgroundColor: theme.cardBorder }]}>
-            <View
-              style={[
-                styles.progressFill,
-                { backgroundColor: AppColors.accent, width: `${progress}%` },
-              ]}
-            />
-          </View>
-          <ThemedText style={[styles.timeText, { color: theme.textSecondary }]}>
-            {formatTime(status.currentTime)} / {formatTime(status.duration)}
-          </ThemedText>
-        </View>
-
-        <Pressable onPress={handleReplay} style={styles.replayButton}>
-          <Feather name="rotate-ccw" size={18} color={theme.textSecondary} />
-        </Pressable>
-      </View>
-    </View>
-  );
-}
-
-function formatTime(seconds: number): string {
-  if (!seconds || isNaN(seconds)) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
-
 interface RuqyahCardProps {
   item: RuqyahItem;
   theme: any;
   isExpanded: boolean;
   onToggle: () => void;
   index: number;
-  currentPlayingId: string | null;
-  onPlay: (id: string) => void;
+  isPlaying: boolean;
+  isLoading: boolean;
+  currentId: string | null;
+  handlePlayAudio: (item: RuqyahItem, e: any) => void;
 }
 
-function RuqyahCard({ item, theme, isExpanded, onToggle, index, currentPlayingId, onPlay }: RuqyahCardProps) {
+function RuqyahCard({
+  item,
+  theme,
+  isExpanded,
+  onToggle,
+  index,
+  isPlaying,
+  isLoading,
+  currentId,
+  handlePlayAudio,
+}: RuqyahCardProps) {
   return (
-    <Animated.View entering={FadeInDown.delay(index * 60).duration(400)}>
+    <Animated.View
+      entering={FadeInDown.delay(100 + index * 50).duration(500)}
+    >
       <Pressable
         onPress={async () => {
           await Haptics.selectionAsync();
@@ -415,9 +340,20 @@ function RuqyahCard({ item, theme, isExpanded, onToggle, index, currentPlayingId
             </ThemedText>
           </View>
           <View style={styles.headerIcons}>
-            {item.audioUrl ? (
-              <Feather name="volume-2" size={16} color={AppColors.accent} style={{ marginRight: 8 }} />
-            ) : null}
+            <Pressable
+              onPress={(e) => handlePlayAudio(item, e)}
+              style={[styles.playBtn, { backgroundColor: theme.primary + "15" }]}
+            >
+              {isLoading && currentId === item.id ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <Feather
+                  name={isPlaying && currentId === item.id ? "pause" : "play"}
+                  size={16}
+                  color={theme.primary}
+                />
+              )}
+            </Pressable>
             <Feather
               name={isExpanded ? "chevron-up" : "chevron-down"}
               size={24}
@@ -428,14 +364,6 @@ function RuqyahCard({ item, theme, isExpanded, onToggle, index, currentPlayingId
 
         {isExpanded ? (
           <View style={styles.expandedContent}>
-            <AudioPlayer
-              audioUrl={item.audioUrl}
-              theme={theme}
-              itemId={item.id}
-              currentPlayingId={currentPlayingId}
-              onPlay={onPlay}
-            />
-
             <View style={[styles.arabicBox, { backgroundColor: AppColors.gold + "10", borderColor: AppColors.gold + "30" }]}>
               <ThemedText style={[styles.arabicText, { color: theme.text }]}>
                 {item.arabic}
@@ -477,9 +405,15 @@ export default function RuqyahScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme, isDark } = useTheme();
+  const { isPlaying, isLoading, currentId, playAudio } = useAudioPlayer();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "quran" | "dua">("all");
+
+  const handlePlayAudio = async (item: RuqyahItem, e: any) => {
+    e.stopPropagation();
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await playAudio(item.id, item.audioUrl);
+  };
 
   const filteredItems = filter === "all" 
     ? RUQYAH_COLLECTION 
@@ -554,8 +488,10 @@ export default function RuqyahScreen() {
               isExpanded={expandedId === item.id}
               onToggle={() => setExpandedId(expandedId === item.id ? null : item.id)}
               index={index}
-              currentPlayingId={currentPlayingId}
-              onPlay={setCurrentPlayingId}
+              isPlaying={isPlaying}
+              isLoading={isLoading}
+              currentId={currentId}
+              handlePlayAudio={handlePlayAudio}
             />
           ))}
         </View>
@@ -579,18 +515,21 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     borderRadius: BorderRadius.xl,
     alignItems: "center",
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
+    ...Shadows.md,
   },
   introIconBg: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.lg,
   },
   introTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: "Poppins_700Bold",
     marginBottom: Spacing.sm,
   },
@@ -603,7 +542,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     flexDirection: "row",
     gap: Spacing.sm,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   filterButton: {
     flex: 1,
@@ -613,16 +552,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   filterText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: "Poppins_600SemiBold",
   },
   cardList: {
     gap: Spacing.md,
   },
   card: {
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
     overflow: "hidden",
+    ...Shadows.sm,
   },
   cardHeader: {
     flexDirection: "row",
@@ -630,18 +570,16 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     gap: Spacing.md,
   },
-  headerIcons: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   numberBadge: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.full,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
   },
   numberText: {
     fontSize: 12,
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins_700Bold",
   },
   titleContainer: {
     flex: 1,
@@ -654,46 +592,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Poppins_400Regular",
   },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  playBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   expandedContent: {
     padding: Spacing.lg,
     paddingTop: 0,
     gap: Spacing.lg,
-  },
-  audioContainer: {
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-  },
-  audioControls: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.md,
-  },
-  playButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  progressContainer: {
-    flex: 1,
-    gap: 4,
-  },
-  progressBar: {
-    height: 4,
-    borderRadius: 2,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: 2,
-  },
-  timeText: {
-    fontSize: 11,
-    fontFamily: "Poppins_400Regular",
-  },
-  replayButton: {
-    padding: Spacing.sm,
   },
   arabicBox: {
     padding: Spacing.lg,
@@ -749,7 +663,7 @@ const styles = StyleSheet.create({
   },
   tipText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: "Poppins_400Regular",
     lineHeight: 20,
   },
