@@ -194,8 +194,8 @@ export default function TasbihScreen() {
         style={[
           styles.content,
           {
-            paddingTop: headerHeight + Spacing.xl,
-            paddingBottom: tabBarHeight + Spacing.xl,
+            paddingTop: headerHeight + Spacing.md,
+            paddingBottom: tabBarHeight + Spacing.md,
           },
         ]}
       >
@@ -378,11 +378,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
+    justifyContent: "center",
   },
   presetRow: {
     flexDirection: "row",
     gap: Spacing.sm,
-    marginBottom: Spacing["3xl"],
+    marginBottom: Spacing["4xl"],
   },
   presetButton: {
     flex: 1,
@@ -406,13 +407,13 @@ const styles = StyleSheet.create({
   },
   arabicDisplay: {
     fontSize: 36,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing["2xl"],
     textAlign: "center",
   },
   countContainer: {
     flexDirection: "row",
     alignItems: "baseline",
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   countText: {
     fontSize: 80,
@@ -435,7 +436,7 @@ const styles = StyleSheet.create({
   },
   buttonSection: {
     alignItems: "center",
-    gap: Spacing.xl,
+    gap: Spacing["2xl"],
   },
   tapButtonWrapper: {
     width: 140,
