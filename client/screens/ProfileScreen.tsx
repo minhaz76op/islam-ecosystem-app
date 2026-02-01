@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, StyleSheet, Pressable, TextInput, Alert } from "react-native";
+import { View, StyleSheet, Pressable, TextInput, Alert, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -21,6 +21,7 @@ export default function ProfileScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
+  const [authUser, setAuthUser] = useState<any>(null);
 
   const [profile, setProfile] = useState<UserProfile>({
     name: "",
@@ -35,11 +36,12 @@ export default function ProfileScreen() {
   }, []);
 
   const loadProfile = async () => {
-    const authUser = await getAuthUser();
-    if (authUser) {
+    const user = await getAuthUser();
+    setAuthUser(user);
+    if (user) {
       setProfile({
-        name: authUser.displayName || authUser.name || authUser.username || "",
-        avatarUri: authUser.avatarUrl || "",
+        name: user.displayName || user.username || "",
+        avatarUri: user.avatarUrl || "",
       });
     }
     const saved = await getUserProfile();
@@ -88,9 +90,21 @@ export default function ProfileScreen() {
         entering={FadeInDown.delay(100).duration(500)}
         style={styles.avatarSection}
       >
-        <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
-          <Feather name="user" size={48} color="#FFFFFF" />
-        </View>
+        <Pressable 
+          onPress={() => isEditing && Alert.alert("Profile Picture", "Upload from gallery coming soon!")}
+          style={[styles.avatar, { backgroundColor: theme.primary, overflow: 'hidden' }]}
+        >
+          {profile.avatarUri ? (
+            <Image source={{ uri: profile.avatarUri }} style={styles.avatarImage} />
+          ) : (
+            <Feather name="user" size={48} color="#FFFFFF" />
+          )}
+          {isEditing && (
+            <View style={styles.avatarEditOverlay}>
+              <Feather name="camera" size={20} color="#FFFFFF" />
+            </View>
+          )}
+        </Pressable>
         <ThemedText style={styles.userName}>
           {profile.name || "Set Your Name"}
         </ThemedText>
@@ -138,6 +152,26 @@ export default function ProfileScreen() {
             placeholder="Enter your name"
             placeholderTextColor={theme.textSecondary}
             editable={isEditing}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            Phone Number
+          </ThemedText>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.backgroundSecondary,
+                color: theme.text,
+                borderColor: "transparent",
+              },
+            ]}
+            value={authUser?.phoneNumber || ""}
+            placeholder="No phone number"
+            placeholderTextColor={theme.textSecondary}
+            editable={false}
           />
         </View>
 
@@ -285,6 +319,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: Spacing.lg,
     ...Shadows.lg,
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
+  },
+  avatarEditOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   userName: {
     fontSize: 24,

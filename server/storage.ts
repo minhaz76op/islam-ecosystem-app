@@ -21,6 +21,7 @@ export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, data: Partial<User>): Promise<User | undefined>;
   searchUsers(query: string, excludeUserId: string): Promise<User[]>;
@@ -64,6 +65,11 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.phoneNumber, phoneNumber));
+    return user || undefined;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
@@ -82,7 +88,8 @@ export class DatabaseStorage implements IStorage {
         and(
           or(
             ilike(users.username, `%${query}%`),
-            ilike(users.displayName, `%${query}%`)
+            ilike(users.displayName, `%${query}%`),
+            ilike(users.phoneNumber, `%${query}%`)
           ),
           ne(users.id, excludeUserId)
         )

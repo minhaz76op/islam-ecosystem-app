@@ -9,6 +9,7 @@ export const users = pgTable("users", {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
+  phoneNumber: text("phone_number").notNull().unique(),
   password: text("password").notNull(),
   displayName: text("display_name"),
   avatarUrl: text("avatar_url"),
@@ -150,6 +151,7 @@ export const challengesRelations = relations(challenges, ({ one }) => ({
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  phoneNumber: true,
   password: true,
   displayName: true,
   avatarUrl: true,

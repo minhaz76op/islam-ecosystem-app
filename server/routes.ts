@@ -58,20 +58,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post("/api/auth/register", async (req: Request, res: Response) => {
     try {
-      const { username, password, displayName } = req.body;
+      const { username, phoneNumber, password, displayName } = req.body;
 
-      if (!username || !password) {
-        return res.status(400).json({ error: "Username and password are required" });
+      if (!username || !phoneNumber || !password) {
+        return res.status(400).json({ error: "Username, phone number and password are required" });
       }
 
-      const existingUser = await storage.getUserByUsername(username);
-      if (existingUser) {
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
         return res.status(409).json({ error: "Username already exists" });
+      }
+
+      const existingPhone = await storage.getUserByPhoneNumber(phoneNumber);
+      if (existingPhone) {
+        return res.status(409).json({ error: "Phone number already exists" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await storage.createUser({
         username,
+        phoneNumber,
         password: hashedPassword,
         displayName: displayName || username,
       });
@@ -85,14 +91,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     try {
-      const { username, password } = req.body;
+      const { username, phoneNumber, password } = req.body;
 
-      if (!username || !password) {
-        return res.status(400).json({ error: "Username and password are required" });
+      if (!username || !phoneNumber || !password) {
+        return res.status(400).json({ error: "Username, phone number and password are required" });
       }
 
       const user = await storage.getUserByUsername(username);
-      if (!user) {
+      if (!user || user.phoneNumber !== phoneNumber) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 

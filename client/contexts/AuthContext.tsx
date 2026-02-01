@@ -5,6 +5,7 @@ import { getApiUrl } from "@/lib/query-client";
 interface User {
   id: string;
   username: string;
+  phoneNumber: string;
   displayName: string | null;
   avatarUrl: string | null;
   createdAt: string;
@@ -13,8 +14,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (username: string, password: string, displayName?: string) => Promise<{ success: boolean; error?: string }>;
+  login: (username: string, password: string, phoneNumber: string) => Promise<{ success: boolean; error?: string }>;
+  register: (username: string, password: string, displayName: string, phoneNumber: string) => Promise<{ success: boolean; error?: string }>;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
@@ -45,12 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (username: string, password: string, phoneNumber: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch(new URL("/api/auth/login", getApiUrl()).toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, phoneNumber }),
       });
 
       const data = await response.json();
@@ -67,12 +68,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (username: string, password: string, displayName?: string): Promise<{ success: boolean; error?: string }> => {
+  const register = async (username: string, password: string, displayName: string, phoneNumber: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch(new URL("/api/auth/register", getApiUrl()).toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, displayName }),
+        body: JSON.stringify({ username, password, displayName, phoneNumber }),
       });
 
       const data = await response.json();

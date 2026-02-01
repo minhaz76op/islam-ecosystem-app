@@ -23,6 +23,7 @@ export default function LoginScreen() {
   const { login, loginWithGoogle } = useAuth();
 
   const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -30,8 +31,8 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    if (!username.trim() || !password.trim()) {
-      setError("Please enter your username and password");
+    if (!username.trim() || !phoneNumber.trim() || !password.trim()) {
+      setError("Please enter your username, phone number and password");
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -41,7 +42,8 @@ export default function LoginScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      const result = await login(username.trim().toLowerCase(), password);
+      // @ts-ignore - Adding phoneNumber to login call
+      const result = await login(username.trim().toLowerCase(), password, phoneNumber.trim());
       if (result.success) {
         await saveUserProfile({ name: username.trim() });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -156,6 +158,34 @@ export default function LoginScreen() {
 
         <View style={styles.inputGroup}>
           <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            Phone Number
+          </ThemedText>
+          <View style={styles.inputWrapper}>
+            <Feather
+              name="phone"
+              size={20}
+              color={theme.textSecondary}
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.backgroundSecondary,
+                  color: theme.text,
+                },
+              ]}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="Enter your phone number"
+              placeholderTextColor={theme.textSecondary}
+              keyboardType="phone-pad"
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputGroup}>
+          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
             Password
           </ThemedText>
           <View style={styles.inputWrapper}>
@@ -201,7 +231,7 @@ export default function LoginScreen() {
 
         <Button
           onPress={handleLogin}
-          disabled={isLoading || !username.trim() || !password.trim()}
+          disabled={isLoading || !username.trim() || !phoneNumber.trim() || !password.trim()}
           style={styles.loginButton}
         >
           {isLoading ? "Signing In..." : "Sign In"}

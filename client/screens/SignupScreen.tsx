@@ -25,6 +25,7 @@ export default function SignupScreen() {
 
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +45,10 @@ export default function SignupScreen() {
       newErrors.username = "Username must be at least 3 characters";
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
       newErrors.username = "Username can only contain letters, numbers, and underscores";
+    }
+
+    if (!phoneNumber.trim()) {
+      newErrors.phoneNumber = "Phone number is required";
     }
 
     if (!password) {
@@ -70,7 +75,8 @@ export default function SignupScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      const result = await register(username.trim().toLowerCase(), password, name.trim());
+      // @ts-ignore - Adding phoneNumber to register call
+      const result = await register(username.trim().toLowerCase(), password, name.trim(), phoneNumber.trim());
       if (result.success) {
         await saveUserProfile({ name: name.trim() });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -213,6 +219,30 @@ export default function SignupScreen() {
           </View>
           {errors.username ? (
             <ThemedText style={[styles.errorText, { color: theme.error }]}>{errors.username}</ThemedText>
+          ) : null}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            Phone Number
+          </ThemedText>
+          <View style={styles.inputWrapper}>
+            <Feather name="phone" size={20} color={theme.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[
+                styles.input,
+                { backgroundColor: theme.backgroundSecondary, color: theme.text },
+                errors.phoneNumber ? { borderWidth: 1, borderColor: theme.error } : null,
+              ]}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="Enter your phone number"
+              placeholderTextColor={theme.textSecondary}
+              keyboardType="phone-pad"
+            />
+          </View>
+          {errors.phoneNumber ? (
+            <ThemedText style={[styles.errorText, { color: theme.error }]}>{errors.phoneNumber}</ThemedText>
           ) : null}
         </View>
         

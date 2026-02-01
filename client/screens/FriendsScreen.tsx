@@ -404,10 +404,11 @@ export default function FriendsScreen() {
               <Feather name="search" size={20} color={theme.textSecondary} />
               <TextInput
                 style={[styles.searchInput, { color: theme.text }]}
-                placeholder="Search by username..."
+                placeholder="Search by phone number..."
                 placeholderTextColor={theme.textSecondary}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                keyboardType="phone-pad"
               />
               {searchQuery.length > 0 ? (
                 <Pressable onPress={() => setSearchQuery("")}>
