@@ -116,11 +116,7 @@ export default function HomeScreen() {
     // Show username when signed in, "Guest" when not signed in
     if (user) {
       setUserName(user.displayName || user.username || "User");
-      if (user.avatarUrl) {
-        setUserAvatar(user.avatarUrl);
-      } else {
-        setUserAvatar(null);
-      }
+      setUserAvatar(user.avatarUrl || null);
     } else {
       // Not signed in - always show Guest
       setUserName("Guest");

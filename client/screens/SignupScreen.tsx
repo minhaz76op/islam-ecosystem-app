@@ -67,7 +67,11 @@ export default function SignupScreen() {
       if (result.success) {
         await saveUserProfile({ name: name.trim() });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        navigation.goBack();
+        // Navigate to the main app flow
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
       } else {
         setErrors({ general: result.error || "Registration failed" });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
