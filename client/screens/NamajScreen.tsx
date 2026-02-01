@@ -27,9 +27,22 @@ const NAMAJ_DATA = {
       { title: "Dua for Friday", ar: "اللَّهُمَّ اجْعَلْ جُمُعَتَنَا مَقْبُولَةً", tr: "Allahummaj'al jumu'atana maqbulatan", meaning: "O Allah, make our Friday accepted." }
     ]
   },
-  eids: {
-    title: "Eid Prayers",
-    rules: "Eid-ul-Fitr and Eid-ul-Adha prayers consist of 2 Rak'ats with extra Takbirs.",
+  "eid-ul-fitr": {
+    title: "Eid-ul-Fitr",
+    rules: "Eid-ul-Fitr prayer is performed on the 1st of Shawwal after the month of Ramadan.",
+    steps: [
+      "Niyyah (Intention)",
+      "7 Takbirs in the first Rak'at before Surah Al-Fatiha",
+      "5 Takbirs in the second Rak'at after Surah Al-Fatiha",
+      "Khutbah after the prayer"
+    ],
+    duas: [
+      { title: "Eid Takbir", ar: "اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ لَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ وَلِلَّهِ الْحَمْدُ", tr: "Allahu Akbar, Allahu Akbar, La ilaha illallahu Wallahu Akbar, Allahu Akbar Walillahil Hamd", meaning: "Allah is the Greatest... and to Him belongs all praise." }
+    ]
+  },
+  "eid-ul-adha": {
+    title: "Eid-ul-Adha",
+    rules: "Eid-ul-Adha prayer is performed on the 10th of Dhul-Hijjah. It commemorates Ibrahim's sacrifice.",
     steps: [
       "Niyyah (Intention)",
       "7 Takbirs in the first Rak'at before Surah Al-Fatiha",
@@ -91,7 +104,7 @@ export default function NamajScreen() {
                   activeTab === tab && { color: "#FFF", fontFamily: "Poppins_600SemiBold" },
                 ]}
               >
-                {tab === "eids" ? "2 Eids" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === "eid-ul-fitr" ? "Fitr" : tab === "eid-ul-adha" ? "Adha" : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </ThemedText>
             </Pressable>
           ))}
