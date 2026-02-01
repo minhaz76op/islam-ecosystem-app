@@ -24,15 +24,13 @@ export default function LoginScreen() {
 
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    if (!username.trim() || !phoneNumber.trim() || !password.trim()) {
-      setError("Please enter your username, phone number and password");
+    if (!username.trim() || !phoneNumber.trim()) {
+      setError("Please enter your username and phone number");
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -43,7 +41,7 @@ export default function LoginScreen() {
 
     try {
       // @ts-ignore - Adding phoneNumber to login call
-      const result = await login(username.trim().toLowerCase(), password, phoneNumber.trim());
+      const result = await login(username.trim().toLowerCase(), "no-password", phoneNumber.trim());
       if (result.success) {
         await saveUserProfile({ name: username.trim() });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -184,54 +182,9 @@ export default function LoginScreen() {
           </View>
         </View>
 
-        <View style={styles.inputGroup}>
-          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
-            Password
-          </ThemedText>
-          <View style={styles.inputWrapper}>
-            <Feather
-              name="lock"
-              size={20}
-              color={theme.textSecondary}
-              style={styles.inputIcon}
-            />
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: theme.backgroundSecondary,
-                  color: theme.text,
-                  paddingRight: 50,
-                },
-              ]}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter your password"
-              placeholderTextColor={theme.textSecondary}
-              secureTextEntry={!showPassword}
-            />
-            <Pressable
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.eyeButton}
-            >
-              <Feather
-                name={showPassword ? "eye-off" : "eye"}
-                size={20}
-                color={theme.textSecondary}
-              />
-            </Pressable>
-          </View>
-        </View>
-
-        <Pressable style={styles.forgotPassword}>
-          <ThemedText style={[styles.forgotText, { color: theme.primary }]}>
-            Forgot Password?
-          </ThemedText>
-        </Pressable>
-
         <Button
           onPress={handleLogin}
-          disabled={isLoading || !username.trim() || !phoneNumber.trim() || !password.trim()}
+          disabled={isLoading || !username.trim() || !phoneNumber.trim()}
           style={styles.loginButton}
         >
           {isLoading ? "Signing In..." : "Sign In"}

@@ -26,10 +26,7 @@ export default function SignupScreen() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateForm = (): boolean => {
@@ -51,16 +48,6 @@ export default function SignupScreen() {
       newErrors.phoneNumber = "Phone number is required";
     }
 
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -76,7 +63,7 @@ export default function SignupScreen() {
 
     try {
       // @ts-ignore - Adding phoneNumber to register call
-      const result = await register(username.trim().toLowerCase(), password, name.trim(), phoneNumber.trim());
+      const result = await register(username.trim().toLowerCase(), "no-password", name.trim(), phoneNumber.trim());
       if (result.success) {
         await saveUserProfile({ name: name.trim() });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -251,57 +238,6 @@ export default function SignupScreen() {
             {errors.general}
           </ThemedText>
         ) : null}
-
-        <View style={styles.inputGroup}>
-          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
-            Password
-          </ThemedText>
-          <View style={styles.inputWrapper}>
-            <Feather name="lock" size={20} color={theme.textSecondary} style={styles.inputIcon} />
-            <TextInput
-              style={[
-                styles.input,
-                { backgroundColor: theme.backgroundSecondary, color: theme.text, paddingRight: 50 },
-                errors.password ? { borderWidth: 1, borderColor: theme.error } : null,
-              ]}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Create a password"
-              placeholderTextColor={theme.textSecondary}
-              secureTextEntry={!showPassword}
-            />
-            <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-              <Feather name={showPassword ? "eye-off" : "eye"} size={20} color={theme.textSecondary} />
-            </Pressable>
-          </View>
-          {errors.password ? (
-            <ThemedText style={[styles.errorText, { color: theme.error }]}>{errors.password}</ThemedText>
-          ) : null}
-        </View>
-
-        <View style={styles.inputGroup}>
-          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
-            Confirm Password
-          </ThemedText>
-          <View style={styles.inputWrapper}>
-            <Feather name="lock" size={20} color={theme.textSecondary} style={styles.inputIcon} />
-            <TextInput
-              style={[
-                styles.input,
-                { backgroundColor: theme.backgroundSecondary, color: theme.text },
-                errors.confirmPassword ? { borderWidth: 1, borderColor: theme.error } : null,
-              ]}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confirm your password"
-              placeholderTextColor={theme.textSecondary}
-              secureTextEntry={!showPassword}
-            />
-          </View>
-          {errors.confirmPassword ? (
-            <ThemedText style={[styles.errorText, { color: theme.error }]}>{errors.confirmPassword}</ThemedText>
-          ) : null}
-        </View>
 
         <Button onPress={handleSignup} disabled={isLoading} style={styles.signupButton}>
           {isLoading ? "Creating Account..." : "Create Account"}

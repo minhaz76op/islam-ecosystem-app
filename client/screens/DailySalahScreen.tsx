@@ -237,10 +237,11 @@ export default function DailySalahScreen() {
         style={styles.scrollView}
         contentContainerStyle={{
           paddingTop: headerHeight + Spacing.xl,
-          paddingBottom: tabBarHeight + Spacing["2xl"],
+          paddingBottom: tabBarHeight + Spacing["4xl"],
           paddingHorizontal: Spacing.lg,
         }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
