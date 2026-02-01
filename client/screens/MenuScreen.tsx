@@ -91,7 +91,7 @@ export default function MenuScreen() {
       screen: "QiblaDirection",
     },
     {
-      icon: "calculator",
+      icon: "shopping-cart",
       title: "Zakat Calculator",
       subtitle: "Calculate your Zakat",
       color: "#6366F1",

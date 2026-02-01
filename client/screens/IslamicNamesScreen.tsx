@@ -9,7 +9,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
-import { ISLAMIC_NAMES, IslamicName, searchNames } from "@/data/islamic-names";
+import { ISLAMIC_NAMES, IslamicName } from "@/data/islamic-names";
 
 export default function IslamicNamesScreen() {
   const insets = useSafeAreaInsets();
@@ -25,7 +25,7 @@ export default function IslamicNamesScreen() {
       searchQuery === "" ||
       name.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       name.meaning.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (name.meaningBengali && name.meaningBengali.includes(searchQuery));
+      (name.meaningBengali && typeof name.meaningBengali === 'string' && name.meaningBengali.includes(searchQuery));
     return matchesGender && matchesSearch;
   });
 
