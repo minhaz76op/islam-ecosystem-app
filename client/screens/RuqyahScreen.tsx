@@ -291,6 +291,60 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     audioUrl: "https://ia801309.us.archive.org/22/items/AthkarAlSabahWaAlMasaa/032.mp3",
     category: "dua",
   },
+  {
+    id: "17",
+    title: "Surah Al-Hashr (21-24)",
+    arabicTitle: "خواتيم سورة الحشر",
+    arabic: `لَوْ أَنزَلْنَا هَٰذَا الْقُرْآنَ عَلَىٰ جَبَلٍ لَّرَأَيْتَهُ خَاشِعًا مُّتَصَدِّعًا مِّنْ خَشْيَةِ اللَّهِ ۚ وَتِلْكَ الْأَمْثَالُ نَضْرِبُهَا لِلنَّاسِ لَعَلَّهُمْ يَتَفَكَّرُونَ ﴿٢١﴾
+هُوَ اللَّهُ الَّذِي لَا إِلَٰهَ إِلَّا هُوَ ۖ عَالِمُ الْغَيْبِ وَالشَّهَادَةِ ۖ هُوَ الرَّحْمَٰنُ الرَّحِيمُ ﴿٢٢﴾
+هُوَ اللَّهُ الَّذِي لَا إِلَٰهَ إِلَّا هُوَ الْمَلِكُ الْقُدُّوسُ السَّلَامُ الْمُؤْمِنُ الْمُهَيْمِنُ الْعَزِيزُ الْجَبَّارُ الْمُتَكَبِّرُ ۚ سُبْحَانَ اللَّهِ عَمَّا يُشْرِكُونَ ﴿٢٣﴾
+هُوَ اللَّهُ الْخَالِقُ الْبَارِئُ الْمُصَوِّرُ ۖ لَهُ الْأَسْمَاءُ الْحُسْنَىٰ ۚ يُسَبِّحُ لَهُ مَا فِي السَّمَاوَاتِ وَالْأَرْضِ ۖ وَهُوَ الْعَزِيزُ الْحَكِيمُ ﴿٢٤﴾`,
+    transliteration: "Law anzalna hazal-Qur'ana 'ala jabalin lara'aytahu khashi'am-mutasaddi'am-min khashyatillah. Wa tilkal-amthalu nadribuha linnasi la'allahum yatafakkarun. Huwallahul-lazi la ilaha illa Huwa, 'Alimul-ghaybi wash-shahadah, Huwar-Rahmanur-Raheem. Huwallahul-lazi la ilaha illa Huwal-Malikul-Quddusus-Salamul-Mu'minul-Muhayminul-'Azizul-Jabbarul-Mutakabbir. Subhanahu-Allahi 'amma yushrikun. Huwallahul-Khaliqul-Bari'ul-Musawwiru lahul-asma'ul-husna. Yusabbihu lahu ma fis-samawati wal-ard, wa Huwal-'Azizul-Hakeem.",
+    translation: "(21) If We had sent down this Quran upon a mountain, you would have seen it humbled and coming apart from fear of Allah. And these examples We present to the people that perhaps they will give thought. (22) He is Allah, other than whom there is no deity, Knower of the unseen and the witnessed. He is the Entirely Merciful, the Especially Merciful. (23) He is Allah, other than whom there is no deity, the Sovereign, the Pure, the Perfection, the Bestower of Faith, the Overseer, the Exalted in Might, the Compeller, the Superior. Exalted is Allah above whatever they associate with Him. (24) He is Allah, the Creator, the Producer, the Fashioner; to Him belong the best names. Whatever is in the heavens and earth is exalting Him. And He is the Exalted in Might, the Wise.",
+    benefit: "The Prophet (PBUH) said: 'Whoever says in the morning 'I seek refuge in Allah, the All-Hearing, the All-Knowing, from the accursed Shaitan' and recites the last three verses of Surah Al-Hashr, Allah will appoint 70,000 angels to pray for him until the evening, and if he dies on that day, he dies as a martyr.' (Tirmidhi 2922). Extremely powerful for spiritual strength and protection.",
+    repetitions: 1,
+    audioUrl: "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/059.mp3",
+    category: "quran",
+  },
+  {
+    id: "18",
+    title: "Surah Al-Jinn (1-4)",
+    arabicTitle: "أول سورة الجن",
+    arabic: `قُلْ أُوحِيَ إِلَيَّ أَنَّهُ اسْتَمَعَ نَفَرٌ مِّنَ الْجِنِّ فَقَالُوا إِنَّا سَمِعْنَا قُرْآنًا عَجَبًا ﴿١﴾
+يَهْدِي إِلَى الرُّشْدِ فَآمَنَّا بِهِ ۖ وَلَن نُّشْرِكَ بِرَبِّنَا أَحَدًا ﴿٢﴾
+وَأَنَّهُ تَعَالَىٰ جَدُّ رَبِّنَا مَا اتَّخَذَ صَاحِبَةً وَلَا وَلَدًا ﴿٣﴾
+وَأَنَّهُ كَانَ يَقُولُ سَفِيهُنَا عَلَى اللَّهِ شَطَطًا ﴿٤﴾`,
+    transliteration: "Qul uhiya ilayya annahustama'a nafarum-minal-jinni faqalu inna sami'na Qur'anan 'ajaba. Yahdee ilar-rushdi fa-aamanna bihi wa lan nushrika bi-Rabbina ahada. Wa annahu ta'ala jaddu Rabbina mat-takhaza sahibatan wa la walada. Wa annahu kana yaqulu safeehuna 'alallahi shatata.",
+    translation: "(1) Say: It has been revealed to me that a group of the jinn listened and said, 'Indeed, we have heard an amazing Quran. (2) It guides to the right course, and we have believed in it. And we will never associate with our Lord anyone. (3) And [it teaches] that exalted is the nobleness of our Lord; He has not taken a wife or a son. (4) And that our foolish one has been saying about Allah an excessive transgression.'",
+    benefit: "These verses are essential in Ruqyah for addressing issues related to Jinn. They establish the oneness of Allah and the impact of the Quran on the unseen world. Recited for protection from Jinn and their influence.",
+    repetitions: 3,
+    audioUrl: "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/072.mp3",
+    category: "quran",
+  },
+  {
+    id: "19",
+    title: "Dua for Physical & Spiritual Strength",
+    arabicTitle: "دعاء القوة والعافية",
+    arabic: `اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ`,
+    transliteration: "Allahumma 'afini fi badani, Allahumma 'afini fi sam'i, Allahumma 'afini fi basari, la ilaha illa Anta.",
+    translation: "O Allah, make my body healthy, O Allah, make my hearing healthy, O Allah, make my eyesight healthy. There is no god but You.",
+    benefit: "The Prophet (PBUH) used to repeat this three times in the morning and three times in the evening. (Abu Dawud 5090). It is a comprehensive dua for physical health and the preservation of one's senses from harm and evil.",
+    repetitions: 3,
+    audioUrl: "https://ia801309.us.archive.org/22/items/AthkarAlSabahWaAlMasaa/006.mp3",
+    category: "dua",
+  },
+  {
+    id: "20",
+    title: "Dua Against Worry and Grief",
+    arabicTitle: "دعاء الاستعاذة من الهم والحزن",
+    arabic: `اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ`,
+    transliteration: "Allahumma inni a'udhu bika minal-hammi wal-hazan, wal-'ajzi wal-kasal, wal-bukhli wal-jubn, wa dala'id-dayni wa ghalabatir-rijal.",
+    translation: "O Allah, I seek refuge in You from anxiety and sorrow, from weakness and laziness, from miserliness and cowardice, from the burden of debt and from being overpowered by men.",
+    benefit: "The Prophet (PBUH) used to say this dua frequently. (Bukhari 2893). It is essential for Ruqyah related to psychological distress, depression, and anxiety, seeking Allah's protection from the weights that hold a believer back.",
+    repetitions: 3,
+    audioUrl: "https://ia801309.us.archive.org/22/items/AthkarAlSabahWaAlMasaa/007.mp3",
+    category: "dua",
+  },
 ];
 
 interface RuqyahCardProps {
