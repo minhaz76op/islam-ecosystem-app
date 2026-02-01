@@ -308,7 +308,7 @@ export default function HomeScreen() {
           <View style={[styles.levelCard, { backgroundColor: theme.primary }]}>
             <View style={styles.levelHeader}>
               <View style={styles.levelBadge}>
-                <ThemedText style={styles.levelNumber}>{userLevel.level}</ThemedText>
+                <ThemedText type="number" style={styles.levelNumber}>{userLevel.level}</ThemedText>
               </View>
               <View style={styles.levelInfo}>
                 <ThemedText style={styles.levelTitle}>Level {userLevel.level}</ThemedText>
@@ -316,7 +316,7 @@ export default function HomeScreen() {
               </View>
               <View style={styles.xpBadge}>
                 <Feather name="star" size={14} color={AppColors.gold} />
-                <ThemedText style={styles.xpText}>{userLevel.totalXp}</ThemedText>
+                <ThemedText type="number" style={styles.xpText}>{userLevel.totalXp}</ThemedText>
               </View>
             </View>
             <View style={styles.levelProgressBar}>
@@ -327,22 +327,22 @@ export default function HomeScreen() {
           <View style={styles.activityRow}>
             <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
               <Feather name="check-square" size={18} color={AppColors.accent} />
-              <ThemedText style={styles.activityValue}>{activityStats.tasks}</ThemedText>
+              <ThemedText type="number" style={styles.activityValue}>{activityStats.tasks}</ThemedText>
               <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Tasks</ThemedText>
             </View>
             <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
               <Feather name="sun" size={18} color={theme.primary} />
-              <ThemedText style={styles.activityValue}>{activityStats.prayers}/5</ThemedText>
+              <ThemedText type="number" style={styles.activityValue}>{activityStats.prayers}/5</ThemedText>
               <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Prayers</ThemedText>
             </View>
             <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
               <Feather name="droplet" size={18} color={AppColors.accent} />
-              <ThemedText style={styles.activityValue}>{activityStats.water}</ThemedText>
+              <ThemedText type="number" style={styles.activityValue}>{activityStats.water}</ThemedText>
               <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Water</ThemedText>
             </View>
             <View style={[styles.activityCard, { backgroundColor: theme.backgroundDefault }]}>
               <Feather name="activity" size={18} color={AppColors.gold} />
-              <ThemedText style={styles.activityValue}>{activityStats.exercise}m</ThemedText>
+              <ThemedText type="number" style={styles.activityValue}>{activityStats.exercise}m</ThemedText>
               <ThemedText style={[styles.activityLabel, { color: theme.textSecondary }]}>Active</ThemedText>
             </View>
           </View>

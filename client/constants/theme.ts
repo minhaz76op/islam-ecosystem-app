@@ -1,10 +1,10 @@
 import { Platform } from "react-native";
 
 export const AppColors = {
-  primary: "#1E40AF",
-  primaryLight: "#3B82F6",
-  accent: "#0EA5E9",
-  gold: "#F59E0B",
+  primary: "#064E3B",
+  primaryLight: "#059669",
+  accent: "#10B981",
+  gold: "#D97706",
   background: "#F8FAFC",
   surface: "#FFFFFF",
   textPrimary: "#1E293B",
@@ -95,18 +95,21 @@ export const Typography = {
     lineHeight: 40,
     fontWeight: "700" as const,
     fontFamily: "Poppins_700Bold",
+    letterSpacing: -0.5,
   },
   h2: {
     fontSize: 28,
     lineHeight: 36,
     fontWeight: "700" as const,
     fontFamily: "Poppins_700Bold",
+    letterSpacing: -0.5,
   },
   h3: {
     fontSize: 24,
     lineHeight: 32,
     fontWeight: "600" as const,
     fontFamily: "Poppins_600SemiBold",
+    letterSpacing: -0.3,
   },
   h4: {
     fontSize: 20,
@@ -119,6 +122,12 @@ export const Typography = {
     lineHeight: 24,
     fontWeight: "400" as const,
     fontFamily: "Poppins_400Regular",
+  },
+  number: {
+    fontSize: 18,
+    fontWeight: "600" as const,
+    fontFamily: "Poppins_600SemiBold",
+    fontVariant: ["tabular-nums"] as any,
   },
   small: {
     fontSize: 14,
@@ -133,14 +142,16 @@ export const Typography = {
     fontFamily: "Poppins_500Medium",
   },
   arabic: {
-    fontSize: 24,
-    lineHeight: 40,
-    fontWeight: "400" as const,
-  },
-  arabicLarge: {
-    fontSize: 32,
+    fontSize: 26,
     lineHeight: 48,
     fontWeight: "400" as const,
+    fontFamily: Platform.OS === "ios" ? "Amiri" : "serif",
+  },
+  arabicLarge: {
+    fontSize: 34,
+    lineHeight: 56,
+    fontWeight: "400" as const,
+    fontFamily: Platform.OS === "ios" ? "Amiri" : "serif",
   },
 };
 

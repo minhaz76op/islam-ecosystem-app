@@ -6,7 +6,7 @@ import { Typography } from "@/constants/theme";
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: "h1" | "h2" | "h3" | "h4" | "body" | "small" | "link" | "arabic" | "arabicLarge";
+  type?: "h1" | "h2" | "h3" | "h4" | "body" | "small" | "link" | "arabic" | "arabicLarge" | "number";
 };
 
 export function ThemedText({
@@ -50,6 +50,8 @@ export function ThemedText({
         return Typography.small;
       case "link":
         return Typography.link;
+      case "number":
+        return Typography.number;
       case "arabic":
         return Typography.arabic;
       case "arabicLarge":
@@ -60,6 +62,7 @@ export function ThemedText({
   };
 
   const isArabic = type === "arabic" || type === "arabicLarge";
+  const isNumber = type === "number";
   const writingDirection = isArabic ? "rtl" : "ltr";
 
   return (
@@ -67,6 +70,7 @@ export function ThemedText({
       style={[
         { color: getColor(), writingDirection },
         getTypeStyle(),
+        isNumber && { fontVariant: ["tabular-nums"] },
         style,
       ]}
       {...rest}
