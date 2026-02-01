@@ -25,7 +25,7 @@ export default function IslamicNamesScreen() {
       searchQuery === "" ||
       name.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       name.meaning.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      name.meaningBengali.includes(searchQuery);
+      (name.meaningBengali && name.meaningBengali.includes(searchQuery));
     return matchesGender && matchesSearch;
   });
 
