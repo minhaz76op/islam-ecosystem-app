@@ -423,7 +423,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const response = await openai.chat.completions.create({
-        model: hasImage ? "gpt-4o" : "gpt-4o",
+        model: "gpt-4o",
         messages: formattedMessages,
         max_tokens: 4000,
       });
@@ -449,7 +449,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const islamicPrompt = `Islamic art style, respectful and appropriate: ${prompt}. No human faces or figures, geometric patterns and calligraphy preferred.`;
 
       const response = await openai.images.generate({
-        model: "gpt-image-1",
+        model: "dall-e-3",
         prompt: islamicPrompt,
         n: 1,
         size: "1024x1024",
