@@ -94,12 +94,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, phoneNumber, password } = req.body;
 
-      if (!username || !phoneNumber || !password) {
-        return res.status(400).json({ error: "Username, phone number and password are required" });
+      if (!password || (!username && !phoneNumber)) {
+        return res.status(400).json({ error: "Password and either username or phone number are required" });
       }
 
-      const user = await storage.getUserByUsername(username);
-      if (!user || user.phoneNumber !== phoneNumber) {
+      let user;
+      if (username) {
+        user = await storage.getUserByUsername(username);
+      } else if (phoneNumber) {
+        user = await storage.getUserByPhoneNumber(phoneNumber);
+      }
+
+      if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
