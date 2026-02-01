@@ -1,6 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MenuScreen from "@/screens/MenuScreen";
+import LearnQuranScreen from "@/screens/LearnQuranScreen";
 import DuaListScreen from "@/screens/DuaListScreen";
 import QuranScreen from "@/screens/QuranScreen";
 import ArticlesScreen from "@/screens/ArticlesScreen";
@@ -35,6 +36,7 @@ export type MenuStackParamList = {
   Ruqyah: undefined;
   IslamicHistory: undefined;
   IslamicStories: undefined;
+  LearnQuran: undefined;
 };
 
 const Stack = createNativeStackNavigator<MenuStackParamList>();
@@ -49,6 +51,13 @@ export default function MenuStackNavigator() {
         component={MenuScreen}
         options={{
           headerTitle: "Menu",
+        }}
+      />
+      <Stack.Screen
+        name="LearnQuran"
+        component={LearnQuranScreen}
+        options={{
+          headerTitle: "Learn Quran",
         }}
       />
       <Stack.Screen

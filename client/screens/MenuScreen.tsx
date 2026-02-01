@@ -56,6 +56,13 @@ export default function MenuScreen() {
 
   const menuItems = [
     {
+      icon: "book-open",
+      title: t("learnQuran"),
+      subtitle: "From alphabets to verses",
+      color: "#059669",
+      screen: "LearnQuran",
+    },
+    {
       icon: "heart",
       title: t("duas"),
       subtitle: "Collection of beautiful duas",
