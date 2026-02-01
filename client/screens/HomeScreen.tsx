@@ -86,6 +86,8 @@ function getGreeting(): string {
   return "Good Evening";
 }
 
+import { ImageModal } from "@/components/ImageModal";
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
@@ -95,6 +97,7 @@ export default function HomeScreen() {
 
   const [userName, setUserName] = useState("Guest");
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [prayers, setPrayers] = useState<DailyPrayers | null>(null);
   const [completedPrayers, setCompletedPrayers] =
     useState<CompletedPrayer | null>(null);
@@ -259,7 +262,13 @@ export default function HomeScreen() {
         >
           <View style={styles.profileRow}>
             <Pressable
-              onPress={() => navigation.navigate("SettingsTab", { screen: "EditProfile" })}
+              onPress={() => {
+                if (userAvatar) {
+                  setIsImageModalVisible(true);
+                } else {
+                  navigation.navigate("SettingsTab", { screen: "EditProfile" });
+                }
+              }}
               style={[
                 styles.avatarContainer,
                 { backgroundColor: theme.primary },
@@ -602,6 +611,12 @@ export default function HomeScreen() {
           </View>
         </Animated.View>
       </ScrollView>
+
+      <ImageModal
+        visible={isImageModalVisible}
+        imageUrl={userAvatar}
+        onClose={() => setIsImageModalVisible(false)}
+      />
       
       {/* Floating IslamicGPT Chat Button */}
       <Pressable

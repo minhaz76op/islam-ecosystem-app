@@ -79,6 +79,8 @@ function SettingsRow({
   );
 }
 
+import { ImageModal } from "@/components/ImageModal";
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -89,6 +91,7 @@ export default function SettingsScreen() {
 
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -149,9 +152,20 @@ export default function SettingsScreen() {
             { backgroundColor: theme.primary },
           ]}
         >
-          <View style={styles.profileAvatar}>
-            <Feather name="user" size={32} color={theme.primary} />
-          </View>
+          <Pressable 
+            onPress={() => {
+              if (user?.avatarUrl) {
+                setIsImageModalVisible(true);
+              }
+            }}
+            style={styles.profileAvatar}
+          >
+            {user?.avatarUrl ? (
+              <Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} />
+            ) : (
+              <Feather name="user" size={32} color={theme.primary} />
+            )}
+          </Pressable>
           <View style={styles.profileInfo}>
             <ThemedText style={styles.profileName}>@{user.username || user.name.toLowerCase().replace(/\s/g, '')}</ThemedText>
             <ThemedText style={styles.profileEmail}>ID: {user.uniqueId || 'DWI' + user.createdAt.toString().slice(-8)}</ThemedText>
@@ -293,6 +307,12 @@ export default function SettingsScreen() {
         </View>
       </Animated.View>
 
+      <ImageModal
+        visible={isImageModalVisible}
+        imageUrl={user?.avatarUrl || null}
+        onClose={() => setIsImageModalVisible(false)}
+      />
+
       {loggedIn ? (
         <Animated.View entering={FadeInDown.delay(600).duration(500)}>
           <View style={[styles.section, { marginTop: Spacing.xl }]}>
@@ -323,12 +343,19 @@ const styles = StyleSheet.create({
     ...Shadows.lg,
   },
   profileAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 3,
+    borderColor: "rgba(255,255,255,0.3)",
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   profileInfo: {
     flex: 1,
