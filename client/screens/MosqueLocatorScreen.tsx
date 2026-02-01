@@ -1,22 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, Platform, Linking } from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
+import { View, StyleSheet, Pressable, Platform, Linking, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 
 const SAMPLE_MOSQUES = [
-  { id: "1", name: "Baitul Mukarram", distance: "0.5 km", address: "Dhaka, Bangladesh" },
-  { id: "2", name: "Islamic Center", distance: "1.2 km", address: "Main Street" },
-  { id: "3", name: "Masjid Al-Rahman", distance: "2.0 km", address: "Downtown Area" },
-  { id: "4", name: "Central Mosque", distance: "2.5 km", address: "City Center" },
+  { id: "1", name: "Baitul Mukarram", coords: { latitude: 23.7317, longitude: 90.4124 }, address: "Dhaka, Bangladesh" },
+  { id: "2", name: "Islamic Center", coords: { latitude: 23.7400, longitude: 90.4200 }, address: "Main Street" },
+  { id: "3", name: "Masjid Al-Rahman", coords: { latitude: 23.7200, longitude: 90.4000 }, address: "Downtown Area" },
+  { id: "4", name: "Central Mosque", coords: { latitude: 23.7500, longitude: 90.4300 }, address: "City Center" },
 ];
+
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
 
 export default function MosqueLocatorScreen() {
   const insets = useSafeAreaInsets();
@@ -46,6 +59,23 @@ export default function MosqueLocatorScreen() {
       setLoading(false);
     }
   };
+
+  const mosquesWithDistance = useMemo(() => {
+    if (!location) return SAMPLE_MOSQUES.map(m => ({ ...m, distance: "Calculating..." }));
+    
+    return SAMPLE_MOSQUES.map(mosque => {
+      const dist = calculateDistance(
+        location.coords.latitude,
+        location.coords.longitude,
+        mosque.coords.latitude,
+        mosque.coords.longitude
+      );
+      return {
+        ...mosque,
+        distance: `${dist.toFixed(1)} km`
+      };
+    }).sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+  }, [location]);
 
   const handleOpenMaps = async (mosque: typeof SAMPLE_MOSQUES[0]) => {
     await Haptics.selectionAsync();
@@ -126,11 +156,12 @@ export default function MosqueLocatorScreen() {
   }
 
   return (
-    <View
+    <ScrollView
       style={[
         styles.container,
-        { backgroundColor: theme.backgroundRoot, paddingTop: headerHeight + Spacing.xl },
+        { backgroundColor: theme.backgroundRoot },
       ]}
+      contentContainerStyle={{ paddingTop: headerHeight + Spacing.xl, paddingBottom: Spacing["2xl"] }}
     >
       <View style={{ paddingHorizontal: Spacing.lg }}>
         <Animated.View entering={FadeInDown.delay(100).duration(500)}>
@@ -143,41 +174,49 @@ export default function MosqueLocatorScreen() {
         {location ? (
           <Animated.View
             entering={FadeInDown.delay(200).duration(500)}
-            style={[styles.locationCard, { backgroundColor: theme.primary + "10" }]}
+            style={styles.mapContainer}
           >
-            <Feather name="navigation" size={18} color={theme.primary} />
-            <View style={styles.locationInfo}>
-              <ThemedText style={[styles.locationLabel, { color: theme.textSecondary }]}>
-                Your Location
-              </ThemedText>
-              <ThemedText style={styles.locationCoords}>
-                {location.coords.latitude.toFixed(4)}, {location.coords.longitude.toFixed(4)}
-              </ThemedText>
-            </View>
+            <MapView
+              style={styles.map}
+              provider={PROVIDER_GOOGLE}
+              initialRegion={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              }}
+              showsUserLocation
+            >
+              {SAMPLE_MOSQUES.map(mosque => (
+                <Marker
+                  key={mosque.id}
+                  coordinate={mosque.coords}
+                  title={mosque.name}
+                  description={mosque.address}
+                />
+              ))}
+            </MapView>
             <Pressable
               onPress={getLocation}
-              style={[styles.refreshButton, { backgroundColor: theme.primary }]}
+              style={[styles.refreshButtonMap, { backgroundColor: theme.primary }]}
             >
               <Feather name="refresh-cw" size={16} color="#FFFFFF" />
             </Pressable>
           </Animated.View>
         ) : loading ? (
-          <Animated.View
-            entering={FadeInDown.delay(200).duration(500)}
-            style={[styles.locationCard, { backgroundColor: theme.backgroundSecondary }]}
-          >
+          <View style={[styles.locationCard, { backgroundColor: theme.backgroundSecondary }]}>
             <ThemedText style={{ color: theme.textSecondary }}>
               Getting your location...
             </ThemedText>
-          </Animated.View>
+          </View>
         ) : null}
 
-        <ThemedText style={[styles.sectionTitle, { marginTop: Spacing["2xl"] }]}>
+        <ThemedText style={[styles.sectionTitle, { marginTop: Spacing.xl }]}>
           Nearby Mosques
         </ThemedText>
 
         <View style={styles.mosqueList}>
-          {SAMPLE_MOSQUES.map((mosque, index) => (
+          {mosquesWithDistance.map((mosque, index) => (
             <Animated.View
               key={mosque.id}
               entering={FadeInDown.delay(300 + index * 100).duration(500)}
@@ -213,7 +252,7 @@ export default function MosqueLocatorScreen() {
           </ThemedText>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -283,30 +322,31 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_400Regular",
     marginBottom: Spacing.xl,
   },
-  locationCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    gap: Spacing.md,
+  mapContainer: {
+    height: 250,
+    borderRadius: BorderRadius.xl,
+    overflow: "hidden",
+    marginBottom: Spacing.xl,
+    ...Shadows.md,
   },
-  locationInfo: {
-    flex: 1,
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
-  locationLabel: {
-    fontSize: 12,
-    fontFamily: "Poppins_400Regular",
-  },
-  locationCoords: {
-    fontSize: 14,
-    fontFamily: "Poppins_500Medium",
-  },
-  refreshButton: {
+  refreshButtonMap: {
+    position: "absolute",
+    right: Spacing.md,
+    bottom: Spacing.md,
     width: 36,
     height: 36,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
+    ...Shadows.md,
+  },
+  locationCard: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.xl,
   },
   sectionTitle: {
     fontSize: 16,
