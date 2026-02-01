@@ -58,10 +58,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post("/api/auth/register", async (req: Request, res: Response) => {
     try {
-      const { username, phoneNumber, password, displayName } = req.body;
+      const { username, phoneNumber, displayName } = req.body;
 
-      if (!username || !phoneNumber || !password) {
-        return res.status(400).json({ error: "Username, phone number and password are required" });
+      if (!username || !phoneNumber) {
+        return res.status(400).json({ error: "Username and phone number are required" });
       }
 
       const existingUsername = await storage.getUserByUsername(username);
@@ -74,11 +74,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ error: "Phone number already exists" });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
       const user = await storage.createUser({
         username,
         phoneNumber,
-        password: hashedPassword,
+        password: "N/A",
         displayName: displayName || username,
         avatarUrl: null,
       });
@@ -92,25 +91,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     try {
-      const { username, phoneNumber, password } = req.body;
+      const { username, phoneNumber } = req.body;
 
-      if (!password || (!username && !phoneNumber)) {
-        return res.status(400).json({ error: "Password and either username or phone number are required" });
+      if (!username || !phoneNumber) {
+        return res.status(400).json({ error: "Username and phone number are required" });
       }
 
-      let user;
-      if (username) {
-        user = await storage.getUserByUsername(username);
-      } else if (phoneNumber) {
-        user = await storage.getUserByPhoneNumber(phoneNumber);
-      }
-
-      if (!user) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) {
+      const user = await storage.getUserByUsername(username);
+      if (!user || user.phoneNumber !== phoneNumber) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
