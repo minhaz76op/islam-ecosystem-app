@@ -9,6 +9,7 @@ import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 
 const { width } = Dimensions.get("window");
@@ -71,6 +72,7 @@ const NAMAJ_DATA = {
 export default function NamajScreen() {
   const headerHeight = useHeaderHeight();
   const { theme, isDark } = useTheme();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<keyof typeof NAMAJ_DATA>("jumma");
 
   const handlePress = () => {
@@ -114,12 +116,12 @@ export default function NamajScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInDown.duration(500)} key={activeTab}>
           <View style={[styles.contentCard, { backgroundColor: theme.backgroundDefault }]}>
-            <ThemedText style={styles.sectionTitle}>{currentData.title}</ThemedText>
+            <ThemedText style={styles.sectionTitle}>{activeTab === "eid-ul-fitr" ? t("eidUlFitr") : activeTab === "eid-ul-adha" ? t("eidUlAdha") : t(activeTab as any)}</ThemedText>
             <ThemedText style={[styles.rulesText, { color: theme.textSecondary }]}>{currentData.rules}</ThemedText>
             
             <View style={styles.divider} />
             
-            <ThemedText style={styles.subTitle}>Steps / Procedure</ThemedText>
+            <ThemedText style={styles.subTitle}>{t("procedure")}</ThemedText>
             {currentData.steps.map((step, idx) => (
               <View key={idx} style={styles.stepRow}>
                 <View style={[styles.stepDot, { backgroundColor: AppColors.primary }]} />

@@ -9,6 +9,7 @@ import Animated, { FadeInDown, FadeInRight, FadeIn, SlideInDown } from "react-na
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 
 const { width, height } = Dimensions.get("window");
@@ -100,6 +101,7 @@ export default function LearnQuranScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme, isDark } = useTheme();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"ampara" | "alphabets" | "words" | "lines">("ampara");
   const [selectedLesson, setSelectedLesson] = useState<typeof AMPARA_LESSONS[0] | null>(null);
 
@@ -141,7 +143,7 @@ export default function LearnQuranScreen() {
                   activeTab === tab && { color: "#FFF", fontFamily: "Poppins_600SemiBold" },
                 ]}
               >
-                {tab === "ampara" ? "Ampara" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === "ampara" ? "Ampara" : tab === "alphabets" ? t("individualLetters") : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </ThemedText>
             </Pressable>
           ))}
@@ -280,7 +282,7 @@ export default function LearnQuranScreen() {
                   <View style={styles.placeholderContainer}>
                     <ThemedText style={styles.lessonArabicLarge}>{selectedLesson?.ar}</ThemedText>
                     <ThemedText style={[styles.placeholderText, { color: theme.textSecondary }]}>
-                      Repeat these letters until you master them.
+                      {t("repeatLetters")}
                     </ThemedText>
                   </View>
                 )}
@@ -289,7 +291,7 @@ export default function LearnQuranScreen() {
             
             <View style={[styles.modalFooter, { paddingBottom: insets.bottom + Spacing.lg }]}>
               <Pressable style={styles.completeButton} onPress={closeLesson}>
-                <ThemedText style={styles.completeButtonText}>Finish Lesson</ThemedText>
+                <ThemedText style={styles.completeButtonText}>{t("finishLesson")}</ThemedText>
               </Pressable>
             </View>
           </Animated.View>
