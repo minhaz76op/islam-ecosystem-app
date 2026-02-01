@@ -194,7 +194,7 @@ export default function MenuScreen() {
         <View style={styles.menuGrid}>
           {menuItems.map((item, index) => (
             <MenuItem
-              key={item.screen}
+              key={item.screen + index}
               icon={item.icon}
               title={item.title}
               subtitle={item.subtitle}

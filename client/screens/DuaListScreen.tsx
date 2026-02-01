@@ -16,6 +16,7 @@ import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 export default function DuaListScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
+  const tabBarHeight = 60; // Default fallback or use a constant
   const { theme, isDark } = useTheme();
   const { language } = useLanguage();
   const [expandedId, setExpandedId] = useState<string | null>(null);
