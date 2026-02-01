@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, Pressable, Dimensions } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable, Dimensions, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
-import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeInRight, FadeIn, SlideInDown } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const ALPHABETS = [
   { ar: "ا", tr: "Alif" }, { ar: "ب", tr: "Ba" }, { ar: "ت", tr: "Ta" }, { ar: "ث", tr: "Tha" },
@@ -24,9 +24,37 @@ const ALPHABETS = [
 ];
 
 const AMPARA_LESSONS = [
-  { id: 1, title: "Lesson 1: Individual Letters", description: "Learn the basic Arabic alphabets", ar: "ا ب ت ث" },
-  { id: 2, title: "Lesson 2: Compound Letters", description: "How letters join together", ar: "لا با تا ثا" },
-  { id: 3, title: "Lesson 3: Harakat (Vowels)", description: "Fatha, Kasra, and Damma", ar: "اَ اِ اُ" },
+  { 
+    id: 1, 
+    title: "Lesson 1: Individual Letters", 
+    description: "Learn the basic Arabic alphabets", 
+    ar: "ا ب ت ث",
+    content: [
+      { ar: "ا", tr: "Alif" }, { ar: "ب", tr: "Ba" }, { ar: "ت", tr: "Ta" }, { ar: "ث", tr: "Tha" },
+      { ar: "ج", tr: "Jim" }, { ar: "ح", tr: "Ha" }, { ar: "خ", tr: "Kha" }, { ar: "د", tr: "Dal" }
+    ]
+  },
+  { 
+    id: 2, 
+    title: "Lesson 2: Compound Letters", 
+    description: "How letters join together", 
+    ar: "لا با تا ثا",
+    content: [
+      { ar: "لا", tr: "Lam-Alif" }, { ar: "با", tr: "Ba-Alif" }, { ar: "تا", tr: "Ta-Alif" }, { ar: "ثا", tr: "Tha-Alif" },
+      { ar: "نا", tr: "Nun-Alif" }, { ar: "يا", tr: "Ya-Alif" }, { ar: "بلى", tr: "Bala" }, { ar: "لما", tr: "Lamma" }
+    ]
+  },
+  { 
+    id: 3, 
+    title: "Lesson 3: Harakat (Vowels)", 
+    description: "Fatha, Kasra, and Damma", 
+    ar: "اَ اِ اُ",
+    content: [
+      { ar: "اَ", tr: "A (Fatha)" }, { ar: "اِ", tr: "I (Kasra)" }, { ar: "اُ", tr: "U (Damma)" },
+      { ar: "بَ", tr: "Ba" }, { ar: "بِ", tr: "Bi" }, { ar: "بُ", tr: "Bu" },
+      { ar: "تَ", tr: "Ta" }, { ar: "تِ", tr: "Ti" }, { ar: "تُ", tr: "Tu" }
+    ]
+  },
   { id: 4, title: "Lesson 4: Tanween", description: "Double vowels", ar: "اً اٍ اٌ" },
   { id: 5, title: "Lesson 5: Madd Letters", description: "Long vowels", ar: "بَا بِى بُو" },
   { id: 6, title: "Lesson 6: Sukoon", description: "Resting sign", ar: "اَبْ اِبْ اُبْ" },
@@ -72,10 +100,20 @@ export default function LearnQuranScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme, isDark } = useTheme();
-  const [activeTab, setActiveTab] = useState<"alphabets" | "ampara" | "words" | "lines">("ampara");
+  const [activeTab, setActiveTab] = useState<"ampara" | "alphabets" | "words" | "lines">("ampara");
+  const [selectedLesson, setSelectedLesson] = useState<typeof AMPARA_LESSONS[0] | null>(null);
 
   const handlePress = () => {
     Haptics.selectionAsync();
+  };
+
+  const openLesson = (lesson: typeof AMPARA_LESSONS[0]) => {
+    handlePress();
+    setSelectedLesson(lesson);
+  };
+
+  const closeLesson = () => {
+    setSelectedLesson(null);
   };
 
   return (
@@ -117,22 +155,24 @@ export default function LearnQuranScreen() {
         {activeTab === "ampara" && (
           <View style={styles.list}>
             {AMPARA_LESSONS.map((item, index) => (
-              <Animated.View
-                key={index}
-                entering={FadeInDown.delay(index * 50).duration(500)}
-                style={[styles.lessonCard, { backgroundColor: theme.backgroundDefault }]}
-              >
-                <View style={styles.lessonHeader}>
-                  <View style={[styles.lessonBadge, { backgroundColor: AppColors.primary + "15" }]}>
-                    <ThemedText style={[styles.lessonBadgeText, { color: AppColors.primary }]}>{item.id}</ThemedText>
+              <Pressable key={index} onPress={() => openLesson(item)}>
+                <Animated.View
+                  entering={FadeInDown.delay(index * 50).duration(500)}
+                  style={[styles.lessonCard, { backgroundColor: theme.backgroundDefault }]}
+                >
+                  <View style={styles.lessonHeader}>
+                    <View style={[styles.lessonBadge, { backgroundColor: AppColors.primary + "15" }]}>
+                      <ThemedText style={[styles.lessonBadgeText, { color: AppColors.primary }]}>{item.id}</ThemedText>
+                    </View>
+                    <View style={styles.lessonInfo}>
+                      <ThemedText style={styles.lessonTitle}>{item.title}</ThemedText>
+                      <ThemedText style={[styles.lessonDesc, { color: theme.textSecondary }]}>{item.description}</ThemedText>
+                    </View>
+                    <Feather name="chevron-right" size={20} color={theme.textSecondary} />
                   </View>
-                  <View style={styles.lessonInfo}>
-                    <ThemedText style={styles.lessonTitle}>{item.title}</ThemedText>
-                    <ThemedText style={[styles.lessonDesc, { color: theme.textSecondary }]}>{item.description}</ThemedText>
-                  </View>
-                </View>
-                <ThemedText style={styles.lessonArabic}>{item.ar}</ThemedText>
-              </Animated.View>
+                  <ThemedText style={styles.lessonArabic}>{item.ar}</ThemedText>
+                </Animated.View>
+              </Pressable>
             ))}
           </View>
         )}
@@ -192,6 +232,69 @@ export default function LearnQuranScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Lesson Detail Modal */}
+      <Modal
+        visible={!!selectedLesson}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={closeLesson}
+      >
+        <View style={styles.modalOverlay}>
+          <Pressable style={styles.modalCloseArea} onPress={closeLesson} />
+          <Animated.View 
+            entering={SlideInDown.springify().damping(20)}
+            style={[styles.modalContent, { backgroundColor: theme.backgroundDefault }]}
+          >
+            <View style={styles.modalHeader}>
+              <View style={styles.modalTitleRow}>
+                <View style={[styles.lessonBadge, { backgroundColor: AppColors.primary + "15" }]}>
+                  <ThemedText style={[styles.lessonBadgeText, { color: AppColors.primary }]}>
+                    {selectedLesson?.id}
+                  </ThemedText>
+                </View>
+                <View>
+                  <ThemedText style={styles.modalTitle}>{selectedLesson?.title}</ThemedText>
+                  <ThemedText style={[styles.modalSubtitle, { color: theme.textSecondary }]}>
+                    {selectedLesson?.description}
+                  </ThemedText>
+                </View>
+              </View>
+              <Pressable onPress={closeLesson} style={styles.modalCloseButton}>
+                <Feather name="x" size={24} color={theme.textSecondary} />
+              </Pressable>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.modalBody}>
+              <View style={styles.practiceGrid}>
+                {selectedLesson?.content ? (
+                  selectedLesson.content.map((item, i) => (
+                    <Pressable key={i} onPress={handlePress}>
+                      <View style={[styles.practiceCard, { backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#F8FAFC" }]}>
+                        <ThemedText style={styles.practiceArabic}>{item.ar}</ThemedText>
+                        <ThemedText style={[styles.practiceTrans, { color: theme.textSecondary }]}>{item.tr}</ThemedText>
+                      </View>
+                    </Pressable>
+                  ))
+                ) : (
+                  <View style={styles.placeholderContainer}>
+                    <ThemedText style={styles.lessonArabicLarge}>{selectedLesson?.ar}</ThemedText>
+                    <ThemedText style={[styles.placeholderText, { color: theme.textSecondary }]}>
+                      Repeat these letters until you master them.
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+            
+            <View style={[styles.modalFooter, { paddingBottom: insets.bottom + Spacing.lg }]}>
+              <Pressable style={styles.completeButton} onPress={closeLesson}>
+                <ThemedText style={styles.completeButtonText}>Finish Lesson</ThemedText>
+              </Pressable>
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
     </LinearGradient>
   );
 }
@@ -211,7 +314,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: BorderRadius.md,
   },
-  tabText: { fontSize: 14, fontFamily: "Poppins_400Regular" },
+  tabText: { fontSize: 13, fontFamily: "Poppins_400Regular" },
   scrollContent: { padding: Spacing.lg, paddingBottom: 100 },
   grid: {
     flexDirection: "row",
@@ -305,5 +408,100 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlign: "right",
     lineHeight: 48,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalCloseArea: {
+    flex: 1,
+  },
+  modalContent: {
+    height: height * 0.8,
+    borderTopLeftRadius: BorderRadius["2xl"],
+    borderTopRightRadius: BorderRadius["2xl"],
+    ...Shadows.lg,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: Spacing.xl,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
+  },
+  modalTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: "Poppins_600SemiBold",
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+  },
+  modalCloseButton: {
+    padding: 8,
+  },
+  modalBody: {
+    padding: Spacing.xl,
+  },
+  practiceGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.md,
+    justifyContent: "center",
+  },
+  practiceCard: {
+    width: (width - Spacing.xl * 2 - Spacing.md * 2) / 3,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  practiceArabic: {
+    fontSize: 32,
+    fontFamily: "Poppins_600SemiBold",
+    marginBottom: 4,
+  },
+  practiceTrans: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+  },
+  placeholderContainer: {
+    padding: Spacing.xl,
+    alignItems: "center",
+    width: "100%",
+  },
+  lessonArabicLarge: {
+    fontSize: 64,
+    textAlign: "center",
+    marginBottom: Spacing.xl,
+    lineHeight: 80,
+  },
+  placeholderText: {
+    fontSize: 16,
+    textAlign: "center",
+    fontFamily: "Poppins_400Regular",
+  },
+  modalFooter: {
+    padding: Spacing.xl,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.05)",
+  },
+  completeButton: {
+    backgroundColor: AppColors.primary,
+    paddingVertical: 16,
+    borderRadius: BorderRadius.xl,
+    alignItems: "center",
+    ...Shadows.md,
+  },
+  completeButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontFamily: "Poppins_600SemiBold",
   },
 });
