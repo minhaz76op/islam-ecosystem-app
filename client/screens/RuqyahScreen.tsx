@@ -268,7 +268,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     category: "dua",
   },
   {
-    id: "17",
+    id: "17_dua",
     title: "Seeking Refuge from Satan",
     arabicTitle: "الاستعاذة من الشيطان",
     arabic: `أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ`,
@@ -280,7 +280,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     category: "dua",
   },
   {
-    id: "18",
+    id: "18_dua",
     title: "Dua When Visiting the Sick",
     arabicTitle: "دعاء عيادة المريض",
     arabic: `أَسْأَلُ اللَّهَ الْعَظِيمَ رَبَّ الْعَرْشِ الْعَظِيمِ أَنْ يَشْفِيَكَ`,
@@ -292,7 +292,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     category: "dua",
   },
   {
-    id: "17",
+    id: "17_quran",
     title: "Surah Al-Hashr (21-24)",
     arabicTitle: "خواتيم سورة الحشر",
     arabic: `لَوْ أَنزَلْنَا هَٰذَا الْقُرْآنَ عَلَىٰ جَبَلٍ لَّرَأَيْتَهُ خَاشِعًا مُّتَصَدِّعًا مِّنْ خَشْيَةِ اللَّهِ ۚ وَتِلْكَ الْأَمْثَالُ نَضْرِبُهَا لِلنَّاسِ لَعَلَّهُمْ يَتَفَكَّرُونَ ﴿٢١﴾
@@ -307,7 +307,7 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     category: "quran",
   },
   {
-    id: "18",
+    id: "18_quran",
     title: "Surah Al-Jinn (1-4)",
     arabicTitle: "أول سورة الجن",
     arabic: `قُلْ أُوحِيَ إِلَيَّ أَنَّهُ اسْتَمَعَ نَفَرٌ مِّنَ الْجِنِّ فَقَالُوا إِنَّا سَمِعْنَا قُرْآنًا عَجَبًا ﴿١﴾
@@ -463,6 +463,30 @@ const RUQYAH_COLLECTION: RuqyahItem[] = [
     benefit: "Repeated recitation for establishing pure monotheism which is the foundation of healing.",
     repetitions: 7,
     audioUrl: "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/112.mp3",
+    category: "quran",
+  },
+  {
+    id: "31",
+    title: "Ruqyah Shariah (Full Length)",
+    arabicTitle: "الرقية الشرعية كاملة",
+    arabic: "قُرآنٌ كَرِيم وَأَدْعِيَةٌ نَبَوِيَّةٌ لِلشِّفَاءِ",
+    transliteration: "Al-Ruqyah Al-Shar'iyyah Al-Kamilah",
+    translation: "Complete Legal Ruqyah: Recitation of Quran and Prophetic Duas for healing.",
+    benefit: "A comprehensive Ruqyah recitation by Mishary Rashid Alafasy covering all verses of healing and protection. Ideal for playing in the home or listening to with focus.",
+    repetitions: 1,
+    audioUrl: "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/ruqyah.mp3",
+    category: "quran",
+  },
+  {
+    id: "32",
+    title: "Surah Al-Baqarah (Complete)",
+    arabicTitle: "سورة البقرة كاملة",
+    arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ... الم",
+    transliteration: "Bismillahir Rahmanir Raheem... Alif-Lam-Mim",
+    translation: "In the name of Allah, the Most Gracious, the Most Merciful... Alif-Lam-Mim",
+    benefit: "The Prophet (PBUH) said: 'Satan runs away from the house in which Surah Al-Baqarah is recited.' It is the best protection against magic and evil influence.",
+    repetitions: 1,
+    audioUrl: "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/002.mp3",
     category: "quran",
   },
 ];
