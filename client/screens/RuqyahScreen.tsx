@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -405,9 +405,15 @@ export default function RuqyahScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme, isDark } = useTheme();
-  const { isPlaying, isLoading, currentId, playAudio } = useAudioPlayer();
+  const { isPlaying, isLoading, currentId, playAudio, stopAudio } = useAudioPlayer();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "quran" | "dua">("all");
+
+  useEffect(() => {
+    return () => {
+      stopAudio();
+    };
+  }, []);
 
   const handlePlayAudio = async (item: RuqyahItem, e: any) => {
     e.stopPropagation();

@@ -20,15 +20,20 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
 
   useEffect(() => {
     if (player) {
-      const subscription = player.addListener("playbackStatusUpdate" as any, (status: any) => {
+      const subscription = player.addListener("playbackStatusUpdate", (status: any) => {
         if (status && typeof status.isPlaying === "boolean") {
           setIsPlaying(status.isPlaying);
-          if (!status.isPlaying && currentId) {
+          if (status.didJustFinish && currentId) {
             setCurrentId(null);
+            setIsPlaying(false);
           }
         }
       });
-      return () => subscription?.remove?.();
+      return () => {
+        if (subscription && typeof subscription.remove === 'function') {
+          subscription.remove();
+        }
+      };
     }
   }, [player, currentId]);
 
