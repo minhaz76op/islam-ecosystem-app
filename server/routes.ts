@@ -371,13 +371,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/challenges/progress", async (req: Request, res: Response) => {
     try {
-      const { challengeId, oderId, progress } = req.body;
+      const { challengeId, userId, progress } = req.body;
 
-      if (!challengeId || !oderId || progress === undefined) {
+      if (!challengeId || !userId || progress === undefined) {
         return res.status(400).json({ error: "ChallengeId, userId, and progress are required" });
       }
 
-      await storage.updateChallengeProgress(challengeId, oderId, progress);
+      await storage.updateChallengeProgress(challengeId, userId, progress);
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to update challenge progress" });

@@ -336,13 +336,13 @@ export class DatabaseStorage implements IStorage {
       .where(eq(challenges.id, challengeId));
   }
 
-  async updateChallengeProgress(challengeId: string, oderId: string, progress: number): Promise<void> {
+  async updateChallengeProgress(challengeId: string, userId: string, progress: number): Promise<void> {
     const [challenge] = await db.select().from(challenges).where(eq(challenges.id, challengeId));
     if (!challenge) return;
 
-    if (challenge.creatorId === oderId) {
+    if (challenge.creatorId === userId) {
       await db.update(challenges).set({ creatorProgress: progress }).where(eq(challenges.id, challengeId));
-    } else if (challenge.opponentId === oderId) {
+    } else if (challenge.opponentId === userId) {
       await db.update(challenges).set({ opponentProgress: progress }).where(eq(challenges.id, challengeId));
     }
 
