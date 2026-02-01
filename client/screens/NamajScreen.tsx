@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   scrollContent: { padding: Spacing.lg, paddingBottom: 100 },
   contentCard: {
     padding: Spacing.xl,
-    borderRadius: BorderRadius.xxl,
+    borderRadius: BorderRadius["2xl"],
     ...Shadows.md,
   },
   sectionTitle: { fontSize: 22, fontFamily: "Poppins_700Bold", marginBottom: Spacing.xs },
