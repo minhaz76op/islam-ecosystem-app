@@ -285,13 +285,6 @@ export default function FriendsScreen() {
             <Feather name="log-in" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
             <ThemedText style={styles.primaryButtonText}>Sign In</ThemedText>
           </Pressable>
-          <Pressable
-            style={[styles.secondaryButton, { borderColor: theme.primary }]}
-            onPress={() => navigation.getParent()?.navigate("Signup")}
-          >
-            <Feather name="user-plus" size={20} color={theme.primary} style={{ marginRight: 8 }} />
-            <ThemedText style={[styles.secondaryButtonText, { color: theme.primary }]}>Create Account</ThemedText>
-          </Pressable>
         </View>
       </View>
     );
