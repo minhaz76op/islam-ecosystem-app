@@ -143,7 +143,7 @@ export default function LearnQuranScreen() {
                   activeTab === tab && { color: "#FFF", fontFamily: "Poppins_600SemiBold" },
                 ]}
               >
-                {tab === "ampara" ? "Ampara" : tab === "alphabets" ? t("individualLetters") : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === "ampara" ? t("ampara") : tab === "alphabets" ? t("individualLetters") : tab === "words" ? t("words") : t("lines")}
               </ThemedText>
             </Pressable>
           ))}

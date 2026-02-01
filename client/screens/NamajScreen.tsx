@@ -106,7 +106,7 @@ export default function NamajScreen() {
                   activeTab === tab && { color: "#FFF", fontFamily: "Poppins_600SemiBold" },
                 ]}
               >
-                {tab === "eid-ul-fitr" ? "Fitr" : tab === "eid-ul-adha" ? "Adha" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === "eid-ul-fitr" ? t("eidUlFitr") : tab === "eid-ul-adha" ? t("eidUlAdha") : t(tab as any)}
               </ThemedText>
             </Pressable>
           ))}
