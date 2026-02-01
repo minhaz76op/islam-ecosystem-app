@@ -8,6 +8,7 @@ import ArticlesScreen from "@/screens/ArticlesScreen";
 import QuizScreen from "@/screens/QuizScreen";
 import MosqueLocatorScreen from "@/screens/MosqueLocatorScreen";
 import RozaTimetableScreen from "@/screens/RozaTimetableScreen";
+import NamajScreen from "@/screens/NamajScreen";
 import NamesOfAllahScreen from "@/screens/NamesOfAllahScreen";
 import IslamicNamesScreen from "@/screens/IslamicNamesScreen";
 import QiblaDirectionScreen from "@/screens/QiblaDirectionScreen";
@@ -37,6 +38,7 @@ export type MenuStackParamList = {
   IslamicHistory: undefined;
   IslamicStories: undefined;
   LearnQuran: undefined;
+  Namaj: undefined;
 };
 
 const Stack = createNativeStackNavigator<MenuStackParamList>();
@@ -163,6 +165,13 @@ export default function MenuStackNavigator() {
         component={IslamicStoriesScreen}
         options={{
           headerTitle: "Islamic Stories",
+        }}
+      />
+      <Stack.Screen
+        name="Namaj"
+        component={NamajScreen}
+        options={{
+          headerTitle: "Namaj & Duas",
         }}
       />
     </Stack.Navigator>

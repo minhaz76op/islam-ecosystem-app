@@ -167,6 +167,13 @@ export default function MenuScreen() {
       color: "#F59E0B",
       screen: "IslamicStories",
     },
+    {
+      icon: "check-circle",
+      title: "Namaj",
+      subtitle: "Jumma, Eid & Janajah",
+      color: "#0EA5E9",
+      screen: "Namaj",
+    },
   ];
 
   const handlePress = async (screen: string) => {
