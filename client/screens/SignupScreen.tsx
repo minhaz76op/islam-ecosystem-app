@@ -86,7 +86,7 @@ export default function SignupScreen() {
 
     try {
       const randomId = Math.random().toString(36).substring(2, 8);
-      const result = await register(`google_user_${randomId}`, `google_${randomId}_pass`, "Google User");
+      const result = await register(`google_user_${randomId}`, `google_${randomId}_pass`, "Google User", "");
       if (result.success) {
         await saveUserProfile({ name: "Google User" });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -117,7 +117,7 @@ export default function SignupScreen() {
       const randomId = Math.random().toString(36).substring(2, 8);
       const appleUsername = `apple_user_${randomId}`;
 
-      const result = await register(appleUsername, `apple_${randomId}_pass`, userName);
+      const result = await register(appleUsername, `apple_${randomId}_pass`, userName, "");
       if (result.success) {
         await saveUserProfile({ name: userName });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
