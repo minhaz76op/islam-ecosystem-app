@@ -80,6 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         phoneNumber,
         password: hashedPassword,
         displayName: displayName || username,
+        avatarUrl: null,
       });
 
       const { password: _, ...userWithoutPassword } = user;
