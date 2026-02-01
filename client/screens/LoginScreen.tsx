@@ -239,38 +239,6 @@ export default function LoginScreen() {
       </Animated.View>
 
       <Animated.View
-        entering={FadeInDown.delay(300).duration(500)}
-        style={styles.dividerRow}
-      >
-        <View style={[styles.divider, { backgroundColor: theme.cardBorder }]} />
-        <ThemedText style={[styles.dividerText, { color: theme.textSecondary }]}>
-          or continue with
-        </ThemedText>
-        <View style={[styles.divider, { backgroundColor: theme.cardBorder }]} />
-      </Animated.View>
-
-      <Animated.View
-        entering={FadeInDown.delay(400).duration(500)}
-        style={styles.socialRow}
-      >
-        <Pressable
-          onPress={handleGoogleLogin}
-          disabled={isGoogleLoading}
-          style={[
-            styles.googleButton,
-            { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder },
-          ]}
-        >
-          <View style={styles.googleIconContainer}>
-            <ThemedText style={styles.googleIcon}>G</ThemedText>
-          </View>
-          <ThemedText style={styles.googleText}>
-            {isGoogleLoading ? "Signing in..." : "Sign in with Google"}
-          </ThemedText>
-        </Pressable>
-      </Animated.View>
-
-      <Animated.View
         entering={FadeInDown.delay(500).duration(500)}
         style={styles.footer}
       >

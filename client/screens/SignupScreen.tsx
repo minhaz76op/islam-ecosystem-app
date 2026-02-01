@@ -308,39 +308,6 @@ export default function SignupScreen() {
         </Button>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.dividerRow}>
-        <View style={[styles.divider, { backgroundColor: theme.cardBorder }]} />
-        <ThemedText style={[styles.dividerText, { color: theme.textSecondary }]}>
-          or sign up with
-        </ThemedText>
-        <View style={[styles.divider, { backgroundColor: theme.cardBorder }]} />
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(400).duration(500)} style={styles.socialRow}>
-        <Pressable
-          onPress={handleGoogleSignIn}
-          style={[
-            styles.socialButton,
-            { backgroundColor: theme.backgroundDefault, borderColor: theme.cardBorder },
-          ]}
-        >
-          <View style={styles.googleIcon}>
-            <ThemedText style={styles.googleIconText}>G</ThemedText>
-          </View>
-          <ThemedText style={styles.socialText}>Google</ThemedText>
-        </Pressable>
-
-        {Platform.OS === "ios" ? (
-          <Pressable
-            onPress={handleAppleSignIn}
-            style={[styles.socialButton, { backgroundColor: "#000000", borderColor: "#000000" }]}
-          >
-            <Feather name="smartphone" size={22} color="#FFFFFF" />
-            <ThemedText style={[styles.socialText, { color: "#FFFFFF" }]}>Apple</ThemedText>
-          </Pressable>
-        ) : null}
-      </Animated.View>
-
       <Animated.View entering={FadeInDown.delay(500).duration(500)} style={styles.footer}>
         <ThemedText style={[styles.footerText, { color: theme.textSecondary }]}>
           Already have an account?{" "}

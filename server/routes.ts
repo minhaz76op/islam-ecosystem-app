@@ -115,34 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/auth/google", async (req: Request, res: Response) => {
-    try {
-      const { googleId, email, displayName, avatarUrl } = req.body;
-
-      if (!googleId || !email) {
-        return res.status(400).json({ error: "Google ID and email are required" });
-      }
-
-      const username = email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "_");
-
-      let user = await storage.getUserByUsername(username);
-
-      if (!user) {
-        const randomPassword = Math.random().toString(36).slice(-12);
-        const hashedPassword = await bcrypt.hash(randomPassword, 10);
-        user = await storage.createUser({
-          username,
-          phoneNumber: "",
-          password: hashedPassword,
-          displayName: displayName || username,
-          avatarUrl,
-        });
-      }
-
-      const { password: _, ...userWithoutPassword } = user;
-      res.json(userWithoutPassword);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to authenticate with Google" });
-    }
+    return res.status(403).json({ error: "Google sign-in is disabled" });
   });
 
   // User routes
