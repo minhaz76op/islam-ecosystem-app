@@ -245,7 +245,7 @@ export default function QuranScreen() {
         style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
         contentContainerStyle={{
           paddingTop: headerHeight + Spacing.lg,
-          paddingBottom: insets.bottom + Spacing["2xl"],
+          paddingBottom: insets.bottom + tabBarHeight + Spacing["2xl"],
           paddingHorizontal: Spacing.lg,
         }}
         showsVerticalScrollIndicator={false}
@@ -453,7 +453,7 @@ export default function QuranScreen() {
         keyExtractor={(item) => String(item.number)}
         contentContainerStyle={{
           paddingHorizontal: Spacing.lg,
-          paddingBottom: insets.bottom + Spacing["2xl"],
+          paddingBottom: insets.bottom + tabBarHeight + Spacing["2xl"],
         }}
         showsVerticalScrollIndicator={false}
       />

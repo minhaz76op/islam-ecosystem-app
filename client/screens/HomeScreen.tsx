@@ -244,7 +244,7 @@ export default function HomeScreen() {
         style={styles.scrollView}
         contentContainerStyle={{
           paddingTop: insets.top + Spacing["2xl"],
-          paddingBottom: tabBarHeight + Spacing["2xl"],
+          paddingBottom: tabBarHeight + Spacing["2xl"] + 100, // Added extra space for floating button
           paddingHorizontal: Spacing.lg,
         }}
         showsVerticalScrollIndicator={false}

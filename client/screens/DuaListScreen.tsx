@@ -67,7 +67,7 @@ export default function DuaListScreen() {
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
       contentContainerStyle={{
         paddingTop: headerHeight + Spacing.xl,
-        paddingBottom: insets.bottom + Spacing["2xl"],
+        paddingBottom: insets.bottom + tabBarHeight + Spacing["2xl"],
         paddingHorizontal: Spacing.lg,
       }}
       showsVerticalScrollIndicator={false}

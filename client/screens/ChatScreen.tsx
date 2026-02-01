@@ -228,7 +228,7 @@ export default function ChatScreen() {
         ListEmptyComponent={renderEmptyState}
         contentContainerStyle={[
           styles.messageList,
-          { paddingTop: headerHeight + Spacing.md },
+          { paddingTop: headerHeight + Spacing.md, paddingBottom: 20 },
         ]}
         showsVerticalScrollIndicator={false}
       />

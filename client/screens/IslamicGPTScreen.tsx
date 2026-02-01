@@ -381,7 +381,7 @@ export default function IslamicGPTScreen() {
           styles.messageList,
           {
             paddingTop: messages.length > 0 ? Spacing.lg : 0,
-            paddingBottom: headerHeight + Spacing.xl,
+            paddingBottom: headerHeight + Spacing.xl + 20,
           },
         ]}
         showsVerticalScrollIndicator={false}
