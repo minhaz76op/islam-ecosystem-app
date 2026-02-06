@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, Pressable, Platform, Linking } from "react-native";
+import { View, StyleSheet, TextInput, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import * as AppleAuthentication from "expo-apple-authentication";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
@@ -13,7 +12,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/contexts/AuthContext";
-import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
+import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
 import { saveUserProfile } from "@/lib/storage";
 
 export default function SignupScreen() {
@@ -81,59 +80,6 @@ export default function SignupScreen() {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setIsLoading(true);
-
-    try {
-      const randomId = Math.random().toString(36).substring(2, 8);
-      const result = await register(`google_user_${randomId}`, `google_${randomId}_pass`, "Google User", "");
-      if (result.success) {
-        await saveUserProfile({ name: "Google User" });
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        navigation.goBack();
-      } else {
-        setErrors({ general: result.error || "Google sign in failed" });
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
-    } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-
-      const userName = credential.fullName
-        ? `${credential.fullName.givenName || ""} ${credential.fullName.familyName || ""}`.trim()
-        : "Apple User";
-      const randomId = Math.random().toString(36).substring(2, 8);
-      const appleUsername = `apple_user_${randomId}`;
-
-      const result = await register(appleUsername, `apple_${randomId}_pass`, userName, "");
-      if (result.success) {
-        await saveUserProfile({ name: userName });
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        navigation.goBack();
-      } else {
-        setErrors({ general: result.error || "Apple sign in failed" });
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
-    } catch (error: any) {
-      if (error.code !== "ERR_REQUEST_CANCELED") {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
     }
   };
 
@@ -318,14 +264,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Poppins_400Regular",
   },
-  eyeButton: {
-    position: "absolute",
-    right: Spacing.md,
-    top: 0,
-    bottom: 0,
-    justifyContent: "center",
-    paddingHorizontal: Spacing.sm,
-  },
   errorText: {
     fontSize: 12,
     fontFamily: "Poppins_400Regular",
@@ -333,52 +271,6 @@ const styles = StyleSheet.create({
   },
   signupButton: {
     marginTop: Spacing.lg,
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: Spacing["2xl"],
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontSize: 13,
-    fontFamily: "Poppins_400Regular",
-    marginHorizontal: Spacing.lg,
-  },
-  socialRow: {
-    flexDirection: "row",
-    gap: Spacing.md,
-    marginBottom: Spacing["2xl"],
-  },
-  socialButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: Spacing.sm,
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-  },
-  googleIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#4285F4",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  googleIconText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  socialText: {
-    fontSize: 14,
-    fontFamily: "Poppins_500Medium",
   },
   footer: {
     flexDirection: "row",

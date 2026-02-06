@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, Pressable, Alert, Image } from "react-native";
+import { View, StyleSheet, TextInput, Pressable, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "@react-navigation/native";
@@ -12,7 +12,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/contexts/AuthContext";
-import { Spacing, BorderRadius, Shadows, AppColors } from "@/constants/theme";
+import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
 import { saveUserProfile } from "@/lib/storage";
 
 export default function LoginScreen() {
@@ -20,12 +20,11 @@ export default function LoginScreen() {
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation<any>();
   const { theme } = useTheme();
-  const { login, loginWithGoogle } = useAuth();
+  const { login } = useAuth();
 
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
@@ -55,36 +54,6 @@ export default function LoginScreen() {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setIsGoogleLoading(true);
-    setError("");
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-    try {
-      const result = await loginWithGoogle();
-      if (result.success) {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        navigation.goBack();
-      } else {
-        if (result.error?.includes("not configured")) {
-          Alert.alert(
-            "Google Sign-In Setup Required",
-            "To enable Google Sign-In, you need to configure Google OAuth credentials in your app settings. Please contact the developer for assistance.",
-            [{ text: "OK" }]
-          );
-        } else {
-          setError(result.error || "Google Sign-In failed");
-        }
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    } finally {
-      setIsGoogleLoading(false);
     }
   };
 
@@ -266,67 +235,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Poppins_400Regular",
   },
-  eyeButton: {
-    position: "absolute",
-    right: Spacing.md,
-    top: 0,
-    bottom: 0,
-    justifyContent: "center",
-    paddingHorizontal: Spacing.sm,
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: Spacing.xl,
-  },
-  forgotText: {
-    fontSize: 13,
-    fontFamily: "Poppins_500Medium",
-  },
   loginButton: {
     marginTop: Spacing.sm,
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: Spacing["2xl"],
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontSize: 13,
-    fontFamily: "Poppins_400Regular",
-    marginHorizontal: Spacing.lg,
-  },
-  socialRow: {
-    marginBottom: Spacing["3xl"],
-  },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: Spacing.md,
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-  },
-  googleIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#4285F4",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  googleIcon: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontFamily: "Poppins_700Bold",
-  },
-  googleText: {
-    fontSize: 15,
-    fontFamily: "Poppins_500Medium",
   },
   footer: {
     flexDirection: "row",
