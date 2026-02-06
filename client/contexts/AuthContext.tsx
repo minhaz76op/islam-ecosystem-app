@@ -16,7 +16,6 @@ interface AuthContextType {
   isLoading: boolean;
   login: (username: string, password: string, phoneNumber: string) => Promise<{ success: boolean; error?: string }>;
   register: (username: string, password: string, displayName: string, phoneNumber: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
 }
@@ -90,68 +89,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
-    const WebBrowser = await import("expo-web-browser");
-    const AuthSession = await import("expo-auth-session");
-    const Google = await import("expo-auth-session/providers/google");
-    
-    const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
-    
-    if (!GOOGLE_CLIENT_ID) {
-      return { 
-        success: false, 
-        error: "Google Sign-In requires configuration. Please contact the developer to enable this feature." 
-      };
-    }
-
-    try {
-      const [request, response, promptAsync] = Google.useAuthRequest({
-        webClientId: GOOGLE_CLIENT_ID,
-        iosClientId: GOOGLE_CLIENT_ID,
-        androidClientId: GOOGLE_CLIENT_ID,
-      });
-
-      const result = await promptAsync();
-      
-      if (result.type === "success") {
-        const { authentication } = result;
-        const accessToken = authentication?.accessToken;
-        
-        if (accessToken) {
-          const userInfoResponse = await fetch(
-            "https://www.googleapis.com/userinfo/v2/me",
-            { headers: { Authorization: `Bearer ${accessToken}` } }
-          );
-          const googleUser = await userInfoResponse.json();
-
-          if (googleUser.email) {
-            const registerResponse = await fetch(new URL("/api/auth/google", getApiUrl()).toString(), {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                googleId: googleUser.id,
-                email: googleUser.email,
-                displayName: googleUser.name,
-                avatarUrl: googleUser.picture,
-              }),
-            });
-
-            if (registerResponse.ok) {
-              const userData = await registerResponse.json();
-              setUser(userData);
-              await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userData));
-              return { success: true };
-            }
-          }
-        }
-      }
-      
-      return { success: false, error: "Google Sign-In was cancelled or failed" };
-    } catch (error) {
-      return { success: false, error: "Failed to sign in with Google" };
-    }
-  };
-
   const logout = async () => {
     setUser(null);
     await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
@@ -171,7 +108,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading, 
       login, 
       register, 
-      loginWithGoogle,
       logout, 
       updateUser,
     }}>

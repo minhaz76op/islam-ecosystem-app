@@ -109,10 +109,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/google", async (req: Request, res: Response) => {
-    return res.status(403).json({ error: "Google sign-in is disabled" });
-  });
-
   // User routes
   app.get("/api/users/search", async (req: Request, res: Response) => {
     try {
