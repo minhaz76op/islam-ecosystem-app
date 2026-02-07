@@ -537,7 +537,6 @@ export default function HomeScreen() {
           </Animated.View>
         ) : null}
 
-
         <Animated.View entering={FadeInDown.delay(500).duration(600)}>
           <View style={styles.salahTrackerHeader}>
             <ThemedText style={styles.sectionTitle}>Daily Salah</ThemedText>
