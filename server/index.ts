@@ -29,20 +29,14 @@ function setupCors(app: express.Application) {
 
     const origin = req.header("origin");
 
-    // Allow localhost origins for Expo web development (any port)
-    const isLocalhost =
-      origin?.startsWith("http://localhost:") ||
-      origin?.startsWith("http://127.0.0.1:");
-
-    if (origin && (origins.has(origin) || isLocalhost)) {
-      res.header("Access-Control-Allow-Origin", origin);
-      res.header(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PUT, DELETE, OPTIONS",
-      );
-      res.header("Access-Control-Allow-Headers", "Content-Type");
-      res.header("Access-Control-Allow-Credentials", "true");
-    }
+    // Allow all origins in Replit environment to ensure preview works
+    res.header("Access-Control-Allow-Origin", origin || "*");
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS",
+    );
+    res.header("Access-Control-Allow-Headers", "Content-Type, expo-platform, expo-protocol-version, expo-sfv-version");
+    res.header("Access-Control-Allow-Credentials", "true");
 
     if (req.method === "OPTIONS") {
       return res.sendStatus(200);
